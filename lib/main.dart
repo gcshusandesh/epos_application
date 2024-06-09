@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:epos_application/providers/info_provider.dart';
+import 'package:epos_application/components/provider_list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,10 +13,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
+    return MultiProvider(
+        providers: providers,
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Demo',
+          theme: ThemeData(
         // This is the theme of your application
         //
         // TRY THIS: Try running your application with "flutter run". You'll see
@@ -29,11 +34,11 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Initial Setup'),
-    );
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+            useMaterial3: true,
+          ),
+          home: const MyHomePage(title: 'Initial Setup'),
+    ));
   }
 }
 
@@ -68,6 +73,18 @@ class _MyHomePageState extends State<MyHomePage> {
       _counter++;
     });
   }
+
+  bool init = true;
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    if (init) {
+      Provider.of<InfoProvider>(context, listen: false).getTestData();
+
+      init = false;
+    }
+    }
+
 
   @override
   Widget build(BuildContext context) {
