@@ -16,6 +16,7 @@ class InfoProvider extends ChangeNotifier {
       var response = await http.get(url, headers: headers);
       var extractedData = json.decode(response.body);
       if (response.statusCode == 200) {
+        // ignore: avoid_print
         print(extractedData);
       }
       notifyListeners();
