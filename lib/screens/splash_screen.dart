@@ -73,7 +73,7 @@ class SplashScreenState extends State<SplashScreen>
                   height: 95,
                   width: 100,
                   child: Image.asset(
-                    "assets/images/logo.png",
+                    "assets/logo.png",
                     fit: BoxFit.fill,
                   ),
                 ),
@@ -86,7 +86,7 @@ class SplashScreenState extends State<SplashScreen>
                     style: TextStyle(
                       fontSize: width * 6,
                       fontFamily: "RobotoRegular",
-                      color: Data.primaryRed,
+                      color: Data.primaryTextColor,
                     ),
                     child: AnimatedTextKit(
                       animatedTexts: [

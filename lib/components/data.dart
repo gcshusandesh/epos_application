@@ -5,6 +5,7 @@ class Data {
   static const primaryBlue = Color(0xff062041);
   static const primaryDarkBlue = Color(0xff020B16);
   static const primaryRed = Color(0xffFF4C5A);
+  static const primaryTextColor = Color(0xff000000);
 }
 
 
