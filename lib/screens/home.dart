@@ -30,7 +30,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     if (init) {
       Provider.of<InfoProvider>(context, listen: false).getTestData();

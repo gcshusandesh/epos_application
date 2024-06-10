@@ -1,65 +1,123 @@
 import 'dart:async';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/screens/home.dart';
 import 'package:flutter/material.dart';
 
-const int splashPageVisibilityTime = 1000;
+const int splashPageVisibilityTime = 2000;
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
   static const routeName = "splashScreen";
+
+  const SplashScreen({super.key});
   @override
   SplashScreenState createState() => SplashScreenState();
 }
 
-class SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _navigateToHomeScreen();
-  }
+class SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
 
   late double height;
   late double width;
-  bool init = true;
+  late AnimationController _controller;
+
   @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-    if (mounted) {
-      if (init) {
-        init = false;
-        isSwitched = true;
-        SizeConfig().init(context);
-        height = SizeConfig.safeBlockVertical;
-        width = SizeConfig.safeBlockHorizontal;
-        // Locale myLocale = Localizations.localeOf(context);
-        // String lc = myLocale.languageCode;
-      }
-    }
+  void initState() {
+    _navigateToHomeScreen();
+
+    _controller = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 1800),
+        lowerBound: 0,
+        upperBound: 10);
+    _controller.reverse(from: 10);
+    _controller.addListener(() {
+      setState(() {});
+    });
+    super.initState();
+
   }
 
-  bool isSwitched = true;
+  @override
+  void didChangeDependencies() {
+    //initialize size config at the very beginning
+    SizeConfig().init(context);
+    height = SizeConfig.safeBlockVertical;
+    width = SizeConfig.safeBlockHorizontal;
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Data.primaryBlue,
-      body: Column(
-        children: [
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: SizedBox(
-                  width:width * 35,
-                  child: buildCustomText("Shusandesh GC", Colors.white, 20),
+      backgroundColor: Colors.white,
+      body: _controller.value <= 8
+          ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+              height: height * _controller.value,
+            ),
+            Column(
+              children: [
+                SizedBox(
+                  height: 95,
+                  width: 100,
+                  child: Image.asset(
+                    "assets/images/logo.png",
+                    fit: BoxFit.fill,
+                  ),
                 ),
+                SizedBox(
+                  height: height * 4,
+                ),
+                Center(
+                  child: DefaultTextStyle(
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: width * 6,
+                      fontFamily: "RobotoRegular",
+                      color: Data.primaryRed,
+                    ),
+                    child: AnimatedTextKit(
+                      animatedTexts: [
+                        TypewriterAnimatedText('EPOS System',
+                            speed: const Duration(milliseconds: 60)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: height * 10,
+            ),
+          ],
+        ),
+      )
+          : Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 95,
+              width: 100,
+              child: Image.asset(
+                "assets/logo.png",
+                fit: BoxFit.fill,
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -72,9 +130,9 @@ class SplashScreenState extends State<SplashScreen> {
               context,
               MaterialPageRoute(builder: (context) => const MyHomePage(title: "My Home Page")),
             );
-        // Navigator.of(context).pushNamedAndRemoveUntil(
-        //     HomePage.routeName, (Route<dynamic> route) => false);
       },
     );
   }
+
+
 }
