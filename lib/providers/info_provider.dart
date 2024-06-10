@@ -4,9 +4,11 @@ import 'dart:convert';
 
 class InfoProvider extends ChangeNotifier {
 
+  String baseUrl = "https://restaurantepos.xyz";
+
   Future<void> getTestData() async {
     var url = Uri.parse(
-        "https://restaurantepos.xyz/api/testdatas/1");
+        "$baseUrl/api/testdatas/1");
     try {
       var headers = {
         "Accept": "application/json",
