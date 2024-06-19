@@ -1,3 +1,4 @@
+import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: Column(
             // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -49,7 +51,12 @@ class _DashboardState extends State<Dashboard> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      buildMenuItem(Icons.ac_unit, "Ac Unit", Colors.red),
+                      dashboardItem(
+                        "assets/dashboard/menu.svg",
+                        "Menu",
+                        height,
+                        width,
+                      ),
                       buildMenuItem(Icons.ac_unit, "Ac Unit", Colors.red),
                       buildMenuItem(Icons.ac_unit, "Ac Unit", Colors.red),
                     ],

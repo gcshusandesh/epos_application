@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class Data {
   static const appName = 'EPOS Application';
@@ -11,83 +10,6 @@ class Data {
   static const darkTextColor = Color(0xff000000);
   static const greyTextColor = Color(0xff1F2937);
   static const lightGreyTextColor = Color(0xff4B5563);
-}
-
-Widget buildButton(
-  IconData icon,
-  String text,
-  double height,
-  double width,
-  Function() onTap,
-) {
-  return InkWell(
-    onTap: onTap,
-    child: Container(
-      height: height * 6,
-      width: width * 40,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5.0),
-        color: Data.primaryColor,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            color: Colors.white,
-            size: width * 2,
-          ),
-          SizedBox(width: width * 2),
-          buildCustomText(text, Colors.white, width * 1.5),
-        ],
-      ),
-    ),
-  );
-}
-
-Widget iconButton(
-  String svg,
-  double height,
-  double width,
-  Function() onTap, {
-  bool isSvg = true,
-  IconData icon = Icons.arrow_back,
-}) {
-  return InkWell(
-    onTap: onTap,
-    child: Container(
-      height: height * 6,
-      width: width * 10,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(
-          color: Data.iconsColor, // Outline color
-          width: 0.5, // Outline width
-        ),
-        borderRadius: BorderRadius.circular(6.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.25), // Shadow color
-            spreadRadius: 0, // How much the shadow spreads
-            blurRadius: 4, // How much the shadow blurs
-            offset: const Offset(0, 5), // The offset of the shadow
-          ),
-        ],
-      ),
-      child: isSvg
-          ? SvgPicture.asset(
-              svg,
-              height: width,
-              width: width,
-              fit: BoxFit.scaleDown,
-            )
-          : Icon(
-              icon,
-              color: Data.iconsColor,
-              size: width * 2,
-            ),
-    ),
-  );
 }
 
 Widget buildInputField(

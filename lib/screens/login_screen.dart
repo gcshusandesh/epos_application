@@ -5,6 +5,7 @@ import 'package:epos_application/screens/reset_password.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../components/buttons.dart';
 import '../components/size_config.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -35,8 +36,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Column(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Column(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
