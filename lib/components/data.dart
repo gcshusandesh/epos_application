@@ -12,6 +12,18 @@ class Data {
   static const lightGreyTextColor = Color(0xff4B5563);
 }
 
+Widget buildImage(
+    String asset,
+    double height,
+    double width,
+    {
+      BoxFit fit = BoxFit.fill,
+    }) {
+    return SizedBox(
+    height: height,
+    width: width,
+    child: Image.asset(" assets/splash.png", fit: fit,),);
+}
 
 Widget buildTitleText(
     String text,

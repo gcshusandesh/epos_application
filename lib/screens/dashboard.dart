@@ -1,8 +1,6 @@
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
-import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -47,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(
               height: height * 2,
             ),
-            buildTitleText("Dashboard" , Data.primaryTextColor, width),
+            buildTitleText("Dashboard" , Data.darkTextColor, width),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

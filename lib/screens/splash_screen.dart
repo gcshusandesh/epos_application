@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
-import 'package:epos_application/screens/home.dart';
+import 'package:epos_application/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 
 const int splashPageVisibilityTime = 2000;
@@ -86,7 +86,7 @@ class SplashScreenState extends State<SplashScreen>
                     style: TextStyle(
                       fontSize: width * 6,
                       fontFamily: "RobotoRegular",
-                      color: Data.primaryTextColor,
+                      color: Data.darkTextColor,
                     ),
                     child: AnimatedTextKit(
                       animatedTexts: [
