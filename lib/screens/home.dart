@@ -29,7 +29,8 @@ class _MyHomePageState extends State<MyHomePage> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-      Provider.of<InfoProvider>(context, listen: false).getTestData();
+      // Test API Call
+      // Provider.of<InfoProvider>(context, listen: false).getTestData();
       init = false;
     }
   }
@@ -46,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(
               height: height * 2,
             ),
-            buildTitleText("Dashboard" , Data.primaryTextColor, width, fontFamily:"",),
+            buildTitleText("Dashboard" , Data.primaryTextColor, width),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

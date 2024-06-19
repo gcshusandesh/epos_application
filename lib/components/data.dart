@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
 class Data {
-  static const appName = 'Personal Portfolio Website';
-  static const primaryBlue = Color(0xff062041);
-  static const primaryDarkBlue = Color(0xff020B16);
-  static const primaryRed = Color(0xffFF4C5A);
-  static const primaryTextColor = Color(0xff000000);
+  static const appName = 'EPOS Application';
+  static const primaryColor = Color(0xff063B9D);
+  static const iconsColor = Color(0xff4071B6);
+  static const greenColor = Color(0xff22C55E);
+  static const redColor = Color(0xffC52222);
+  static const lightGreyBodyColor = Color(0xffD9D9D9);
+  static const darkTextColor = Color(0xff000000);
+  static const greyTextColor = Color(0xff1F2937);
+  static const lightGreyTextColor = Color(0xff4B5563);
 }
 
 
@@ -13,7 +17,7 @@ Widget buildTitleText(
     String text,
     Color color,
     double width, {
-      String fontFamily = "RobotoRegular",
+      String fontFamily = "RobotoBold",
       FontWeight fontWeight = FontWeight.normal,
       bool selectable = true,
     }) {

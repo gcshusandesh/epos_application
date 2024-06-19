@@ -1,11 +1,20 @@
 import 'package:epos_application/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:epos_application/components/provider_list.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+//enabling app to run only in landscape mode
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ])
+      .then((_) {
   runApp(const MyApp());
+      });
 }
 
 class MyApp extends StatelessWidget {
