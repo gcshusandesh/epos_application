@@ -4,6 +4,8 @@ import 'dart:convert';
 
 class InfoProvider extends ChangeNotifier {
 
+  String restaurantName = "Bob's Diner";
+
   String baseUrl = "https://restaurantepos.xyz";
 
   Future<void> getTestData() async {
