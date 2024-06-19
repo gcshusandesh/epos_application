@@ -46,7 +46,7 @@ class _DashboardState extends State<Dashboard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
-                    height: height * 10,
+                    height: height * 5,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -57,19 +57,50 @@ class _DashboardState extends State<Dashboard> {
                         height,
                         width,
                       ),
-                      buildMenuItem(Icons.ac_unit, "Ac Unit", Colors.red),
-                      buildMenuItem(Icons.ac_unit, "Ac Unit", Colors.red),
+                      dashboardItem(
+                        "assets/dashboard/menu.svg",
+                        "Order",
+                        height,
+                        width,
+                      ),
+                      dashboardItem(
+                        "assets/dashboard/menu.svg",
+                        "Payment",
+                        height,
+                        width,
+                      ),
+                      dashboardItem(
+                        "assets/dashboard/menu.svg",
+                        "Sales History",
+                        height,
+                        width,
+                      ),
                     ],
                   ),
                   SizedBox(
-                    height: height * 10,
+                    height: height * 5,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      buildMenuItem(Icons.ac_unit, "Ac Unit", Colors.red),
-                      buildMenuItem(Icons.ac_unit, "Ac Unit", Colors.red),
-                      buildMenuItem(Icons.ac_unit, "Ac Unit", Colors.red),
+                      dashboardItem(
+                        "assets/dashboard/menu.svg",
+                        "My Employee",
+                        height,
+                        width,
+                      ),
+                      dashboardItem(
+                        "assets/dashboard/menu.svg",
+                        "Inventory",
+                        height,
+                        width,
+                      ),
+                      dashboardItem(
+                        "assets/dashboard/menu.svg",
+                        "Analytics",
+                        height,
+                        width,
+                      ),
                     ],
                   ),
                 ],
