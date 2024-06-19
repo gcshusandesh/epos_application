@@ -70,10 +70,10 @@ class SplashScreenState extends State<SplashScreen>
             Column(
               children: [
                 SizedBox(
-                  height: 95,
-                  width: 100,
+                  height: 150,
+                  width: 150,
                   child: Image.asset(
-                    "assets/logo.png",
+                    "assets/splash.png",
                     fit: BoxFit.fill,
                   ),
                 ),
@@ -109,10 +109,10 @@ class SplashScreenState extends State<SplashScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              height: 95,
-              width: 100,
+              height: 150,
+              width: 150,
               child: Image.asset(
-                "assets/logo.png",
+                "assets/splash.png",
                 fit: BoxFit.fill,
               ),
             ),

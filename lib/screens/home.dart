@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(
               height: height * 2,
             ),
-            buildTitleText("Dashboard Hub" , Data.primaryTextColor, width),
+            buildTitleText("Dashboard" , Data.primaryTextColor, width, fontFamily:"",),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
