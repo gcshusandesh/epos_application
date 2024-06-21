@@ -44,7 +44,7 @@ class _ResetPasswordState extends State<ResetPassword> {
             children: [
               SizedBox(width: width * 2),
               iconButton(
-                "assets/profile_icon.svg",
+                "assets/arrow_back.svg",
                 height,
                 width,
                 () {
@@ -81,7 +81,7 @@ class _ResetPasswordState extends State<ResetPassword> {
           SizedBox(height: height * 4),
           buildButton(
             Icons.person,
-            "Log In",
+            "Reset",
             height,
             width,
             () {},

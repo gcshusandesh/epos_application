@@ -1,6 +1,8 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/screens/profile_screen.dart';
+import 'package:epos_application/screens/settings.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {
@@ -41,7 +43,14 @@ class _DashboardState extends State<Dashboard> {
               SizedBox(
                 height: height * 2,
               ),
-              buildTitleText("Dashboard", Data.darkTextColor, width),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Opacity(opacity: 0, child: options(context)),
+                  buildTitleText("Dashboard", Data.darkTextColor, width),
+                  options(context),
+                ],
+              ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -56,24 +65,28 @@ class _DashboardState extends State<Dashboard> {
                         "Menu",
                         height,
                         width,
+                        () {},
                       ),
                       dashboardItem(
-                        "assets/dashboard/menu.svg",
+                        "assets/dashboard/order.svg",
                         "Order",
                         height,
                         width,
+                        () {},
                       ),
                       dashboardItem(
-                        "assets/dashboard/menu.svg",
+                        "assets/dashboard/payment.svg",
                         "Payment",
                         height,
                         width,
+                        () {},
                       ),
                       dashboardItem(
-                        "assets/dashboard/menu.svg",
+                        "assets/dashboard/sales.svg",
                         "Sales History",
                         height,
                         width,
+                        () {},
                       ),
                     ],
                   ),
@@ -84,22 +97,25 @@ class _DashboardState extends State<Dashboard> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       dashboardItem(
-                        "assets/dashboard/menu.svg",
+                        "assets/dashboard/employees.svg",
                         "My Employee",
                         height,
                         width,
+                        () {},
                       ),
                       dashboardItem(
-                        "assets/dashboard/menu.svg",
+                        "assets/dashboard/inventory.svg",
                         "Inventory",
                         height,
                         width,
+                        () {},
                       ),
                       dashboardItem(
-                        "assets/dashboard/menu.svg",
+                        "assets/dashboard/analytics.svg",
                         "Analytics",
                         height,
                         width,
+                        () {},
                       ),
                     ],
                   ),
@@ -110,10 +126,41 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
+  Row options(BuildContext context) {
+    return Row(
+      children: [
+        iconButton(
+          "assets/profile_icon.svg",
+          height,
+          width,
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            );
+          },
+        ),
+        SizedBox(width: width * 2),
+        iconButton(
+          "assets/settings.svg",
+          height,
+          width,
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Settings()),
+            );
+          },
+        ),
+        SizedBox(width: width * 2),
+      ],
+    );
+  }
+
   InkWell buildMenuItem(IconData icon, String text, Color color) {
     return InkWell(
       onTap: () {
-        print("Tapped $text");
+        // print("Tapped $text");
       },
       child: Expanded(
         child: Container(

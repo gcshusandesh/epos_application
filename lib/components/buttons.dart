@@ -2,47 +2,69 @@ import 'package:epos_application/components/data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+Row backButton(BuildContext context, double width, double height) {
+  return Row(
+    children: [
+      SizedBox(width: width * 2),
+      iconButton(
+        "assets/arrow_back.svg",
+        height,
+        width,
+        () {
+          Navigator.pop(context);
+        },
+      ),
+    ],
+  );
+}
+
 Widget dashboardItem(
   String asset,
   String text,
   double height,
   double width,
+  Function() onTap,
 ) {
-  return Container(
-    height: width * 20,
-    width: width * 20,
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(
-        color: Data.iconsColor, // Outline color
-        width: 0.5, // Outline width
+  return InkWell(
+    onTap: onTap,
+    child: Container(
+      height: width * 20,
+      width: width * 20,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Data.iconsColor, // Outline color
+          width: 0.5, // Outline width
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25), // Shadow color
+            spreadRadius: 0, // How much the shadow spreads
+            blurRadius: 4, // How much the shadow blurs
+            offset: const Offset(0, 5), // The offset of the shadow
+          ),
+        ],
       ),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.25), // Shadow color
-          spreadRadius: 0, // How much the shadow spreads
-          blurRadius: 4, // How much the shadow blurs
-          offset: const Offset(0, 5), // The offset of the shadow
-        ),
-      ],
-    ),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SvgPicture.asset(
-          asset,
-          height: 50,
-          width: 50,
-          fit: BoxFit.scaleDown,
-        ),
-        buildCustomText(
-          text,
-          Data.greyTextColor,
-          width * 1.2,
-          fontFamily: "RobotoMedium",
-        ),
-      ],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: width * 13, // Define the size of the SVG image
+            width: width * 13,
+            child: SvgPicture.asset(
+              asset,
+            ),
+          ),
+          const Flexible(child: SizedBox(height: 10)),
+          buildCustomText(
+            text,
+            Data.greyTextColor,
+            width * 1.5,
+            fontFamily: "RobotoMedium",
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -71,8 +93,12 @@ Widget buildButton(
             color: Colors.white,
             size: width * 2,
           ),
-          SizedBox(width: width * 2),
-          buildCustomText(text, Colors.white, width * 1.5),
+          buildCustomText(
+            text,
+            Colors.white,
+            width * 1.5,
+            selectable: false,
+          ),
         ],
       ),
     ),
@@ -90,8 +116,8 @@ Widget iconButton(
   return InkWell(
     onTap: onTap,
     child: Container(
-      height: height * 6,
-      width: width * 10,
+      height: height * 5,
+      width: width * 5,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(
@@ -108,18 +134,20 @@ Widget iconButton(
           ),
         ],
       ),
-      child: isSvg
-          ? SvgPicture.asset(
-              svg,
-              height: width,
-              width: width,
-              fit: BoxFit.scaleDown,
-            )
-          : Icon(
-              icon,
-              color: Data.iconsColor,
-              size: width * 2,
-            ),
+      child: Center(
+        child: isSvg
+            ? SvgPicture.asset(
+                svg,
+                height: width * 2,
+                width: width * 2,
+                fit: BoxFit.contain,
+              )
+            : Icon(
+                icon,
+                color: Data.iconsColor,
+                size: width * 2,
+              ),
+      ),
     ),
   );
 }

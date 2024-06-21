@@ -68,8 +68,8 @@ class SplashScreenState extends State<SplashScreen>
                   Column(
                     children: [
                       SizedBox(
-                        height: 150,
-                        width: 150,
+                        height: 200,
+                        width: 200,
                         child: Image.asset(
                           "assets/splash.png",
                           fit: BoxFit.fill,
