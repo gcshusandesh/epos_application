@@ -5,6 +5,8 @@ import 'package:epos_application/screens/profile_screen.dart';
 import 'package:epos_application/screens/settings.dart';
 import 'package:flutter/material.dart';
 
+import 'make_employee.dart';
+
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
   static const routeName = "dashboard";
@@ -101,7 +103,13 @@ class _DashboardState extends State<Dashboard> {
                         "My Employee",
                         height,
                         width,
-                        () {},
+                        () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MakeEmployee()),
+                          );
+                        },
                       ),
                       dashboardItem(
                         "assets/dashboard/inventory.svg",

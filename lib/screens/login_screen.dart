@@ -47,45 +47,43 @@ class _LoginScreenState extends State<LoginScreen> {
             Data.greyTextColor,
             width,
           ),
-          SizedBox(height: height * 2),
-          buildImage("assets/restaurant_image.png", 200, 300),
-          SizedBox(height: height * 2),
+          SizedBox(height: height),
+          buildImage("assets/restaurant_image.png", height * 25, width * 30),
           buildTitleText(
             "Log In",
             Data.greyTextColor,
             width,
           ),
-          SizedBox(height: height * 2),
           buildBodyText(
             "Please enter your credentials to access the EPOS system.",
             Data.lightGreyTextColor,
             width,
           ),
-          SizedBox(height: height * 2),
+          SizedBox(height: height),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildTitleText(
                 "Email",
                 Data.lightGreyTextColor,
-                width * 0.8,
+                width * 0.7,
               ),
               buildInputField("Email", height, width),
             ],
           ),
-          SizedBox(height: height * 1),
+          SizedBox(height: height),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildTitleText(
                 "Password",
                 Data.lightGreyTextColor,
-                width * 0.8,
+                width * 0.7,
               ),
               buildInputField("Password", height, width),
             ],
           ),
-          SizedBox(height: height * 4),
+          SizedBox(height: height * 2),
           buildButton(
             Icons.person,
             "Log In",
@@ -98,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
               );
             },
           ),
-          SizedBox(height: height * 2),
+          SizedBox(height: height),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -125,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ],
           ),
-          SizedBox(height: height * 2),
+          SizedBox(height: height),
           InkWell(
             onTap: () {
               Navigator.push(

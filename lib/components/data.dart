@@ -59,7 +59,7 @@ Widget buildTitleText(
   double width, {
   String fontFamily = "RobotoBold",
   FontWeight fontWeight = FontWeight.normal,
-  bool selectable = true,
+  bool selectable = false,
 }) {
   TextStyle style = TextStyle(
       fontSize: width * 3,
@@ -83,7 +83,7 @@ Widget buildBodyText(
   double width, {
   String fontFamily = "RobotoRegular",
   FontWeight fontWeight = FontWeight.normal,
-  bool selectable = true,
+  bool selectable = false,
 }) {
   TextStyle style = TextStyle(
       fontSize: width * 2,
@@ -107,10 +107,10 @@ Widget buildSmallText(
   double width, {
   String fontFamily = "RobotoRegular",
   FontWeight fontWeight = FontWeight.normal,
-  bool selectable = true,
+  bool selectable = false,
 }) {
   TextStyle style = TextStyle(
-      fontSize: width * 1,
+      fontSize: width * 1.25,
       color: color,
       fontFamily: fontFamily,
       fontWeight: fontWeight);
@@ -133,7 +133,7 @@ Widget buildCustomText(
   String fontFamily = "RobotoRegular",
   double? height,
   TextAlign? textAlign,
-  bool selectable = true,
+  bool selectable = false,
   TextDecoration? decoration,
   double letterSpacing = 0,
 }) {

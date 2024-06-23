@@ -1,16 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class InfoProvider extends ChangeNotifier {
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
+class InfoProvider extends ChangeNotifier {
   String restaurantName = "Bob's Diner";
 
   String baseUrl = "https://restaurantepos.xyz";
 
   Future<void> getTestData() async {
-    var url = Uri.parse(
-        "$baseUrl/api/testdatas/1");
+    var url = Uri.parse("$baseUrl/api/testdatas/1");
     try {
       var headers = {
         "Accept": "application/json",
@@ -27,5 +26,4 @@ class InfoProvider extends ChangeNotifier {
       print(e);
     }
   }
-
 }
