@@ -150,15 +150,19 @@ class _MakeEmployeeState extends State<MakeEmployee> {
     );
   }
 
-  CupertinoSwitch buildCupertinoSwitch({required int index}) {
-    return CupertinoSwitch(
-      activeColor: Data.primaryColor,
-      value: employeeList[index].status,
-      onChanged: (bool newValue) {
-        setState(() {
-          employeeList[index].status = newValue;
-        });
-      },
+  Widget buildCupertinoSwitch({required int index}) {
+    return Transform.scale(
+      scale: 1.5,
+      child: CupertinoSwitch(
+        activeColor: Data.primaryColor,
+        trackColor: Data.greyTextColor,
+        value: employeeList[index].status,
+        onChanged: (bool newValue) {
+          setState(() {
+            employeeList[index].status = newValue;
+          });
+        },
+      ),
     );
   }
 
