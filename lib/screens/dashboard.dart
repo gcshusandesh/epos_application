@@ -5,7 +5,7 @@ import 'package:epos_application/screens/profile_screen.dart';
 import 'package:epos_application/screens/settings.dart';
 import 'package:flutter/material.dart';
 
-import 'make_employee.dart';
+import 'employees/make_employee.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -64,14 +64,14 @@ class _DashboardState extends State<Dashboard> {
                     children: [
                       dashboardItem(
                         "assets/dashboard/menu.svg",
-                        "Menu",
+                        "menu",
                         height,
                         width,
                         () {},
                       ),
                       dashboardItem(
                         "assets/dashboard/order.svg",
-                        "Order",
+                        "order",
                         height,
                         width,
                         () {},

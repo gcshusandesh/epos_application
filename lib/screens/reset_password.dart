@@ -6,7 +6,7 @@ import '../components/size_config.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({super.key});
-  static const routeName = "loginScreen";
+  static const routeName = "resetPassword";
 
   @override
   State<ResetPassword> createState() => _ResetPasswordState();
