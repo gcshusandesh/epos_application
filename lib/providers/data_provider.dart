@@ -65,4 +65,38 @@ class DataProvider extends ChangeNotifier {
       print(e);
     }
   }
+
+  List<Specials> specialsList = [];
+
+  Future<void> getSpecialsList() async {
+    // var url = Uri.parse("$baseUrl/api/testdatas/1");
+    try {
+      // var headers = {
+      //   "Accept": "application/json",
+      // };
+      // var response = await http.get(url, headers: headers);
+      // var extractedData = json.decode(response.body);
+      // if (response.statusCode == 200) {
+      //   print(extractedData);
+      // }
+      specialsList = [
+        Specials(
+            name: "Featured Burger",
+            image: "assets/featured_burger1.png",
+            status: true),
+        Specials(
+            name: "Featured Breakfast",
+            image: "assets/breakfast_featured.png",
+            status: true),
+        Specials(
+            name: "Featured Coffee",
+            image: "assets/coffee_featured.png",
+            status: true),
+      ];
+      notifyListeners();
+    } catch (e) {
+      // ignore: avoid_print
+      print(e);
+    }
+  }
 }

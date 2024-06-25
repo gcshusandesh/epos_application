@@ -5,7 +5,7 @@ import 'package:epos_application/screens/profile_screen.dart';
 import 'package:epos_application/screens/settings.dart';
 import 'package:flutter/material.dart';
 
-import 'employees/make_employee.dart';
+import 'employees/manage_employee.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -107,7 +107,7 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const MakeEmployee()),
+                                builder: (context) => const ManageEmployee()),
                           );
                         },
                       ),
