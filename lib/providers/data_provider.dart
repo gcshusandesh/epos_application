@@ -116,6 +116,15 @@ class DataProvider extends ChangeNotifier {
   }
 
   List<Category> categoryList = [];
+  void changeCategoryStatus(int index) {
+    categoryList[index].status = !categoryList[index].status;
+    notifyListeners();
+  }
+
+  void removeCategory(int index) {
+    categoryList.removeAt(index);
+    notifyListeners();
+  }
 
   Future<void> getCategoryList() async {
     // var url = Uri.parse("$baseUrl/api/testdatas/1");

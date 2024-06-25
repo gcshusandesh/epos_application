@@ -3,6 +3,7 @@ import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/data_provider.dart';
+import 'package:epos_application/screens/menu/edit_category.dart';
 import 'package:epos_application/screens/menu/edit_specials.dart';
 import 'package:epos_application/screens/profile_screen.dart';
 import 'package:epos_application/screens/settings.dart';
@@ -144,7 +145,12 @@ class _DashboardState extends State<Dashboard> {
               "Analytics",
               height,
               width,
-              () {},
+              () {
+                animatedNavigatorPush(
+                  context: context,
+                  screen: const EditCategory(),
+                );
+              },
             ),
           ],
         ),
