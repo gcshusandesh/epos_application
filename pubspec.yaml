@@ -76,6 +76,7 @@ flutter:
     - assets/
     - assets/category/
     - assets/dashboard/
+    - assets/featured/
     - assets/fonts/
     - assets/food/
 

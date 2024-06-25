@@ -152,13 +152,16 @@ class _EditSpecialsState extends State<EditSpecials> {
             ],
           ),
         ),
-        Image.asset(
-          Provider.of<DataProvider>(context, listen: true)
-              .specialsList[index]
-              .image,
-          height: height * 10,
-          width: width * 20,
-          fit: BoxFit.fill,
+        Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Image.asset(
+            Provider.of<DataProvider>(context, listen: true)
+                .specialsList[index]
+                .image,
+            height: height * 10,
+            width: width * 20,
+            fit: BoxFit.fill,
+          ),
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: width * 6),

@@ -97,15 +97,15 @@ class DataProvider extends ChangeNotifier {
       specialsList = [
         Specials(
             name: "Featured Burger",
-            image: "assets/featured/featured_burger1.png",
+            image: "assets/featured/featured_burger1.jpg",
             status: true),
         Specials(
             name: "Featured Breakfast",
-            image: "assets/featured/breakfast_featured.png",
+            image: "assets/featured/breakfast_featured.jpg",
             status: true),
         Specials(
             name: "Featured Coffee",
-            image: "assets/featured/coffee_featured.png",
+            image: "assets/featured/coffee_featured.jpg",
             status: true),
       ];
       notifyListeners();
