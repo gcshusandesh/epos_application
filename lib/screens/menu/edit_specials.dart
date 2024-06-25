@@ -41,7 +41,11 @@ class _EditSpecialsState extends State<EditSpecials> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            topSection(context),
+            topSection(
+                context: context,
+                text: "Specials",
+                height: height,
+                width: width),
             SizedBox(height: height * 2),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -60,7 +64,7 @@ class _EditSpecialsState extends State<EditSpecials> {
                       ),
                       backgroundColor: Data.lightGreyBodyColor,
                       context: context,
-                      builder: (context) => Container(
+                      builder: (context) => SizedBox(
                         height: height * 10,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -109,26 +113,6 @@ class _EditSpecialsState extends State<EditSpecials> {
           ],
         ),
       ),
-    );
-  }
-
-  Row topSection(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        iconButton(
-          "assets/svg/arrow_back.svg",
-          height,
-          width,
-          () {
-            Navigator.pop(context);
-          },
-        ),
-        buildTitleText("Specials", Data.darkTextColor, width),
-        SizedBox(
-          width: width * 5,
-        ),
-      ],
     );
   }
 

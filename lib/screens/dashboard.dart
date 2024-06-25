@@ -59,7 +59,10 @@ class _DashboardState extends State<Dashboard> {
               SizedBox(
                 height: height * 2,
               ),
-              topSection(context),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 2),
+                child: topSection(context),
+              ),
               optionsSection(context),
             ]),
       ), // This trailing comma makes auto-formatting nicer for build methods.

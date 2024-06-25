@@ -1,3 +1,4 @@
+import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,30 @@ Future<dynamic> animatedNavigatorPushNamed({
       child: screen,
       duration: duration,
     ),
+  );
+}
+
+Row topSection(
+    {required BuildContext context,
+    required double height,
+    required String text,
+    required double width}) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      iconButton(
+        "assets/svg/arrow_back.svg",
+        height,
+        width,
+        () {
+          Navigator.pop(context);
+        },
+      ),
+      buildTitleText(text, Data.darkTextColor, width),
+      SizedBox(
+        width: width * 5,
+      ),
+    ],
   );
 }
 

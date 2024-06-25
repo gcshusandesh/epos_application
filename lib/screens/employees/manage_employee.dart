@@ -1,3 +1,4 @@
+import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
@@ -35,15 +36,20 @@ class _ManageEmployeeState extends State<ManageEmployee> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Center(
-              child: buildTitleText("My Employees", Data.darkTextColor, width)),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Container(
-                color: Colors.white,
-                padding: const EdgeInsets.all(20.0),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            topSection(
+                context: context,
+                text: "My Employees",
+                height: height,
+                width: width),
+            SizedBox(height: height * 2),
+            editSection(),
+            SizedBox(height: height * 2),
+            Expanded(
+              child: SingleChildScrollView(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: Provider.of<DataProvider>(context, listen: true)
@@ -117,10 +123,33 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                         ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
+    );
+  }
+
+  Row editSection() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        iconButton(
+          "assets/svg/add.svg",
+          height,
+          width,
+          () {},
+        ),
+        SizedBox(width: width),
+        iconButton(
+          "assets/svg/edit.svg",
+          height,
+          width,
+          () {
+            //do something
+          },
+        ),
+      ],
     );
   }
 
