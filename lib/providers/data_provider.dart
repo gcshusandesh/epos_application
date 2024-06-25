@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 class DataProvider extends ChangeNotifier {
   List<Employee> employeeList = [];
 
+  void changeEmployeeStatus(int index) {
+    employeeList[index].status = !employeeList[index].status;
+    notifyListeners();
+  }
+
   Future<void> getEmployeeData() async {
     // var url = Uri.parse("$baseUrl/api/testdatas/1");
     try {
@@ -68,12 +73,12 @@ class DataProvider extends ChangeNotifier {
 
   List<Specials> specialsList = [];
 
-  void changeStatusSpecials(int index) {
+  void changeSpecialsStatus(int index) {
     specialsList[index].status = !specialsList[index].status;
     notifyListeners();
   }
 
-  void deleteSpecials(int index) {
+  void removeSpecials(int index) {
     specialsList.removeAt(index);
     notifyListeners();
   }

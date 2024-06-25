@@ -2,6 +2,7 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/screens/menu/edit_specials.dart';
 import 'package:epos_application/screens/profile_screen.dart';
 import 'package:epos_application/screens/settings.dart';
 import 'package:flutter/material.dart';
@@ -119,7 +120,7 @@ class _DashboardState extends State<Dashboard> {
               () {
                 animatedNavigatorPush(
                   context: context,
-                  screen: const ManageEmployee(),
+                  screen: const EditSpecials(),
                 );
               },
             ),

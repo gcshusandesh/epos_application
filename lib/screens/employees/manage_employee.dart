@@ -1,6 +1,5 @@
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
-import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/data_provider.dart';
 import 'package:flutter/material.dart';
@@ -19,8 +18,6 @@ class _ManageEmployeeState extends State<ManageEmployee> {
   late double height;
   late double width;
 
-  List<Employee> employeeList = [];
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -30,13 +27,8 @@ class _ManageEmployeeState extends State<ManageEmployee> {
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
 
-      // Defer the call to getEmployeeData
-      // WidgetsBinding.instance.addPostFrameCallback((_) {
       // Get Employee Data from API
       Provider.of<DataProvider>(context, listen: false).getEmployeeData();
-      employeeList =
-          Provider.of<DataProvider>(context, listen: false).employeeList;
-      // });
 
       init = false;
     }
@@ -57,7 +49,9 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                 padding: const EdgeInsets.all(20.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(6),
-                  child: employeeList.isEmpty
+                  child: Provider.of<DataProvider>(context, listen: true)
+                          .employeeList
+                          .isEmpty
                       ? Column(
                           children: [
                             Table(
@@ -114,8 +108,14 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                                   tableTitle("Gender", width),
                                   tableTitle("Status", width),
                                 ]),
-                            for (int i = 0; i < employeeList.length; i++)
-                              buildEmployeeRow(i, employeeList[i]),
+                            for (int i = 0;
+                                i <
+                                    Provider.of<DataProvider>(context,
+                                            listen: true)
+                                        .employeeList
+                                        .length;
+                                i++)
+                              buildEmployeeRow(i),
                           ],
                         ),
                 ),
@@ -127,7 +127,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
     );
   }
 
-  TableRow buildEmployeeRow(int index, Employee employee) {
+  TableRow buildEmployeeRow(int index) {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
@@ -136,25 +136,50 @@ class _ManageEmployeeState extends State<ManageEmployee> {
           padding: const EdgeInsets.symmetric(vertical: 10.0),
           child: Column(
             children: [
-              tableItem(employee.name, width),
+              tableItem(
+                  Provider.of<DataProvider>(context, listen: true)
+                      .employeeList[index]
+                      .name,
+                  width),
               buildCustomText(
-                employee.status ? "Active" : "Inactive",
-                employee.status ? Data.greenColor : Data.redColor,
+                Provider.of<DataProvider>(context, listen: true)
+                        .employeeList[index]
+                        .status
+                    ? "Active"
+                    : "Inactive",
+                Provider.of<DataProvider>(context, listen: true)
+                        .employeeList[index]
+                        .status
+                    ? Data.greenColor
+                    : Data.redColor,
                 width,
               )
             ],
           ),
         ),
-        tableItem(employee.email, width),
-        tableItem(employee.phone, width),
-        tableItem(employee.gender, width),
+        tableItem(
+            Provider.of<DataProvider>(context, listen: true)
+                .employeeList[index]
+                .email,
+            width),
+        tableItem(
+            Provider.of<DataProvider>(context, listen: true)
+                .employeeList[index]
+                .phone,
+            width),
+        tableItem(
+            Provider.of<DataProvider>(context, listen: true)
+                .employeeList[index]
+                .gender,
+            width),
         buildCupertinoSwitch(
             index: index,
-            value: employeeList[index].status,
+            value: Provider.of<DataProvider>(context, listen: true)
+                .employeeList[index]
+                .status,
             onChanged: (value) {
-              setState(() {
-                employeeList[index].status = value;
-              });
+              Provider.of<DataProvider>(context, listen: false)
+                  .changeEmployeeStatus(index);
             }),
       ],
     );

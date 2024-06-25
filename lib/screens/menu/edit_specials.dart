@@ -170,7 +170,7 @@ class _EditSpecialsState extends State<EditSpecials> {
           () {
             // delete item from list
             Provider.of<DataProvider>(context, listen: false)
-                .deleteSpecials(index);
+                .removeSpecials(index);
           },
         ),
         buildCupertinoSwitch(
@@ -180,7 +180,7 @@ class _EditSpecialsState extends State<EditSpecials> {
                 .status,
             onChanged: (value) {
               Provider.of<DataProvider>(context, listen: false)
-                  .changeStatusSpecials(index);
+                  .changeSpecialsStatus(index);
             }),
       ],
     );
