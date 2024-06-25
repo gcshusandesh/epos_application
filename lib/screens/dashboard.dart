@@ -2,10 +2,12 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/data_provider.dart';
 import 'package:epos_application/screens/menu/edit_specials.dart';
 import 'package:epos_application/screens/profile_screen.dart';
 import 'package:epos_application/screens/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'employees/manage_employee.dart';
 
@@ -32,6 +34,13 @@ class _DashboardState extends State<Dashboard> {
       width = SizeConfig.safeBlockHorizontal;
       // Test API Call
       // Provider.of<InfoProvider>(context, listen: false).getTestData();
+
+      // Get Specials Data from API
+      Provider.of<DataProvider>(context, listen: false).getSpecialsList();
+
+      // Get Employee Data from API
+      Provider.of<DataProvider>(context, listen: false).getEmployeeData();
+
       init = false;
     }
   }

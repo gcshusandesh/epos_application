@@ -27,9 +27,6 @@ class _ManageEmployeeState extends State<ManageEmployee> {
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
 
-      // Get Employee Data from API
-      Provider.of<DataProvider>(context, listen: false).getEmployeeData();
-
       init = false;
     }
   }

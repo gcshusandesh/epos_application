@@ -151,3 +151,39 @@ Widget iconButton(
     ),
   );
 }
+
+Widget textButton({
+  required String text,
+  required double height,
+  required double width,
+  required Color textColor,
+  required Color buttonColor,
+  required Function() onTap,
+}) {
+  return InkWell(
+    onTap: onTap,
+    child: Container(
+      height: height * 5,
+      width: width * 2,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(
+          color: buttonColor, // Outline color
+          width: 0.5, // Outline width
+        ),
+        borderRadius: BorderRadius.circular(6.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25), // Shadow color
+            spreadRadius: 0, // How much the shadow spreads
+            blurRadius: 4, // How much the shadow blurs
+            offset: const Offset(0, 5), // The offset of the shadow
+          ),
+        ],
+      ),
+      child: Center(
+        child: buildSmallText(text, textColor, width),
+      ),
+    ),
+  );
+}

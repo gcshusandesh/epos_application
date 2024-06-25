@@ -28,9 +28,6 @@ class _EditSpecialsState extends State<EditSpecials> {
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
 
-      // Get Specials Data from API
-      Provider.of<DataProvider>(context, listen: false).getSpecialsList();
-
       init = false;
     }
   }
@@ -163,15 +160,20 @@ class _EditSpecialsState extends State<EditSpecials> {
           width: width * 20,
           fit: BoxFit.fill,
         ),
-        iconButton(
-          "assets/profile_icon.svg",
-          height,
-          width,
-          () {
-            // delete item from list
-            Provider.of<DataProvider>(context, listen: false)
-                .removeSpecials(index);
-          },
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: width * 6),
+          child: textButton(
+            text: "Delete",
+            height: height,
+            width: width,
+            textColor: Data.redColor,
+            buttonColor: Data.redColor,
+            onTap: () {
+              // delete item from list
+              Provider.of<DataProvider>(context, listen: false)
+                  .removeSpecials(index);
+            },
+          ),
         ),
         buildCupertinoSwitch(
             index: index,
