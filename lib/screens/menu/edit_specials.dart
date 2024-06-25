@@ -4,6 +4,7 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/data_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 class EditSpecials extends StatefulWidget {
@@ -36,88 +37,169 @@ class _EditSpecialsState extends State<EditSpecials> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Center(child: buildTitleText("Specials", Data.darkTextColor, width)),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Container(
-                color: Colors.white,
-                padding: const EdgeInsets.all(20.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: Provider.of<DataProvider>(context, listen: true)
-                          .specialsList
-                          .isEmpty
-                      ? Column(
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            topSection(context),
+            SizedBox(height: height * 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                iconButton(
+                  "assets/svg/add.svg",
+                  height,
+                  width,
+                  () {
+                    showMaterialModalBottomSheet(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(12.0),
+                          topRight: Radius.circular(12.0),
+                        ),
+                      ),
+                      backgroundColor: Data.lightGreyBodyColor,
+                      context: context,
+                      builder: (context) => Container(
+                        height: height * 10,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Table(
-                              border: TableBorder.all(color: Colors.black),
-                              defaultVerticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              children: [
-                                TableRow(
-                                    decoration: const BoxDecoration(
-                                        color: Data.lightGreyBodyColor),
-                                    children: [
-                                      tableTitle("S.N.", width),
-                                      tableTitle("Name", width),
-                                      tableTitle("Image", width),
-                                      tableTitle("Action", width),
-                                      tableTitle("Status", width),
-                                    ]),
-                              ],
-                            ),
+                            SizedBox(height: height * 2),
                             Container(
-                              width: width * 100,
-                              decoration: const BoxDecoration(
-                                color: Data.lightGreyBodyColor,
-                                border: Border(
-                                  left:
-                                      BorderSide(color: Colors.black, width: 1),
-                                  right:
-                                      BorderSide(color: Colors.black, width: 1),
-                                  bottom:
-                                      BorderSide(color: Colors.black, width: 1),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(
+                                  color: Colors.black, // Outline color
+                                  width: 0.5, // Outline width
                                 ),
+                                borderRadius: BorderRadius.circular(6.0),
                               ),
-                              child: Center(
-                                child: buildSmallText("No Data Available",
-                                    Data.lightGreyTextColor, width),
-                              ),
-                            )
-                          ],
-                        )
-                      : Table(
-                          border: TableBorder.all(color: Colors.black),
-                          defaultVerticalAlignment:
-                              TableCellVerticalAlignment.middle,
-                          children: [
-                            TableRow(
-                                decoration: const BoxDecoration(
-                                    color: Data.lightGreyBodyColor),
-                                children: [
-                                  tableTitle("S.N.", width),
-                                  tableTitle("Name", width),
-                                  tableTitle("Image", width),
-                                  tableTitle("Action", width),
-                                  tableTitle("Status", width),
-                                ]),
-                            for (int index = 0;
-                                index <
-                                    Provider.of<DataProvider>(context,
-                                            listen: true)
-                                        .specialsList
-                                        .length;
-                                index++)
-                              buildSpecialsRow(index),
+                              height: 10,
+                              width: width * 20,
+                            ),
                           ],
                         ),
+                      ),
+                    );
+                  },
                 ),
-              ),
+                SizedBox(width: width),
+                iconButton(
+                  "assets/svg/edit.svg",
+                  height,
+                  width,
+                  () {
+                    //do something
+                  },
+                ),
+                SizedBox(width: width),
+                textButton(
+                  text: "Change Priority",
+                  height: height,
+                  width: width,
+                  textColor: Data.iconsColor,
+                  buttonColor: Data.iconsColor,
+                  onTap: () {},
+                )
+              ],
             ),
-          )
-        ],
+            SizedBox(height: height * 2),
+            tableSection(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Row topSection(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        iconButton(
+          "assets/svg/arrow_back.svg",
+          height,
+          width,
+          () {
+            Navigator.pop(context);
+          },
+        ),
+        buildTitleText("Specials", Data.darkTextColor, width),
+        SizedBox(
+          width: width * 5,
+        ),
+      ],
+    );
+  }
+
+  Expanded tableSection(BuildContext context) {
+    return Expanded(
+      child: SingleChildScrollView(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: Provider.of<DataProvider>(context, listen: true)
+                  .specialsList
+                  .isEmpty
+              ? Column(
+                  children: [
+                    Table(
+                      border: TableBorder.all(color: Colors.black),
+                      defaultVerticalAlignment:
+                          TableCellVerticalAlignment.middle,
+                      children: [
+                        TableRow(
+                            decoration: const BoxDecoration(
+                                color: Data.lightGreyBodyColor),
+                            children: [
+                              tableTitle("S.N.", width),
+                              tableTitle("Name", width),
+                              tableTitle("Image", width),
+                              tableTitle("Action", width),
+                              tableTitle("Status", width),
+                            ]),
+                      ],
+                    ),
+                    Container(
+                      width: width * 100,
+                      decoration: const BoxDecoration(
+                        color: Data.lightGreyBodyColor,
+                        border: Border(
+                          left: BorderSide(color: Colors.black, width: 1),
+                          right: BorderSide(color: Colors.black, width: 1),
+                          bottom: BorderSide(color: Colors.black, width: 1),
+                        ),
+                      ),
+                      child: Center(
+                        child: buildSmallText("No Data Available",
+                            Data.lightGreyTextColor, width),
+                      ),
+                    )
+                  ],
+                )
+              : Table(
+                  border: TableBorder.all(color: Colors.black),
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  children: [
+                    TableRow(
+                        decoration:
+                            const BoxDecoration(color: Data.lightGreyBodyColor),
+                        children: [
+                          tableTitle("S.N.", width),
+                          tableTitle("Name", width),
+                          tableTitle("Image", width),
+                          tableTitle("Action", width),
+                          tableTitle("Status", width),
+                        ]),
+                    for (int index = 0;
+                        index <
+                            Provider.of<DataProvider>(context, listen: true)
+                                .specialsList
+                                .length;
+                        index++)
+                      buildSpecialsRow(index),
+                  ],
+                ),
+        ),
       ),
     );
   }

@@ -41,6 +41,9 @@ class _DashboardState extends State<Dashboard> {
       // Get Employee Data from API
       Provider.of<DataProvider>(context, listen: false).getEmployeeData();
 
+      // Get Category Data from API
+      Provider.of<DataProvider>(context, listen: false).getCategoryList();
+
       init = false;
     }
   }
@@ -161,7 +164,7 @@ class _DashboardState extends State<Dashboard> {
     return Row(
       children: [
         iconButton(
-          "assets/profile_icon.svg",
+          "assets/svg/profile_icon.svg",
           height,
           width,
           () {
@@ -173,7 +176,7 @@ class _DashboardState extends State<Dashboard> {
         ),
         SizedBox(width: width * 2),
         iconButton(
-          "assets/settings.svg",
+          "assets/svg/settings.svg",
           height,
           width,
           () {

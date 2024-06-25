@@ -164,7 +164,6 @@ Widget textButton({
     onTap: onTap,
     child: Container(
       height: height * 5,
-      width: width * 2,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(
@@ -182,7 +181,11 @@ Widget textButton({
         ],
       ),
       child: Center(
-        child: buildSmallText(text, textColor, width),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: buildSmallText(text, textColor, width,
+              fontFamily: "RobotoMedium"),
+        ),
       ),
     ),
   );
