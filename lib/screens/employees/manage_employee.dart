@@ -1,8 +1,8 @@
+import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/data_provider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,10 +30,13 @@ class _ManageEmployeeState extends State<ManageEmployee> {
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
 
+      // Defer the call to getEmployeeData
+      // WidgetsBinding.instance.addPostFrameCallback((_) {
       // Get Employee Data from API
       Provider.of<DataProvider>(context, listen: false).getEmployeeData();
       employeeList =
           Provider.of<DataProvider>(context, listen: false).employeeList;
+      // });
 
       init = false;
     }
@@ -66,12 +69,12 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                                     decoration: const BoxDecoration(
                                         color: Data.lightGreyBodyColor),
                                     children: [
-                                      tableTitle("S.N."),
-                                      tableTitle("Full Name"),
-                                      tableTitle("Email"),
-                                      tableTitle("Phone"),
-                                      tableTitle("Gender"),
-                                      tableTitle("Status"),
+                                      tableTitle("S.N.", width),
+                                      tableTitle("Full Name", width),
+                                      tableTitle("Email", width),
+                                      tableTitle("Phone", width),
+                                      tableTitle("Gender", width),
+                                      tableTitle("Status", width),
                                     ]),
                               ],
                             ),
@@ -104,12 +107,12 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                                 decoration: const BoxDecoration(
                                     color: Data.lightGreyBodyColor),
                                 children: [
-                                  tableTitle("S.N."),
-                                  tableTitle("Full Name"),
-                                  tableTitle("Email"),
-                                  tableTitle("Phone"),
-                                  tableTitle("Gender"),
-                                  tableTitle("Status"),
+                                  tableTitle("S.N.", width),
+                                  tableTitle("Full Name", width),
+                                  tableTitle("Email", width),
+                                  tableTitle("Phone", width),
+                                  tableTitle("Gender", width),
+                                  tableTitle("Status", width),
                                 ]),
                             for (int i = 0; i < employeeList.length; i++)
                               buildEmployeeRow(i, employeeList[i]),
@@ -128,12 +131,12 @@ class _ManageEmployeeState extends State<ManageEmployee> {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
-        tableItem((index + 1).toString()),
+        tableItem((index + 1).toString(), width),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0),
           child: Column(
             children: [
-              tableItem(employee.name),
+              tableItem(employee.name, width),
               buildCustomText(
                 employee.status ? "Active" : "Inactive",
                 employee.status ? Data.greenColor : Data.redColor,
@@ -142,49 +145,18 @@ class _ManageEmployeeState extends State<ManageEmployee> {
             ],
           ),
         ),
-        tableItem(employee.email),
-        tableItem(employee.phone),
-        tableItem(employee.gender),
-        buildCupertinoSwitch(index: index),
+        tableItem(employee.email, width),
+        tableItem(employee.phone, width),
+        tableItem(employee.gender, width),
+        buildCupertinoSwitch(
+            index: index,
+            value: employeeList[index].status,
+            onChanged: (value) {
+              setState(() {
+                employeeList[index].status = value;
+              });
+            }),
       ],
     );
-  }
-
-  Widget buildCupertinoSwitch({required int index}) {
-    return Transform.scale(
-      scale: 1.5,
-      child: CupertinoSwitch(
-        activeColor: Data.primaryColor,
-        trackColor: Data.greyTextColor,
-        value: employeeList[index].status,
-        onChanged: (bool newValue) {
-          setState(() {
-            employeeList[index].status = newValue;
-          });
-        },
-      ),
-    );
-  }
-
-  Widget tableTitle(String text) {
-    return Center(
-        child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 15.0),
-      child: buildBodyText(
-        text,
-        Data.lightGreyTextColor,
-        width,
-        fontFamily: "RobotoMedium",
-      ),
-    ));
-  }
-
-  Widget tableItem(String text) {
-    return Center(
-        child: buildSmallText(
-      text,
-      Data.lightGreyTextColor,
-      width,
-    ));
   }
 }

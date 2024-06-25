@@ -1,5 +1,39 @@
 import 'package:epos_application/components/data.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
+
+Future<dynamic> animatedNavigatorPush({
+  required BuildContext context,
+  required screen,
+  PageTransitionType pageTransitionType = PageTransitionType.rightToLeft,
+  Duration duration = const Duration(milliseconds: 300),
+}) {
+  return Navigator.push(
+    context,
+    PageTransition(
+      type: pageTransitionType,
+      child: screen,
+      duration: duration,
+    ),
+  );
+}
+
+Future<dynamic> animatedNavigatorPushNamed({
+  required BuildContext context,
+  required Widget screen,
+  PageTransitionType pageTransitionType = PageTransitionType.rightToLeft,
+  Duration duration = const Duration(milliseconds: 300),
+}) {
+  return Navigator.push(
+    context,
+    PageTransition(
+      type: pageTransitionType,
+      child: screen,
+      duration: duration,
+    ),
+  );
+}
 
 Widget onLoading({required double width}) {
   return ClipRRect(
@@ -38,4 +72,41 @@ Widget onLoading({required double width}) {
       ),
     ),
   );
+}
+
+Widget buildCupertinoSwitch(
+    {required int index,
+    required bool value,
+    required Function(bool) onChanged}) {
+  return Transform.scale(
+    scale: 1.5,
+    child: CupertinoSwitch(
+      activeColor: Data.primaryColor,
+      trackColor: Data.greyTextColor,
+      value: value,
+      onChanged: onChanged,
+    ),
+  );
+}
+
+Widget tableTitle(String text, double width) {
+  return Center(
+      child: Padding(
+    padding: const EdgeInsets.symmetric(vertical: 15.0),
+    child: buildBodyText(
+      text,
+      Data.lightGreyTextColor,
+      width,
+      fontFamily: "RobotoMedium",
+    ),
+  ));
+}
+
+Widget tableItem(String text, double width) {
+  return Center(
+      child: buildSmallText(
+    text,
+    Data.lightGreyTextColor,
+    width,
+  ));
 }

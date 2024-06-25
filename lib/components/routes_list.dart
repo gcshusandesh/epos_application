@@ -1,5 +1,5 @@
 import 'package:epos_application/screens/dashboard.dart';
-import 'package:epos_application/screens/employees/manage.dart';
+import 'package:epos_application/screens/employees/make_employee.dart';
 import 'package:epos_application/screens/employees/manage_employee.dart';
 import 'package:epos_application/screens/login_screen.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';

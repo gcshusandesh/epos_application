@@ -1,4 +1,5 @@
 import 'package:epos_application/components/buttons.dart';
+import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/screens/profile_screen.dart';
@@ -45,92 +46,104 @@ class _DashboardState extends State<Dashboard> {
               SizedBox(
                 height: height * 2,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Opacity(opacity: 0, child: options(context)),
-                  buildTitleText("Dashboard", Data.darkTextColor, width),
-                  options(context),
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    height: height * 5,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      dashboardItem(
-                        "assets/dashboard/menu.svg",
-                        "menu",
-                        height,
-                        width,
-                        () {},
-                      ),
-                      dashboardItem(
-                        "assets/dashboard/order.svg",
-                        "order",
-                        height,
-                        width,
-                        () {},
-                      ),
-                      dashboardItem(
-                        "assets/dashboard/payment.svg",
-                        "Payment",
-                        height,
-                        width,
-                        () {},
-                      ),
-                      dashboardItem(
-                        "assets/dashboard/sales.svg",
-                        "Sales History",
-                        height,
-                        width,
-                        () {},
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: height * 5,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      dashboardItem(
-                        "assets/dashboard/employees.svg",
-                        "My Employee",
-                        height,
-                        width,
-                        () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const ManageEmployee()),
-                          );
-                        },
-                      ),
-                      dashboardItem(
-                        "assets/dashboard/inventory.svg",
-                        "Inventory",
-                        height,
-                        width,
-                        () {},
-                      ),
-                      dashboardItem(
-                        "assets/dashboard/analytics.svg",
-                        "Analytics",
-                        height,
-                        width,
-                        () {},
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              topSection(context),
+              optionsSection(context),
             ]),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Column optionsSection(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        SizedBox(
+          height: height * 5,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            dashboardItem(
+              "assets/dashboard/menu.svg",
+              "menu",
+              height,
+              width,
+              () {},
+            ),
+            dashboardItem(
+              "assets/dashboard/order.svg",
+              "order",
+              height,
+              width,
+              () {},
+            ),
+            dashboardItem(
+              "assets/dashboard/payment.svg",
+              "Payment",
+              height,
+              width,
+              () {},
+            ),
+            dashboardItem(
+              "assets/dashboard/sales.svg",
+              "Sales History",
+              height,
+              width,
+              () {},
+            ),
+          ],
+        ),
+        SizedBox(
+          height: height * 5,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            dashboardItem(
+              "assets/dashboard/employees.svg",
+              "My Employee",
+              height,
+              width,
+              () {
+                animatedNavigatorPush(
+                  context: context,
+                  screen: const ManageEmployee(),
+                );
+              },
+            ),
+            dashboardItem(
+              "assets/dashboard/inventory.svg",
+              "Inventory",
+              height,
+              width,
+              () {
+                animatedNavigatorPush(
+                  context: context,
+                  screen: const ManageEmployee(),
+                );
+              },
+            ),
+            dashboardItem(
+              "assets/dashboard/analytics.svg",
+              "Analytics",
+              height,
+              width,
+              () {},
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Row topSection(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Opacity(opacity: 0, child: options(context)),
+        buildTitleText("Dashboard", Data.darkTextColor, width),
+        options(context),
+      ],
     );
   }
 

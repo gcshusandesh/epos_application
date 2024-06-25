@@ -59,7 +59,7 @@ class DataProvider extends ChangeNotifier {
           status: true,
         ),
       ];
-      notifyListeners();
+      // notifyListeners();
     } catch (e) {
       // ignore: avoid_print
       print(e);
@@ -67,6 +67,16 @@ class DataProvider extends ChangeNotifier {
   }
 
   List<Specials> specialsList = [];
+
+  void changeStatusSpecials(int index) {
+    specialsList[index].status = !specialsList[index].status;
+    notifyListeners();
+  }
+
+  void deleteSpecials(int index) {
+    specialsList.removeAt(index);
+    notifyListeners();
+  }
 
   Future<void> getSpecialsList() async {
     // var url = Uri.parse("$baseUrl/api/testdatas/1");
@@ -82,16 +92,73 @@ class DataProvider extends ChangeNotifier {
       specialsList = [
         Specials(
             name: "Featured Burger",
-            image: "assets/featured_burger1.png",
+            image: "assets/featured/featured_burger1.png",
             status: true),
         Specials(
             name: "Featured Breakfast",
-            image: "assets/breakfast_featured.png",
+            image: "assets/featured/breakfast_featured.png",
             status: true),
         Specials(
             name: "Featured Coffee",
-            image: "assets/coffee_featured.png",
+            image: "assets/featured/coffee_featured.png",
             status: true),
+      ];
+      notifyListeners();
+    } catch (e) {
+      // ignore: avoid_print
+      print(e);
+    }
+  }
+
+  List<Category> categoryList = [];
+
+  Future<void> getCategoryList() async {
+    // var url = Uri.parse("$baseUrl/api/testdatas/1");
+    try {
+      // var headers = {
+      //   "Accept": "application/json",
+      // };
+      // var response = await http.get(url, headers: headers);
+      // var extractedData = json.decode(response.body);
+      // if (response.statusCode == 200) {
+      //   print(extractedData);
+      // }
+      categoryList = [
+        Category(
+          name: "Breakfast",
+          image: "assets/category/breakfast.png",
+          status: true,
+        ),
+        Category(
+          name: "Appetizers",
+          image: "assets/category/burger.jpeg",
+          status: true,
+        ),
+        Category(
+          name: "Sides",
+          image: "assets/category/fries.jpeg",
+          status: true,
+        ),
+        Category(
+          name: "Salads",
+          image: "assets/category/salad.png",
+          status: true,
+        ),
+        Category(
+          name: "Soups",
+          image: "assets/category/soup.jpeg",
+          status: true,
+        ),
+        Category(
+          name: "Coffee",
+          image: "assets/category/coffee1.jpeg",
+          status: true,
+        ),
+        Category(
+          name: "Beverages",
+          image: "assets/category/beverages1.jpeg",
+          status: true,
+        ),
       ];
       notifyListeners();
     } catch (e) {

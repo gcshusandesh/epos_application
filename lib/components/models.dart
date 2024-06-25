@@ -25,3 +25,15 @@ class Specials {
     required this.status,
   });
 }
+
+class Category {
+  final String name;
+  final String image;
+  bool status;
+
+  Category({
+    required this.name,
+    required this.image,
+    required this.status,
+  });
+}
