@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 class InfoProvider extends ChangeNotifier {
   String restaurantName = "Bob's Diner";
 
+  String currencySymbol = "£";
+
   String baseUrl = "https://restaurantepos.xyz";
 
   Future<void> getTestData() async {

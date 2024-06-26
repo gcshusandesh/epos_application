@@ -206,7 +206,7 @@ class MenuProvider extends ChangeNotifier {
               status: true,
             ),
             MenuItems(
-              name: "Sausage(chicken)",
+              name: "Sausage",
               image: "assets/food/sausage1.jpg",
               description: "Some description about food",
               ingredients: "Ingredient 1, Ingredient 2",

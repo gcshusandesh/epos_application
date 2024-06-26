@@ -44,16 +44,6 @@ class _EditCategoryState extends State<EditCategory> {
   }
 
   @override
-  dispose() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    super.dispose();
-  }
-
-  @override
-  @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: true,

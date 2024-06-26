@@ -8,8 +8,10 @@ import 'package:epos_application/screens/menu/edit_menu.dart';
 import 'package:epos_application/screens/menu/edit_specials.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/info_provider.dart';
 import '../../providers/menu_provider.dart';
 
 class MenuPage extends StatefulWidget {
@@ -48,15 +50,6 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   @override
-  dispose() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
-    ]);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -76,24 +69,160 @@ class _MenuPageState extends State<MenuPage> {
             SizedBox(height: height * 2),
             Expanded(
               flex: 3,
-              child: GridView.builder(
-                itemCount: 6,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  return const Card(
-                    child: GridTile(
-                      footer: Text("Hey"),
-                      child: Text(
-                          "low"), //just for testing, will fill with image later
+              child: Provider.of<MenuProvider>(context, listen: true)
+                      .menuItemsByCategory[
+                          Provider.of<MenuProvider>(context, listen: true)
+                              .selectedCategoryIndex]
+                      .menuItems
+                      .isEmpty
+                  ? Center(
+                      child: buildCustomText(
+                        "No Data Available",
+                        Data.darkTextColor,
+                        width * 1.3,
+                        fontFamily: "RobotoMedium",
+                      ),
+                    )
+                  : GridView.builder(
+                      itemCount: Provider.of<MenuProvider>(context,
+                              listen: true)
+                          .menuItemsByCategory[
+                              Provider.of<MenuProvider>(context, listen: true)
+                                  .selectedCategoryIndex]
+                          .menuItems
+                          .length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 10.0, // spacing between rows
+                        crossAxisSpacing: 10.0, // spacing between columns
+                      ),
+                      itemBuilder: (BuildContext context, int itemIndex) {
+                        return menuItem(itemIndex);
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Container menuItem(int itemIndex) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: height * 1.5,
+      ),
+      height: width * 10,
+      width: width * 10,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Data.iconsColor, // Outline color
+          width: 0.5, // Outline width
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25), // Shadow color
+            spreadRadius: 0, // How much the shadow spreads
+            blurRadius: 4, // How much the shadow blurs
+            offset: const Offset(0, 5), // The offset of the shadow
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: width * 12, // Define the size of the SVG image
+            width: width * 12,
+            child: Image.asset(
+              Provider.of<MenuProvider>(context, listen: true)
+                  .menuItemsByCategory[
+                      Provider.of<MenuProvider>(context, listen: true)
+                          .selectedCategoryIndex]
+                  .menuItems[itemIndex]
+                  .image,
+              fit: BoxFit.fill,
+            ),
+          ),
+          const Flexible(child: SizedBox(height: 10)),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: width),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    // to balance the UI
+                    Opacity(
+                      opacity: 0,
+                      child: customIconButton(
+                          "assets/svg/info.svg", height, width, () {
+                        // open food description box
+                      }),
+                    ),
+                    SizedBox(
+                      width: width * 10,
+                      child: Center(
+                        child: buildCustomText(
+                          "${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].name}"
+                          "\n${Provider.of<InfoProvider>(context, listen: true).currencySymbol}"
+                          " ${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].price}",
+                          Data.greyTextColor,
+                          width * 1.3,
+                          fontFamily: "RobotoMedium",
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                customIconButton("assets/svg/info.svg", height, width, () {
+                  // open food description box
+                })
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget customIconButton(
+    String svg,
+    double height,
+    double width,
+    Function() onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        height: height * 3,
+        width: width * 3,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: Data.iconsColor, // Outline color
+            width: 0.5, // Outline width
+          ),
+          borderRadius: BorderRadius.circular(6.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.25), // Shadow color
+              spreadRadius: 0, // How much the shadow spreads
+              blurRadius: 4, // How much the shadow blurs
+              offset: const Offset(0, 5), // The offset of the shadow
+            ),
+          ],
+        ),
+        child: Center(
+            child: SvgPicture.asset(
+          svg,
+          height: width * 1.5,
+          width: width * 1.5,
+          fit: BoxFit.contain,
+        )),
       ),
     );
   }
@@ -105,7 +234,7 @@ class _MenuPageState extends State<MenuPage> {
         buildBodyText(
           "Specials",
           Data.greyTextColor,
-          width * 0.8,
+          width * 0.9,
           fontFamily: "RobotoMedium",
         ),
         iconButton(
@@ -130,7 +259,7 @@ class _MenuPageState extends State<MenuPage> {
         buildBodyText(
           "Category",
           Data.greyTextColor,
-          width * 0.8,
+          width * 0.9,
           fontFamily: "RobotoMedium",
         ),
         iconButton(
@@ -157,7 +286,7 @@ class _MenuPageState extends State<MenuPage> {
             buildBodyText(
               "Menu Items",
               Data.greyTextColor,
-              width * 0.8,
+              width * 0.9,
               fontFamily: "RobotoMedium",
             ),
             SizedBox(width: width),
@@ -168,7 +297,7 @@ class _MenuPageState extends State<MenuPage> {
         Row(
           children: [
             textButton(
-              text: "Change Priority",
+              text: "Take Order",
               height: height,
               width: width,
               textColor: Data.iconsColor,

@@ -229,7 +229,8 @@ Widget menuOption(
       child: Column(
         children: [
           Image.asset(image, height: width * 8, width: width * 8),
-          buildBodyText(name, Data.greyTextColor, width * 0.8),
+          buildBodyText(name, Data.greyTextColor, width * 0.7,
+              fontFamily: "RobotoMedium"),
         ],
       ),
     ),
