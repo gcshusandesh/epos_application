@@ -2,7 +2,7 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
-import 'package:epos_application/providers/data_provider.dart';
+import 'package:epos_application/providers/menu_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -91,7 +91,7 @@ class _EditCategoryState extends State<EditCategory> {
       child: SingleChildScrollView(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(6),
-          child: Provider.of<DataProvider>(context, listen: true)
+          child: Provider.of<MenuProvider>(context, listen: true)
                   .categoryList
                   .isEmpty
               ? Column(
@@ -146,7 +146,7 @@ class _EditCategoryState extends State<EditCategory> {
                         ]),
                     for (int index = 0;
                         index <
-                            Provider.of<DataProvider>(context, listen: true)
+                            Provider.of<MenuProvider>(context, listen: true)
                                 .categoryList
                                 .length;
                         index++)
@@ -168,17 +168,17 @@ class _EditCategoryState extends State<EditCategory> {
           child: Column(
             children: [
               tableItem(
-                  Provider.of<DataProvider>(context, listen: true)
+                  Provider.of<MenuProvider>(context, listen: true)
                       .categoryList[index]
                       .name,
                   width),
               buildCustomText(
-                Provider.of<DataProvider>(context, listen: true)
+                Provider.of<MenuProvider>(context, listen: true)
                         .categoryList[index]
                         .status
                     ? "Active"
                     : "Inactive",
-                Provider.of<DataProvider>(context, listen: true)
+                Provider.of<MenuProvider>(context, listen: true)
                         .categoryList[index]
                         .status
                     ? Data.greenColor
@@ -191,7 +191,7 @@ class _EditCategoryState extends State<EditCategory> {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: width * 5, vertical: 15.0),
           child: Image.asset(
-            Provider.of<DataProvider>(context, listen: true)
+            Provider.of<MenuProvider>(context, listen: true)
                 .categoryList[index]
                 .image,
             height: height * 10,
@@ -209,18 +209,18 @@ class _EditCategoryState extends State<EditCategory> {
             buttonColor: Data.redColor,
             onTap: () {
               // delete item from list
-              Provider.of<DataProvider>(context, listen: false)
+              Provider.of<MenuProvider>(context, listen: false)
                   .removeCategory(index);
             },
           ),
         ),
         buildCupertinoSwitch(
             index: index,
-            value: Provider.of<DataProvider>(context, listen: true)
+            value: Provider.of<MenuProvider>(context, listen: true)
                 .categoryList[index]
                 .status,
             onChanged: (value) {
-              Provider.of<DataProvider>(context, listen: false)
+              Provider.of<MenuProvider>(context, listen: false)
                   .changeCategoryStatus(index);
             }),
       ],

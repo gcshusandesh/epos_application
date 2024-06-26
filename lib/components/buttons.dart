@@ -1,6 +1,9 @@
 import 'package:epos_application/components/data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/menu_provider.dart';
 
 Row backButton(BuildContext context, double width, double height) {
   return Row(
@@ -186,6 +189,48 @@ Widget textButton({
           child: buildSmallText(text, textColor, width,
               fontFamily: "RobotoMedium"),
         ),
+      ),
+    ),
+  );
+}
+
+Widget menuOption(
+    String name, String image, double height, double width, Function() onTap,
+    {required BuildContext context, required int index}) {
+  return InkWell(
+    onTap: onTap,
+    child: Container(
+      height: width * 12,
+      width: width * 12,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(
+          color: Provider.of<MenuProvider>(context, listen: true)
+                  .categoryList[index]
+                  .isSelected
+              ? Data.primaryColor
+              : Data.iconsColor, // Outline color
+          width: Provider.of<MenuProvider>(context, listen: true)
+                  .categoryList[index]
+                  .isSelected
+              ? 3
+              : 0.5, // Outline width
+        ),
+        borderRadius: BorderRadius.circular(20.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25), // Shadow color
+            spreadRadius: 0, // How much the shadow spreads
+            blurRadius: 4, // How much the shadow blurs
+            offset: const Offset(0, 5), // The offset of the shadow
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Image.asset(image, height: width * 8, width: width * 8),
+          buildBodyText(name, Data.greyTextColor, width * 0.8),
+        ],
       ),
     ),
   );

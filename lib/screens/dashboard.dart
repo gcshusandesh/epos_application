@@ -2,8 +2,10 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
-import 'package:epos_application/providers/data_provider.dart';
+import 'package:epos_application/providers/employee_provider.dart';
+import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';
+import 'package:epos_application/screens/menu/edit_menu.dart';
 import 'package:epos_application/screens/menu/edit_specials.dart';
 import 'package:epos_application/screens/profile_screen.dart';
 import 'package:epos_application/screens/settings.dart';
@@ -37,13 +39,16 @@ class _DashboardState extends State<Dashboard> {
       // Provider.of<InfoProvider>(context, listen: false).getTestData();
 
       // Get Specials Data from API
-      Provider.of<DataProvider>(context, listen: false).getSpecialsList();
+      Provider.of<MenuProvider>(context, listen: false).getSpecialsList();
 
       // Get Employee Data from API
-      Provider.of<DataProvider>(context, listen: false).getEmployeeData();
+      Provider.of<EmployeeProvider>(context, listen: false).getEmployeeData();
 
       // Get Category Data from API
-      Provider.of<DataProvider>(context, listen: false).getCategoryList();
+      Provider.of<MenuProvider>(context, listen: false).getCategoryList();
+
+      // Get Category Data from API
+      Provider.of<MenuProvider>(context, listen: false).getMenuItems();
 
       init = false;
     }
@@ -106,7 +111,12 @@ class _DashboardState extends State<Dashboard> {
               "Sales History",
               height,
               width,
-              () {},
+              () {
+                animatedNavigatorPush(
+                  context: context,
+                  screen: const EditMenu(),
+                );
+              },
             ),
           ],
         ),

@@ -30,6 +30,7 @@ class Category {
   final String name;
   final String image;
   bool status;
+  bool isSelected = false;
 
   Category({
     required this.name,
@@ -38,15 +39,15 @@ class Category {
   });
 }
 
-class CategoryItems {
+class MenuItems {
   final String name;
   final String image;
   final String description;
   final String ingredients;
-  final String price;
+  final int price;
   bool status;
 
-  CategoryItems({
+  MenuItems({
     required this.name,
     required this.image,
     required this.description,

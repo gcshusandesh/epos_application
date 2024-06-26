@@ -2,7 +2,7 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
-import 'package:epos_application/providers/data_provider.dart';
+import 'package:epos_application/providers/employee_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -52,7 +52,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
               child: SingleChildScrollView(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(6),
-                  child: Provider.of<DataProvider>(context, listen: true)
+                  child: Provider.of<EmployeeProvider>(context, listen: true)
                           .employeeList
                           .isEmpty
                       ? Column(
@@ -113,7 +113,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                                 ]),
                             for (int i = 0;
                                 i <
-                                    Provider.of<DataProvider>(context,
+                                    Provider.of<EmployeeProvider>(context,
                                             listen: true)
                                         .employeeList
                                         .length;
@@ -163,17 +163,17 @@ class _ManageEmployeeState extends State<ManageEmployee> {
           child: Column(
             children: [
               tableItem(
-                  Provider.of<DataProvider>(context, listen: true)
+                  Provider.of<EmployeeProvider>(context, listen: true)
                       .employeeList[index]
                       .name,
                   width),
               buildCustomText(
-                Provider.of<DataProvider>(context, listen: true)
+                Provider.of<EmployeeProvider>(context, listen: true)
                         .employeeList[index]
                         .status
                     ? "Active"
                     : "Inactive",
-                Provider.of<DataProvider>(context, listen: true)
+                Provider.of<EmployeeProvider>(context, listen: true)
                         .employeeList[index]
                         .status
                     ? Data.greenColor
@@ -184,27 +184,27 @@ class _ManageEmployeeState extends State<ManageEmployee> {
           ),
         ),
         tableItem(
-            Provider.of<DataProvider>(context, listen: true)
+            Provider.of<EmployeeProvider>(context, listen: true)
                 .employeeList[index]
                 .email,
             width),
         tableItem(
-            Provider.of<DataProvider>(context, listen: true)
+            Provider.of<EmployeeProvider>(context, listen: true)
                 .employeeList[index]
                 .phone,
             width),
         tableItem(
-            Provider.of<DataProvider>(context, listen: true)
+            Provider.of<EmployeeProvider>(context, listen: true)
                 .employeeList[index]
                 .gender,
             width),
         buildCupertinoSwitch(
             index: index,
-            value: Provider.of<DataProvider>(context, listen: true)
+            value: Provider.of<EmployeeProvider>(context, listen: true)
                 .employeeList[index]
                 .status,
             onChanged: (value) {
-              Provider.of<DataProvider>(context, listen: false)
+              Provider.of<EmployeeProvider>(context, listen: false)
                   .changeEmployeeStatus(index);
             }),
       ],
