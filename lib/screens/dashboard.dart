@@ -47,8 +47,9 @@ class _DashboardState extends State<Dashboard> {
       // Get Category Data from API
       Provider.of<MenuProvider>(context, listen: false).getCategoryList();
 
-      // Get Category Data from API
-      Provider.of<MenuProvider>(context, listen: false).getMenuItems();
+      // Get Menu Items by Category Data from API
+      Provider.of<MenuProvider>(context, listen: false)
+          .getMenuItemsByCategory();
 
       init = false;
     }
@@ -112,6 +113,9 @@ class _DashboardState extends State<Dashboard> {
               height,
               width,
               () {
+                //can be used to initialise category as well
+                Provider.of<MenuProvider>(context, listen: false)
+                    .resetCategory();
                 animatedNavigatorPush(
                   context: context,
                   screen: const EditMenu(),

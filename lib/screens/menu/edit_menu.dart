@@ -46,50 +46,48 @@ class _EditMenuState extends State<EditMenu> {
                 text: "Menu Item",
                 height: height,
                 width: width),
-            SizedBox(height: height * 2),
-            Row(
-              children: [
-                menuOption(
-                  Provider.of<MenuProvider>(context, listen: true)
-                      .categoryList[0]
-                      .name,
-                  Provider.of<MenuProvider>(context, listen: true)
-                      .categoryList[0]
-                      .image,
-                  height,
-                  width,
-                  () {
-                    Provider.of<MenuProvider>(context, listen: false)
-                        .changeSelectedCategory(0);
-                  },
-                  index: 0,
-                  context: context,
-                ),
-                SizedBox(width: width),
-                menuOption(
-                  Provider.of<MenuProvider>(context, listen: true)
-                      .categoryList[1]
-                      .name,
-                  Provider.of<MenuProvider>(context, listen: true)
-                      .categoryList[1]
-                      .image,
-                  height,
-                  width,
-                  () {
-                    Provider.of<MenuProvider>(context, listen: false)
-                        .changeSelectedCategory(1);
-                  },
-                  index: 1,
-                  context: context,
-                ),
-              ],
-            ),
+            optionsSection(context),
             SizedBox(height: height * 2),
             editSection(context),
             SizedBox(height: height * 2),
             tableSection(context),
           ],
         ),
+      ),
+    );
+  }
+
+  Expanded optionsSection(BuildContext context) {
+    return Expanded(
+      flex: 1,
+      child: ListView.builder(
+        padding: EdgeInsets.zero,
+        scrollDirection:
+            Axis.horizontal, // Assuming you want a horizontal list view
+        itemCount: Provider.of<MenuProvider>(context, listen: true)
+            .categoryList
+            .length,
+        itemBuilder: (context, index) {
+          final category = Provider.of<MenuProvider>(context, listen: true)
+              .categoryList[index];
+          return Row(
+            children: [
+              menuOption(
+                category.name,
+                category.image,
+                height,
+                width,
+                () {
+                  Provider.of<MenuProvider>(context, listen: false)
+                      .changeSelectedCategory(index);
+                },
+                index: index,
+                context: context,
+              ),
+              SizedBox(width: width),
+            ],
+          );
+        },
       ),
     );
   }
@@ -183,12 +181,16 @@ class _EditMenuState extends State<EditMenu> {
     );
   }
 
-  Expanded tableSection(BuildContext context) {
+  Widget tableSection(BuildContext context) {
     return Expanded(
+      flex: 2,
       child: SingleChildScrollView(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(6),
           child: Provider.of<MenuProvider>(context, listen: true)
+                  .menuItemsByCategory[
+                      Provider.of<MenuProvider>(context, listen: true)
+                          .selectedCategoryIndex]
                   .menuItems
                   .isEmpty
               ? Column(
@@ -250,6 +252,10 @@ class _EditMenuState extends State<EditMenu> {
                     for (int index = 0;
                         index <
                             Provider.of<MenuProvider>(context, listen: true)
+                                .menuItemsByCategory[Provider.of<MenuProvider>(
+                                        context,
+                                        listen: true)
+                                    .selectedCategoryIndex]
                                 .menuItems
                                 .length;
                         index++)
@@ -261,28 +267,37 @@ class _EditMenuState extends State<EditMenu> {
     );
   }
 
-  TableRow buildMenuRow(int index) {
+  TableRow buildMenuRow(int itemIndex) {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
-        tableItem((index + 1).toString(), width),
+        tableItem((itemIndex + 1).toString(), width),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0),
           child: Column(
             children: [
               tableItem(
                   Provider.of<MenuProvider>(context, listen: true)
-                      .menuItems[index]
+                      .menuItemsByCategory[
+                          Provider.of<MenuProvider>(context, listen: true)
+                              .selectedCategoryIndex]
+                      .menuItems[itemIndex]
                       .name,
                   width),
               buildCustomText(
                 Provider.of<MenuProvider>(context, listen: true)
-                        .menuItems[index]
+                        .menuItemsByCategory[
+                            Provider.of<MenuProvider>(context, listen: true)
+                                .selectedCategoryIndex]
+                        .menuItems[itemIndex]
                         .status
                     ? "Active"
                     : "Inactive",
                 Provider.of<MenuProvider>(context, listen: true)
-                        .menuItems[index]
+                        .menuItemsByCategory[
+                            Provider.of<MenuProvider>(context, listen: true)
+                                .selectedCategoryIndex]
+                        .menuItems[itemIndex]
                         .status
                     ? Data.greenColor
                     : Data.redColor,
@@ -295,7 +310,10 @@ class _EditMenuState extends State<EditMenu> {
           padding: const EdgeInsets.all(15.0),
           child: Image.asset(
             Provider.of<MenuProvider>(context, listen: true)
-                .menuItems[index]
+                .menuItemsByCategory[
+                    Provider.of<MenuProvider>(context, listen: true)
+                        .selectedCategoryIndex]
+                .menuItems[itemIndex]
                 .image,
             height: height * 10,
             width: width * 20,
@@ -304,18 +322,24 @@ class _EditMenuState extends State<EditMenu> {
         ),
         tableItem(
           Provider.of<MenuProvider>(context, listen: true)
-              .menuItems[index]
+              .menuItemsByCategory[
+                  Provider.of<MenuProvider>(context, listen: true)
+                      .selectedCategoryIndex]
+              .menuItems[itemIndex]
               .description,
           width,
         ),
         tableItem(
           Provider.of<MenuProvider>(context, listen: true)
-              .menuItems[index]
+              .menuItemsByCategory[
+                  Provider.of<MenuProvider>(context, listen: true)
+                      .selectedCategoryIndex]
+              .menuItems[itemIndex]
               .ingredients,
           width,
         ),
         tableItem(
-          "£ ${Provider.of<MenuProvider>(context, listen: true).menuItems[index].price}",
+          "£ ${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].price}",
           width,
         ),
         Padding(
@@ -329,18 +353,21 @@ class _EditMenuState extends State<EditMenu> {
             onTap: () {
               // delete item from list
               Provider.of<MenuProvider>(context, listen: false)
-                  .removeMenuItem(index);
+                  .removeMenuItem(itemIndex: itemIndex);
             },
           ),
         ),
         buildCupertinoSwitch(
-            index: index,
+            index: itemIndex,
             value: Provider.of<MenuProvider>(context, listen: true)
-                .menuItems[index]
+                .menuItemsByCategory[
+                    Provider.of<MenuProvider>(context, listen: true)
+                        .selectedCategoryIndex]
+                .menuItems[itemIndex]
                 .status,
             onChanged: (value) {
               Provider.of<MenuProvider>(context, listen: false)
-                  .changeMenuItemStatus(index);
+                  .changeMenuItemStatus(itemIndex: itemIndex);
             }),
       ],
     );

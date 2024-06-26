@@ -39,6 +39,15 @@ class Category {
   });
 }
 
+class MenuItemsByCategory {
+  Category category;
+  List<MenuItems> menuItems;
+  MenuItemsByCategory({
+    required this.category,
+    required this.menuItems,
+  });
+}
+
 class MenuItems {
   final String name;
   final String image;

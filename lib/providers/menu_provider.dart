@@ -47,6 +47,7 @@ class MenuProvider extends ChangeNotifier {
   }
 
   List<Category> categoryList = [];
+  int selectedCategoryIndex = 0;
   void changeCategoryStatus(int index) {
     categoryList[index].status = !categoryList[index].status;
     notifyListeners();
@@ -58,25 +59,27 @@ class MenuProvider extends ChangeNotifier {
   }
 
   void resetCategory() {
+    int indexToSelect = 0;
     for (int i = 0; i < categoryList.length; i++) {
-      if (i == 0) {
-        categoryList[i].status = true;
+      if (i == indexToSelect) {
+        categoryList[i].isSelected = true;
       } else {
-        categoryList[i].status = false;
+        categoryList[i].isSelected = false;
       }
     }
-    //no need notify listeners as this will be shown in new page
+    selectedCategoryIndex = indexToSelect;
+    notifyListeners();
   }
 
   void changeSelectedCategory(int index) {
     for (int i = 0; i < categoryList.length; i++) {
       if (i == index) {
-        categoryList[index].status = true;
-        print("selected category is $index");
+        categoryList[i].isSelected = true;
       } else {
-        categoryList[index].status = false;
+        categoryList[i].isSelected = false;
       }
     }
+    selectedCategoryIndex = index;
     notifyListeners();
   }
 
@@ -134,19 +137,100 @@ class MenuProvider extends ChangeNotifier {
       print(e);
     }
   }
+  //
+  // List<MenuItems> menuItems = [];
+  // void changeMenuItemStatus(int index) {
+  //   menuItems[index].status = !menuItems[index].status;
+  //   notifyListeners();
+  // }
+  //
+  // void removeMenuItem(int index) {
+  //   menuItems.removeAt(index);
+  //   notifyListeners();
+  // }
+  //
+  // Future<void> getMenuItems() async {
+  //   // var url = Uri.parse("$baseUrl/api/testdatas/1");
+  //   try {
+  //     // var headers = {
+  //     //   "Accept": "application/json",
+  //     // };
+  //     // var response = await http.get(url, headers: headers);
+  //     // var extractedData = json.decode(response.body);
+  //     // if (response.statusCode == 200) {
+  //     //   print(extractedData);
+  //     // }
+  //     menuItems = [
+  //       MenuItems(
+  //         name: "Eggs",
+  //         image: "assets/food/eggs.jpg",
+  //         description: "Some description about food",
+  //         ingredients: "Ingredient 1, Ingredient 2",
+  //         price: 8,
+  //         status: true,
+  //       ),
+  //       MenuItems(
+  //         name: "Pancake",
+  //         image: "assets/food/pancakes_cropped.jpg",
+  //         description: "Some description about food",
+  //         ingredients: "Ingredient 1, Ingredient 2",
+  //         price: 10,
+  //         status: true,
+  //       ),
+  //       MenuItems(
+  //         name: "French Toast",
+  //         image: "assets/food/toast.jpg",
+  //         description:
+  //             "Some description about food ldjlsjalfdjslfj slsjdflksjal flsajf sjdfjsjflsdj lfslkjf ljsafsdlkjflsj fldslfjlasjflksdjfl ",
+  //         ingredients: "Ingredient 1, Ingredient 2",
+  //         price: 10,
+  //         status: true,
+  //       ),
+  //       MenuItems(
+  //         name: "Bacon",
+  //         image: "assets/food/bacon.jpg",
+  //         description: "Some description about food",
+  //         ingredients: "Ingredient 1, Ingredient 2",
+  //         price: 8,
+  //         status: true,
+  //       ),
+  //       MenuItems(
+  //         name: "Sausage(chicken)",
+  //         image: "assets/food/sausage1.jpg",
+  //         description: "Some description about food",
+  //         ingredients: "Ingredient 1, Ingredient 2",
+  //         price: 8,
+  //         status: true,
+  //       ),
+  //       MenuItems(
+  //         name: "Cereal",
+  //         image: "assets/food/cereal.jpg",
+  //         description: "Some description about food",
+  //         ingredients: "Ingredient 1, Ingredient 2",
+  //         price: 8,
+  //         status: true,
+  //       ),
+  //     ];
+  //     notifyListeners();
+  //   } catch (e) {
+  //     // ignore: avoid_print
+  //     print(e);
+  //   }
+  // }
 
-  List<MenuItems> menuItems = [];
-  void changeMenuItemStatus(int index) {
-    menuItems[index].status = !menuItems[index].status;
+  List<MenuItemsByCategory> menuItemsByCategory = [];
+  void changeMenuItemStatus({required int itemIndex}) {
+    menuItemsByCategory[selectedCategoryIndex].menuItems[itemIndex].status =
+        !menuItemsByCategory[selectedCategoryIndex].menuItems[itemIndex].status;
     notifyListeners();
   }
 
-  void removeMenuItem(int index) {
-    menuItems.removeAt(index);
+  void removeMenuItem({required int itemIndex}) {
+    menuItemsByCategory[selectedCategoryIndex].menuItems.removeAt(itemIndex);
     notifyListeners();
   }
 
-  Future<void> getMenuItems() async {
+  Future<void> getMenuItemsByCategory() async {
     // var url = Uri.parse("$baseUrl/api/testdatas/1");
     try {
       // var headers = {
@@ -157,55 +241,112 @@ class MenuProvider extends ChangeNotifier {
       // if (response.statusCode == 200) {
       //   print(extractedData);
       // }
-      menuItems = [
-        MenuItems(
-          name: "Eggs",
-          image: "assets/food/eggs.jpg",
-          description: "Some description about food",
-          ingredients: "Ingredient 1, Ingredient 2",
-          price: 8,
-          status: true,
+      menuItemsByCategory = [
+        MenuItemsByCategory(
+          category: Category(
+            name: "Breakfast",
+            image: "assets/category/breakfast.png",
+            status: true,
+          ),
+          menuItems: [
+            MenuItems(
+              name: "Eggs",
+              image: "assets/food/eggs.jpg",
+              description: "Some description about food",
+              ingredients: "Ingredient 1, Ingredient 2",
+              price: 8,
+              status: true,
+            ),
+            MenuItems(
+              name: "Pancake",
+              image: "assets/food/pancakes_cropped.jpg",
+              description: "Some description about food",
+              ingredients: "Ingredient 1, Ingredient 2",
+              price: 10,
+              status: true,
+            ),
+            MenuItems(
+              name: "French Toast",
+              image: "assets/food/toast.jpg",
+              description:
+                  "Some description about food ldjlsjalfdjslfj slsjdflksjal flsajf sjdfjsjflsdj lfslkjf ljsafsdlkjflsj fldslfjlasjflksdjfl ",
+              ingredients: "Ingredient 1, Ingredient 2",
+              price: 10,
+              status: true,
+            ),
+            MenuItems(
+              name: "Bacon",
+              image: "assets/food/bacon.jpg",
+              description: "Some description about food",
+              ingredients: "Ingredient 1, Ingredient 2",
+              price: 8,
+              status: true,
+            ),
+            MenuItems(
+              name: "Sausage(chicken)",
+              image: "assets/food/sausage1.jpg",
+              description: "Some description about food",
+              ingredients: "Ingredient 1, Ingredient 2",
+              price: 8,
+              status: true,
+            ),
+            MenuItems(
+              name: "Cereal",
+              image: "assets/food/cereal.jpg",
+              description: "Some description about food",
+              ingredients: "Ingredient 1, Ingredient 2",
+              price: 8,
+              status: true,
+            ),
+          ],
         ),
-        MenuItems(
-          name: "Pancake",
-          image: "assets/food/pancakes_cropped.jpg",
-          description: "Some description about food",
-          ingredients: "Ingredient 1, Ingredient 2",
-          price: 10,
-          status: true,
+        MenuItemsByCategory(
+          category: Category(
+            name: "Appetizers",
+            image: "assets/category/burger.jpeg",
+            status: true,
+          ),
+          menuItems: [],
         ),
-        MenuItems(
-          name: "French Toast",
-          image: "assets/food/toast.jpg",
-          description:
-              "Some description about food ldjlsjalfdjslfj slsjdflksjal flsajf sjdfjsjflsdj lfslkjf ljsafsdlkjflsj fldslfjlasjflksdjfl ",
-          ingredients: "Ingredient 1, Ingredient 2",
-          price: 10,
-          status: true,
+        MenuItemsByCategory(
+          category: Category(
+            name: "Sides",
+            image: "assets/category/fries.jpeg",
+            status: true,
+          ),
+          menuItems: [],
         ),
-        MenuItems(
-          name: "Bacon",
-          image: "assets/food/bacon.jpg",
-          description: "Some description about food",
-          ingredients: "Ingredient 1, Ingredient 2",
-          price: 8,
-          status: true,
+        MenuItemsByCategory(
+          category: Category(
+            name: "Salads",
+            image: "assets/category/salad.png",
+            status: true,
+          ),
+          menuItems: [],
         ),
-        MenuItems(
-          name: "Sausage(chicken)",
-          image: "assets/food/sausage1.jpg",
-          description: "Some description about food",
-          ingredients: "Ingredient 1, Ingredient 2",
-          price: 8,
-          status: true,
+        MenuItemsByCategory(
+          category: Category(
+            name: "Soups",
+            image: "assets/category/soup.jpeg",
+            status: true,
+          ),
+          menuItems: [],
         ),
-        MenuItems(
-          name: "Cereal",
-          image: "assets/food/cereal.jpg",
-          description: "Some description about food",
-          ingredients: "Ingredient 1, Ingredient 2",
-          price: 8,
-          status: true,
+        MenuItemsByCategory(
+          category: Category(
+            name: "Coffee",
+            image: "assets/category/coffee1.jpeg",
+            status: true,
+          ),
+          menuItems: [],
+        ),
+        MenuItemsByCategory(
+          category: Category(
+            name: "Beverages",
+            image: "assets/category/beverages1.jpeg",
+            status: true,
+          ),
+          menuItems: [],
         ),
       ];
       notifyListeners();
