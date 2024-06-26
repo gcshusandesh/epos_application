@@ -137,86 +137,6 @@ class MenuProvider extends ChangeNotifier {
       print(e);
     }
   }
-  //
-  // List<MenuItems> menuItems = [];
-  // void changeMenuItemStatus(int index) {
-  //   menuItems[index].status = !menuItems[index].status;
-  //   notifyListeners();
-  // }
-  //
-  // void removeMenuItem(int index) {
-  //   menuItems.removeAt(index);
-  //   notifyListeners();
-  // }
-  //
-  // Future<void> getMenuItems() async {
-  //   // var url = Uri.parse("$baseUrl/api/testdatas/1");
-  //   try {
-  //     // var headers = {
-  //     //   "Accept": "application/json",
-  //     // };
-  //     // var response = await http.get(url, headers: headers);
-  //     // var extractedData = json.decode(response.body);
-  //     // if (response.statusCode == 200) {
-  //     //   print(extractedData);
-  //     // }
-  //     menuItems = [
-  //       MenuItems(
-  //         name: "Eggs",
-  //         image: "assets/food/eggs.jpg",
-  //         description: "Some description about food",
-  //         ingredients: "Ingredient 1, Ingredient 2",
-  //         price: 8,
-  //         status: true,
-  //       ),
-  //       MenuItems(
-  //         name: "Pancake",
-  //         image: "assets/food/pancakes_cropped.jpg",
-  //         description: "Some description about food",
-  //         ingredients: "Ingredient 1, Ingredient 2",
-  //         price: 10,
-  //         status: true,
-  //       ),
-  //       MenuItems(
-  //         name: "French Toast",
-  //         image: "assets/food/toast.jpg",
-  //         description:
-  //             "Some description about food ldjlsjalfdjslfj slsjdflksjal flsajf sjdfjsjflsdj lfslkjf ljsafsdlkjflsj fldslfjlasjflksdjfl ",
-  //         ingredients: "Ingredient 1, Ingredient 2",
-  //         price: 10,
-  //         status: true,
-  //       ),
-  //       MenuItems(
-  //         name: "Bacon",
-  //         image: "assets/food/bacon.jpg",
-  //         description: "Some description about food",
-  //         ingredients: "Ingredient 1, Ingredient 2",
-  //         price: 8,
-  //         status: true,
-  //       ),
-  //       MenuItems(
-  //         name: "Sausage(chicken)",
-  //         image: "assets/food/sausage1.jpg",
-  //         description: "Some description about food",
-  //         ingredients: "Ingredient 1, Ingredient 2",
-  //         price: 8,
-  //         status: true,
-  //       ),
-  //       MenuItems(
-  //         name: "Cereal",
-  //         image: "assets/food/cereal.jpg",
-  //         description: "Some description about food",
-  //         ingredients: "Ingredient 1, Ingredient 2",
-  //         price: 8,
-  //         status: true,
-  //       ),
-  //     ];
-  //     notifyListeners();
-  //   } catch (e) {
-  //     // ignore: avoid_print
-  //     print(e);
-  //   }
-  // }
 
   List<MenuItemsByCategory> menuItemsByCategory = [];
   void changeMenuItemStatus({required int itemIndex}) {
@@ -268,8 +188,7 @@ class MenuProvider extends ChangeNotifier {
             MenuItems(
               name: "French Toast",
               image: "assets/food/toast.jpg",
-              description:
-                  "Some description about food ldjlsjalfdjslfj slsjdflksjal flsajf sjdfjsjflsdj lfslkjf ljsafsdlkjflsj fldslfjlasjflksdjfl ",
+              description: "Some description about food",
               ingredients: "Ingredient 1, Ingredient 2",
               price: 10,
               status: true,
@@ -306,7 +225,16 @@ class MenuProvider extends ChangeNotifier {
             image: "assets/category/burger.jpeg",
             status: true,
           ),
-          menuItems: [],
+          menuItems: [
+            MenuItems(
+              name: "Burger",
+              image: "assets/category/burger.jpeg",
+              description: "Some description about food",
+              ingredients: "Ingredient 1, Ingredient 2",
+              price: 10,
+              status: true,
+            ),
+          ],
         ),
         MenuItemsByCategory(
           category: Category(
