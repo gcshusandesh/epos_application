@@ -4,6 +4,7 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +17,15 @@ class EditSpecials extends StatefulWidget {
 }
 
 class _EditSpecialsState extends State<EditSpecials> {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
+  }
+
   bool init = true;
   late double height;
   late double width;
@@ -26,93 +36,142 @@ class _EditSpecialsState extends State<EditSpecials> {
     if (init) {
       //initialize size config at the very beginning
       SizeConfig().init(context);
-      height = SizeConfig.safeBlockVertical;
-      width = SizeConfig.safeBlockHorizontal;
+      // here height and width have been swapped to tackle orientation swap
+      width = SizeConfig.safeBlockVertical;
+      height = SizeConfig.safeBlockHorizontal;
 
       init = false;
     }
   }
 
   @override
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            topSection(
-                context: context,
-                text: "Specials",
-                height: height,
-                width: width),
-            SizedBox(height: height * 2),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                iconButton(
-                  "assets/svg/add.svg",
-                  height,
-                  width,
-                  () {
-                    showMaterialModalBottomSheet(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(12.0),
-                          topRight: Radius.circular(12.0),
-                        ),
-                      ),
-                      backgroundColor: Data.lightGreyBodyColor,
-                      context: context,
-                      builder: (context) => SizedBox(
-                        height: height * 10,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(height: height * 2),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: Colors.black, // Outline color
-                                  width: 0.5, // Outline width
-                                ),
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              height: 10,
-                              width: width * 20,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                SizedBox(width: width),
-                iconButton(
-                  "assets/svg/edit.svg",
-                  height,
-                  width,
-                  () {
-                    //do something
-                  },
-                ),
-                SizedBox(width: width),
-                textButton(
-                  text: "Change Priority",
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (bool value) {
+        //for faster swapping of orientation
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ]);
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              topSection(
+                  context: context,
+                  text: "Specials",
                   height: height,
-                  width: width,
-                  textColor: Data.iconsColor,
-                  buttonColor: Data.iconsColor,
-                  onTap: () {},
-                )
-              ],
-            ),
-            SizedBox(height: height * 2),
-            tableSection(context),
-          ],
+                  width: width),
+              SizedBox(height: height * 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  iconButton(
+                    "assets/svg/add.svg",
+                    height,
+                    width,
+                    () {
+                      showMaterialModalBottomSheet(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(12.0),
+                            topRight: Radius.circular(12.0),
+                          ),
+                        ),
+                        backgroundColor: Data.lightGreyBodyColor,
+                        context: context,
+                        builder: (context) => SizedBox(
+                          height: height * 10,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(height: height * 2),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: Colors.black, // Outline color
+                                    width: 0.5, // Outline width
+                                  ),
+                                  borderRadius: BorderRadius.circular(6.0),
+                                ),
+                                height: 10,
+                                width: width * 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  SizedBox(width: width),
+                  iconButton(
+                    "assets/svg/edit.svg",
+                    height,
+                    width,
+                    () {
+                      //do something
+                    },
+                  ),
+                  SizedBox(width: width),
+                  textButton(
+                    text: "Change Priority",
+                    height: height,
+                    width: width,
+                    textColor: Data.iconsColor,
+                    buttonColor: Data.iconsColor,
+                    onTap: () {},
+                  )
+                ],
+              ),
+              SizedBox(height: height * 2),
+              tableSection(context),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Row topSection(
+      {required BuildContext context,
+      required double height,
+      required String text,
+      required double width}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        iconButton(
+          "assets/svg/arrow_back.svg",
+          height,
+          width,
+          () {
+            Navigator.pop(context);
+            //for faster swapping of orientation
+            SystemChrome.setPreferredOrientations([
+              DeviceOrientation.portraitUp,
+              DeviceOrientation.portraitDown,
+            ]);
+          },
+        ),
+        buildTitleText(text, Data.darkTextColor, width),
+        SizedBox(
+          width: width * 5,
+        ),
+      ],
     );
   }
 

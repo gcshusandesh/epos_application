@@ -4,6 +4,7 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +17,15 @@ class EditMenu extends StatefulWidget {
 }
 
 class _EditMenuState extends State<EditMenu> {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
+  }
+
   bool init = true;
   late double height;
   late double width;
@@ -26,11 +36,21 @@ class _EditMenuState extends State<EditMenu> {
     if (init) {
       //initialize size config at the very beginning
       SizeConfig().init(context);
-      height = SizeConfig.safeBlockVertical;
-      width = SizeConfig.safeBlockHorizontal;
+      // here height and width have been swapped to tackle orientation swap
+      width = SizeConfig.safeBlockVertical;
+      height = SizeConfig.safeBlockHorizontal;
 
       init = false;
     }
+  }
+
+  @override
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
   }
 
   @override
@@ -39,6 +59,11 @@ class _EditMenuState extends State<EditMenu> {
       canPop: true,
       onPopInvoked: (bool value) async {
         Provider.of<MenuProvider>(context, listen: false).resetCategory();
+        //for faster swapping of orientation
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ]);
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -113,6 +138,12 @@ class _EditMenuState extends State<EditMenu> {
           () {
             Navigator.pop(context);
             Provider.of<MenuProvider>(context, listen: false).resetCategory();
+
+            //for faster swapping of orientation
+            SystemChrome.setPreferredOrientations([
+              DeviceOrientation.portraitUp,
+              DeviceOrientation.portraitDown,
+            ]);
           },
         ),
         buildTitleText(text, Data.darkTextColor, width),

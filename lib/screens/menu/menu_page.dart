@@ -3,6 +3,9 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/screens/menu/edit_category.dart';
+import 'package:epos_application/screens/menu/edit_menu.dart';
+import 'package:epos_application/screens/menu/edit_specials.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -110,7 +113,10 @@ class _MenuPageState extends State<MenuPage> {
           height,
           width,
           () {
-            //do something
+            animatedNavigatorPush(
+              context: context,
+              screen: const EditSpecials(),
+            );
           },
         ),
       ],
@@ -132,7 +138,10 @@ class _MenuPageState extends State<MenuPage> {
           height,
           width,
           () {
-            //do something
+            animatedNavigatorPush(
+              context: context,
+              screen: const EditCategory(),
+            );
           },
         ),
       ],
@@ -172,7 +181,13 @@ class _MenuPageState extends State<MenuPage> {
               height,
               width,
               () {
-                //do something
+                //can be used to initialise category as well
+                Provider.of<MenuProvider>(context, listen: false)
+                    .resetCategory();
+                animatedNavigatorPush(
+                  context: context,
+                  screen: const EditMenu(),
+                );
               },
             ),
           ],
