@@ -7,6 +7,7 @@ import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';
 import 'package:epos_application/screens/menu/edit_menu.dart';
 import 'package:epos_application/screens/menu/edit_specials.dart';
+import 'package:epos_application/screens/menu/menu_page.dart';
 import 'package:epos_application/screens/profile_screen.dart';
 import 'package:epos_application/screens/settings.dart';
 import 'package:flutter/material.dart';
@@ -94,7 +95,15 @@ class _DashboardState extends State<Dashboard> {
               "menu",
               height,
               width,
-              () {},
+              () {
+                //can be used to initialise category as well
+                Provider.of<MenuProvider>(context, listen: false)
+                    .resetCategory();
+                animatedNavigatorPush(
+                  context: context,
+                  screen: const MenuPage(),
+                );
+              },
             ),
             dashboardItem(
               "assets/dashboard/order.svg",

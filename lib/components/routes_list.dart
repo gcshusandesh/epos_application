@@ -4,6 +4,7 @@ import 'package:epos_application/screens/employees/manage_employee.dart';
 import 'package:epos_application/screens/login_screen.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';
 import 'package:epos_application/screens/menu/edit_specials.dart';
+import 'package:epos_application/screens/menu/menu_page.dart';
 import 'package:epos_application/screens/profile_screen.dart';
 import 'package:epos_application/screens/reset_password.dart';
 import 'package:epos_application/screens/settings.dart';
@@ -27,6 +28,7 @@ Map<String, Widget Function(BuildContext)> routes = {
   // Inventory Section
 
   // Menu Section
+  MenuPage.routeName: (ctx) => const MenuPage(),
   EditCategory.routeName: (ctx) => const EditCategory(),
   EditSpecials.routeName: (ctx) => const EditSpecials(),
 
