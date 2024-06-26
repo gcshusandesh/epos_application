@@ -35,23 +35,29 @@ class _EditMenuState extends State<EditMenu> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            topSection(
-                context: context,
-                text: "Menu Item",
-                height: height,
-                width: width),
-            optionsSection(context),
-            SizedBox(height: height * 2),
-            editSection(context),
-            SizedBox(height: height * 2),
-            tableSection(context),
-          ],
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (bool value) async {
+        Provider.of<MenuProvider>(context, listen: false).resetCategory();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              topSection(
+                  context: context,
+                  text: "Menu Item",
+                  height: height,
+                  width: width),
+              optionsSection(context),
+              SizedBox(height: height * 2),
+              editSection(context),
+              SizedBox(height: height * 2),
+              tableSection(context),
+            ],
+          ),
         ),
       ),
     );
