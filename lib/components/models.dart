@@ -37,3 +37,21 @@ class Category {
     required this.status,
   });
 }
+
+class CategoryItems {
+  final String name;
+  final String image;
+  final String description;
+  final String ingredients;
+  final String price;
+  bool status;
+
+  CategoryItems({
+    required this.name,
+    required this.image,
+    required this.description,
+    required this.ingredients,
+    required this.price,
+    required this.status,
+  });
+}
