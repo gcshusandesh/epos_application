@@ -14,7 +14,7 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getSpecialsList() async {
+  Future<void> getSpecialsList({required bool init}) async {
     // var url = Uri.parse("$baseUrl/api/testdatas/1");
     try {
       // var headers = {
@@ -39,7 +39,9 @@ class MenuProvider extends ChangeNotifier {
             image: "assets/featured/coffee_featured.jpg",
             status: true),
       ];
-      notifyListeners();
+      if (!init) {
+        notifyListeners();
+      }
     } catch (e) {
       // ignore: avoid_print
       print(e);
@@ -83,7 +85,7 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getCategoryList() async {
+  Future<void> getCategoryList({required bool init}) async {
     // var url = Uri.parse("$baseUrl/api/testdatas/1");
     try {
       // var headers = {
@@ -131,7 +133,9 @@ class MenuProvider extends ChangeNotifier {
           status: true,
         ),
       ];
-      notifyListeners();
+      if (!init) {
+        notifyListeners();
+      }
     } catch (e) {
       // ignore: avoid_print
       print(e);
@@ -150,7 +154,7 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getMenuItemsByCategory() async {
+  Future<void> getMenuItemsByCategory({required bool init}) async {
     // var url = Uri.parse("$baseUrl/api/testdatas/1");
     try {
       // var headers = {
@@ -277,7 +281,9 @@ class MenuProvider extends ChangeNotifier {
           menuItems: [],
         ),
       ];
-      notifyListeners();
+      if (!init) {
+        notifyListeners();
+      }
     } catch (e) {
       // ignore: avoid_print
       print(e);

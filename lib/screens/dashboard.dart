@@ -39,17 +39,20 @@ class _DashboardState extends State<Dashboard> {
       // Provider.of<InfoProvider>(context, listen: false).getTestData();
 
       // Get Specials Data from API
-      Provider.of<MenuProvider>(context, listen: false).getSpecialsList();
+      Provider.of<MenuProvider>(context, listen: false)
+          .getSpecialsList(init: true);
 
       // Get Employee Data from API
-      Provider.of<EmployeeProvider>(context, listen: false).getEmployeeData();
+      Provider.of<EmployeeProvider>(context, listen: false)
+          .getEmployeeData(init: true);
 
       // Get Category Data from API
-      Provider.of<MenuProvider>(context, listen: false).getCategoryList();
+      Provider.of<MenuProvider>(context, listen: false)
+          .getCategoryList(init: true);
 
       // Get Menu Items by Category Data from API
       Provider.of<MenuProvider>(context, listen: false)
-          .getMenuItemsByCategory();
+          .getMenuItemsByCategory(init: true);
 
       init = false;
     }

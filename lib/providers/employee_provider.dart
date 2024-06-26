@@ -9,7 +9,7 @@ class EmployeeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getEmployeeData() async {
+  Future<void> getEmployeeData({required bool init}) async {
     // var url = Uri.parse("$baseUrl/api/testdatas/1");
     try {
       // var headers = {
@@ -64,7 +64,9 @@ class EmployeeProvider extends ChangeNotifier {
           status: true,
         ),
       ];
-      // notifyListeners();
+      if (!init) {
+        notifyListeners();
+      }
     } catch (e) {
       // ignore: avoid_print
       print(e);
