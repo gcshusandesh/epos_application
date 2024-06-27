@@ -1,11 +1,12 @@
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Data {
   static const appName = 'EPOS Application';
-  static const primaryColor = Color(0xff063B9D);
-  static const iconsColor = Color(0xff4071B6);
   static const greenColor = Color(0xff22C55E);
   static const redColor = Color(0xffC52222);
+  static const lightGreyBodyColor50 = Color(0xffECECEC);
   static const lightGreyBodyColor = Color(0xffD9D9D9);
   static const darkTextColor = Color(0xff000000);
   static const greyTextColor = Color(0xff1F2937);
@@ -16,6 +17,7 @@ Widget buildInputField(
   String hintText,
   double height,
   double width,
+  BuildContext context,
 ) {
   return Container(
     height: height * 6,
@@ -25,9 +27,11 @@ Widget buildInputField(
     ),
     child: TextField(
       decoration: InputDecoration(
-        border: const OutlineInputBorder(
+        border: OutlineInputBorder(
           borderSide: BorderSide(
-            color: Data.primaryColor, // Custom focused border color
+            color: Provider.of<InfoProvider>(context, listen: true)
+                .systemInfo
+                .primaryColor, // Custom focused border color
             width: 2.0, // Custom focused border width (optional)
           ),
         ),

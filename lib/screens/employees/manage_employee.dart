@@ -139,6 +139,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
           height,
           width,
           () {},
+          context: context,
         ),
         SizedBox(width: width),
         iconButton(
@@ -148,6 +149,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
           () {
             //do something
           },
+          context: context,
         ),
       ],
     );
@@ -199,14 +201,16 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                 .gender,
             width),
         buildCupertinoSwitch(
-            index: index,
-            value: Provider.of<EmployeeProvider>(context, listen: true)
-                .employeeList[index]
-                .status,
-            onChanged: (value) {
-              Provider.of<EmployeeProvider>(context, listen: false)
-                  .changeEmployeeStatus(index);
-            }),
+          index: index,
+          value: Provider.of<EmployeeProvider>(context, listen: true)
+              .employeeList[index]
+              .status,
+          onChanged: (value) {
+            Provider.of<EmployeeProvider>(context, listen: false)
+                .changeEmployeeStatus(index);
+          },
+          context: context,
+        ),
       ],
     );
   }

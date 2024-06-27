@@ -1,4 +1,5 @@
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ Row backButton(BuildContext context, double width, double height) {
         () {
           Navigator.pop(context);
         },
+        context: context,
       ),
     ],
   );
@@ -27,6 +29,7 @@ Widget dashboardItem(
   double height,
   double width,
   Function() onTap,
+  BuildContext context,
 ) {
   return InkWell(
     onTap: onTap,
@@ -37,7 +40,9 @@ Widget dashboardItem(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Data.iconsColor, // Outline color
+          color: Provider.of<InfoProvider>(context, listen: true)
+              .systemInfo
+              .iconsColor, // Outline color
           width: 0.5, // Outline width
         ),
         boxShadow: [
@@ -78,6 +83,7 @@ Widget buildButton(
   double height,
   double width,
   Function() onTap,
+  BuildContext context,
 ) {
   return InkWell(
     onTap: onTap,
@@ -86,7 +92,9 @@ Widget buildButton(
       width: width * 40,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5.0),
-        color: Data.primaryColor,
+        color: Provider.of<InfoProvider>(context, listen: true)
+            .systemInfo
+            .primaryColor,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -115,6 +123,7 @@ Widget iconButton(
   Function() onTap, {
   bool isSvg = true,
   IconData icon = Icons.arrow_back,
+  required BuildContext context,
 }) {
   return InkWell(
     onTap: onTap,
@@ -124,7 +133,9 @@ Widget iconButton(
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(
-          color: Data.iconsColor, // Outline color
+          color: Provider.of<InfoProvider>(context, listen: true)
+              .systemInfo
+              .iconsColor, // Outline color
           width: 0.5, // Outline width
         ),
         borderRadius: BorderRadius.circular(6.0),
@@ -147,7 +158,9 @@ Widget iconButton(
               )
             : Icon(
                 icon,
-                color: Data.iconsColor,
+                color: Provider.of<InfoProvider>(context, listen: true)
+                    .systemInfo
+                    .iconsColor,
                 size: width * 2,
               ),
       ),
@@ -208,8 +221,12 @@ Widget menuOption(
           color: Provider.of<MenuProvider>(context, listen: true)
                   .categoryList[index]
                   .isSelected
-              ? Data.primaryColor
-              : Data.iconsColor, // Outline color
+              ? Provider.of<InfoProvider>(context, listen: true)
+                  .systemInfo
+                  .primaryColor
+              : Provider.of<InfoProvider>(context, listen: true)
+                  .systemInfo
+                  .iconsColor, // Outline color
           width: Provider.of<MenuProvider>(context, listen: true)
                   .categoryList[index]
                   .isSelected

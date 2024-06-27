@@ -139,6 +139,7 @@ class _MenuPageState extends State<MenuPage> {
               DeviceOrientation.landscapeRight,
             ]);
           },
+          context: context,
         ),
         buildTitleText(text, Data.darkTextColor, width),
         SizedBox(
@@ -159,7 +160,9 @@ class _MenuPageState extends State<MenuPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Data.iconsColor, // Outline color
+          color: Provider.of<InfoProvider>(context, listen: true)
+              .systemInfo
+              .iconsColor, // Outline color
           width: 0.5, // Outline width
         ),
         boxShadow: [
@@ -209,7 +212,7 @@ class _MenuPageState extends State<MenuPage> {
                       child: Center(
                         child: buildCustomText(
                           "${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].name}"
-                          "\n${Provider.of<InfoProvider>(context, listen: true).currencySymbol}"
+                          "\n${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol}"
                           " ${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].price}",
                           Data.greyTextColor,
                           width * 1.3,
@@ -266,7 +269,9 @@ class _MenuPageState extends State<MenuPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(
-          color: Data.iconsColor, // Outline color
+          color: Provider.of<InfoProvider>(context, listen: true)
+              .systemInfo
+              .iconsColor, // Outline color
           width: 0.5, // Outline width
         ),
         borderRadius: BorderRadius.circular(6.0),
@@ -309,6 +314,7 @@ class _MenuPageState extends State<MenuPage> {
               screen: const EditSpecials(),
             );
           },
+          context: context,
         ),
       ],
     );
@@ -334,6 +340,7 @@ class _MenuPageState extends State<MenuPage> {
               screen: const EditCategory(),
             );
           },
+          context: context,
         ),
       ],
     );
@@ -362,8 +369,12 @@ class _MenuPageState extends State<MenuPage> {
               text: "Take Order",
               height: height,
               width: width,
-              textColor: Data.iconsColor,
-              buttonColor: Data.iconsColor,
+              textColor: Provider.of<InfoProvider>(context, listen: true)
+                  .systemInfo
+                  .iconsColor,
+              buttonColor: Provider.of<InfoProvider>(context, listen: true)
+                  .systemInfo
+                  .iconsColor,
               onTap: () {},
             ),
             SizedBox(width: width),
@@ -380,6 +391,7 @@ class _MenuPageState extends State<MenuPage> {
                   screen: const EditMenu(),
                 );
               },
+              context: context,
             ),
           ],
         )

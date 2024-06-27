@@ -101,6 +101,7 @@ class _DashboardState extends State<Dashboard> {
                   screen: const MenuPage(),
                 );
               },
+              context,
             ),
             dashboardItem(
               "assets/dashboard/order.svg",
@@ -108,6 +109,7 @@ class _DashboardState extends State<Dashboard> {
               height,
               width,
               () {},
+              context,
             ),
             dashboardItem(
               "assets/dashboard/payment.svg",
@@ -115,6 +117,7 @@ class _DashboardState extends State<Dashboard> {
               height,
               width,
               () {},
+              context,
             ),
             dashboardItem(
               "assets/dashboard/sales.svg",
@@ -122,6 +125,7 @@ class _DashboardState extends State<Dashboard> {
               height,
               width,
               () {},
+              context,
             ),
           ],
         ),
@@ -142,6 +146,7 @@ class _DashboardState extends State<Dashboard> {
                   screen: const ManageEmployee(),
                 );
               },
+              context,
             ),
             dashboardItem(
               "assets/dashboard/inventory.svg",
@@ -151,6 +156,7 @@ class _DashboardState extends State<Dashboard> {
               () {
                 //do something
               },
+              context,
             ),
             dashboardItem(
               "assets/dashboard/analytics.svg",
@@ -158,6 +164,7 @@ class _DashboardState extends State<Dashboard> {
               height,
               width,
               () {},
+              context,
             ),
           ],
         ),
@@ -189,6 +196,7 @@ class _DashboardState extends State<Dashboard> {
               MaterialPageRoute(builder: (context) => const ProfileScreen()),
             );
           },
+          context: context,
         ),
         SizedBox(width: width * 2),
         iconButton(
@@ -201,6 +209,7 @@ class _DashboardState extends State<Dashboard> {
               MaterialPageRoute(builder: (context) => const Settings()),
             );
           },
+          context: context,
         ),
         SizedBox(width: width * 2),
       ],

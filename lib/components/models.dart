@@ -1,3 +1,39 @@
+import 'package:flutter/material.dart';
+
+class RestaurantInfo {
+  final String name;
+  final String vatNumber;
+  final String address;
+  final String postcode;
+  final String countryOfOperation;
+  final String logoUrl;
+
+  RestaurantInfo({
+    required this.name,
+    required this.vatNumber,
+    required this.address,
+    required this.postcode,
+    required this.countryOfOperation,
+    required this.logoUrl,
+  });
+}
+
+class SystemInfo {
+  final String versionNumber;
+  final String language;
+  final String currencySymbol;
+  Color primaryColor;
+  Color iconsColor;
+
+  SystemInfo({
+    required this.versionNumber,
+    required this.language,
+    required this.currencySymbol,
+    required this.primaryColor,
+    required this.iconsColor,
+  });
+}
+
 class Employee {
   final String name;
   final String email;

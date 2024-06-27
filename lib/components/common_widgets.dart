@@ -1,8 +1,10 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 Future<dynamic> animatedNavigatorPush({
   required BuildContext context,
@@ -51,6 +53,7 @@ Row topSection(
         () {
           Navigator.pop(context);
         },
+        context: context,
       ),
       buildTitleText(text, Data.darkTextColor, width),
       SizedBox(
@@ -60,7 +63,7 @@ Row topSection(
   );
 }
 
-Widget onLoading({required double width}) {
+Widget onLoading({required double width, required BuildContext context}) {
   return ClipRRect(
     borderRadius: BorderRadius.circular(10),
     child: Material(
@@ -85,8 +88,11 @@ Widget onLoading({required double width}) {
             SizedBox(
               height: width * 2,
             ),
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Data.primaryColor),
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  Provider.of<InfoProvider>(context, listen: true)
+                      .systemInfo
+                      .primaryColor),
             ),
             SizedBox(
               height: width * 4,
@@ -102,11 +108,14 @@ Widget onLoading({required double width}) {
 Widget buildCupertinoSwitch(
     {required int index,
     required bool value,
-    required Function(bool) onChanged}) {
+    required Function(bool) onChanged,
+    required BuildContext context}) {
   return Transform.scale(
     scale: 1.5,
     child: CupertinoSwitch(
-      activeColor: Data.primaryColor,
+      activeColor: Provider.of<InfoProvider>(context, listen: true)
+          .systemInfo
+          .primaryColor,
       trackColor: Data.greyTextColor,
       value: value,
       onChanged: onChanged,

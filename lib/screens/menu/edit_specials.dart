@@ -2,6 +2,7 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -107,6 +108,7 @@ class _EditSpecialsState extends State<EditSpecials> {
                         ),
                       );
                     },
+                    context: context,
                   ),
                   SizedBox(width: width),
                   iconButton(
@@ -116,14 +118,20 @@ class _EditSpecialsState extends State<EditSpecials> {
                     () {
                       //do something
                     },
+                    context: context,
                   ),
                   SizedBox(width: width),
                   textButton(
                     text: "Change Priority",
                     height: height,
                     width: width,
-                    textColor: Data.iconsColor,
-                    buttonColor: Data.iconsColor,
+                    textColor: Provider.of<InfoProvider>(context, listen: true)
+                        .systemInfo
+                        .iconsColor,
+                    buttonColor:
+                        Provider.of<InfoProvider>(context, listen: true)
+                            .systemInfo
+                            .iconsColor,
                     onTap: () {},
                   )
                 ],
@@ -157,6 +165,7 @@ class _EditSpecialsState extends State<EditSpecials> {
               DeviceOrientation.portraitDown,
             ]);
           },
+          context: context,
         ),
         buildTitleText(text, Data.darkTextColor, width),
         SizedBox(
@@ -295,14 +304,16 @@ class _EditSpecialsState extends State<EditSpecials> {
           ),
         ),
         buildCupertinoSwitch(
-            index: index,
-            value: Provider.of<MenuProvider>(context, listen: true)
-                .specialsList[index]
-                .status,
-            onChanged: (value) {
-              Provider.of<MenuProvider>(context, listen: false)
-                  .changeSpecialsStatus(index);
-            }),
+          index: index,
+          value: Provider.of<MenuProvider>(context, listen: true)
+              .specialsList[index]
+              .status,
+          onChanged: (value) {
+            Provider.of<MenuProvider>(context, listen: false)
+                .changeSpecialsStatus(index);
+          },
+          context: context,
+        ),
       ],
     );
   }

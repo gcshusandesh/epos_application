@@ -43,7 +43,9 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           buildTitleText(
-            Provider.of<InfoProvider>(context, listen: false).restaurantName,
+            Provider.of<InfoProvider>(context, listen: false)
+                .restaurantInfo
+                .name,
             Data.greyTextColor,
             width,
           ),
@@ -68,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Data.lightGreyTextColor,
                 width * 0.7,
               ),
-              buildInputField("Email", height, width),
+              buildInputField("Email", height, width, context),
             ],
           ),
           SizedBox(height: height),
@@ -80,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Data.lightGreyTextColor,
                 width * 0.7,
               ),
-              buildInputField("Password", height, width),
+              buildInputField("Password", height, width, context),
             ],
           ),
           SizedBox(height: height * 2),
@@ -95,6 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 MaterialPageRoute(builder: (context) => const Dashboard()),
               );
             },
+            context,
           ),
           SizedBox(height: height),
           Row(
@@ -102,7 +105,9 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               Checkbox(
                 value: value,
-                activeColor: Data.iconsColor,
+                activeColor: Provider.of<InfoProvider>(context, listen: true)
+                    .systemInfo
+                    .iconsColor,
                 side: WidgetStateBorderSide.resolveWith(
                   (states) => const BorderSide(
                       width: 1.0, color: Data.lightGreyTextColor),
@@ -133,7 +138,9 @@ class _LoginScreenState extends State<LoginScreen> {
             },
             child: buildSmallText(
               "Forgot your Password?",
-              Data.iconsColor,
+              Provider.of<InfoProvider>(context, listen: true)
+                  .systemInfo
+                  .iconsColor,
               width,
               selectable: false,
             ),

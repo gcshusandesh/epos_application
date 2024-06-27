@@ -50,6 +50,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                 () {
                   Navigator.pop(context);
                 },
+                context: context,
               ),
             ],
           ),
@@ -75,7 +76,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                 Data.lightGreyTextColor,
                 width * 0.8,
               ),
-              buildInputField("Email", height, width),
+              buildInputField("Email", height, width, context),
             ],
           ),
           SizedBox(height: height * 4),
@@ -85,6 +86,7 @@ class _ResetPasswordState extends State<ResetPassword> {
             height,
             width,
             () {},
+            context,
           ),
           SizedBox(height: height * 2),
         ],
