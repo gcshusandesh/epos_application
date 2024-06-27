@@ -36,6 +36,18 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    //to save memory
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +86,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   Data.lightGreyTextColor,
                   width * 0.7,
                 ),
-                buildInputField("Email", height, width, context),
+                buildInputField(
+                    "Email", height, width, context, emailController),
               ],
             ),
             SizedBox(height: height),
@@ -86,7 +99,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   Data.lightGreyTextColor,
                   width * 0.7,
                 ),
-                buildInputField("Password", height, width, context),
+                buildInputField(
+                    "Password", height, width, context, passwordController),
               ],
             ),
             SizedBox(height: height * 2),

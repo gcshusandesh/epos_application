@@ -9,6 +9,11 @@ class EmployeeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addEmployee(Employee employee) {
+    employeeList.add(employee);
+    notifyListeners();
+  }
+
   Future<void> getEmployeeData({required bool init}) async {
     // var url = Uri.parse("$baseUrl/api/testdatas/1");
     try {
@@ -22,6 +27,7 @@ class EmployeeProvider extends ChangeNotifier {
       // }
       employeeList = [
         Employee(
+          id: "1",
           name: "Shusandesh G C",
           email: "shusandesh@gmail.com",
           phone: "+44 9999999990",
@@ -29,6 +35,7 @@ class EmployeeProvider extends ChangeNotifier {
           status: true,
         ),
         Employee(
+          id: "2",
           name: "Shreen Subedi",
           email: "shreeno@gmail.com",
           phone: "+44 9999999991",
@@ -36,6 +43,7 @@ class EmployeeProvider extends ChangeNotifier {
           status: true,
         ),
         Employee(
+          id: "3",
           name: "Jayant Kundal",
           email: "kundal@gmail.com",
           phone: "+44 9999999992",
@@ -43,6 +51,7 @@ class EmployeeProvider extends ChangeNotifier {
           status: true,
         ),
         Employee(
+          id: "4",
           name: "Rajes Shenoy",
           email: "rajes@gmail.com",
           phone: "+44 9999999993",
@@ -50,6 +59,7 @@ class EmployeeProvider extends ChangeNotifier {
           status: true,
         ),
         Employee(
+          id: "5",
           name: "Utkarsh Bhoumick",
           email: "utki@gmail.com",
           phone: "+44 9999999994",
@@ -57,6 +67,7 @@ class EmployeeProvider extends ChangeNotifier {
           status: true,
         ),
         Employee(
+          id: "6",
           name: "Meghna Ghosh",
           email: "meg@gmail.com",
           phone: "+44 9999999995",

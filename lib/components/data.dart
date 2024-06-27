@@ -18,6 +18,7 @@ Widget buildInputField(
   double height,
   double width,
   BuildContext context,
+  TextEditingController controller,
 ) {
   return Container(
     height: height * 6,
@@ -29,10 +30,11 @@ Widget buildInputField(
       cursorColor: Provider.of<InfoProvider>(context, listen: true)
           .systemInfo
           .primaryColor,
+      controller: controller,
       decoration: InputDecoration(
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(
-            color: Data.greyTextColor, // Custom focused border color
+            color: Data.lightGreyBodyColor, // Custom focused border color
             width: 1, // Custom focused border width (optional)
           ),
         ),

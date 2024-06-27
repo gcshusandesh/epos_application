@@ -30,6 +30,16 @@ class _ResetPasswordState extends State<ResetPassword> {
     }
   }
 
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    //to save memory
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +89,8 @@ class _ResetPasswordState extends State<ResetPassword> {
                     Data.lightGreyTextColor,
                     width * 0.8,
                   ),
-                  buildInputField("Email", height, width, context),
+                  buildInputField(
+                      "Email", height, width, context, passwordController),
                 ],
               ),
               SizedBox(height: height * 4),
