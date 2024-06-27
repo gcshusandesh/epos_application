@@ -102,7 +102,21 @@ class _SettingsState extends State<Settings> {
                   color: Colors.white,
                   child: fancyDataBox(
                     title: "Version",
-                    data: "#1.00",
+                    data:
+                        "#${Provider.of<InfoProvider>(context, listen: true).systemInfo.versionNumber}",
+                  ),
+                ),
+                SizedBox(height: height),
+                Container(
+                  width: width * 30,
+                  padding: EdgeInsets.symmetric(
+                      vertical: height, horizontal: width * 2),
+                  color: Colors.white,
+                  child: fancyDataBox(
+                    title: "Language",
+                    data: Provider.of<InfoProvider>(context, listen: true)
+                        .systemInfo
+                        .language,
                   ),
                 ),
               ],
@@ -110,20 +124,94 @@ class _SettingsState extends State<Settings> {
           ),
           SizedBox(height: height * 2),
           editSection("System Settings", () {}),
+          SizedBox(height: height * 2),
+          Container(
+            width: width * 31,
+            padding: EdgeInsets.symmetric(
+                vertical: height * 2, horizontal: width * 2),
+            color: Data.lightGreyBodyColor,
+            child: Column(
+              children: [
+                Container(
+                  width: width * 30,
+                  padding: EdgeInsets.symmetric(
+                      vertical: height, horizontal: width * 2),
+                  color: Colors.white,
+                  child: fancyDataBox(
+                    title: "Primary Color",
+                    hasColor: true,
+                    color: Provider.of<InfoProvider>(context, listen: true)
+                        .systemInfo
+                        .primaryColor,
+                  ),
+                ),
+                SizedBox(height: height),
+                Container(
+                  width: width * 30,
+                  padding: EdgeInsets.symmetric(
+                      vertical: height, horizontal: width * 2),
+                  color: Colors.white,
+                  child: fancyDataBox(
+                    title: "Icons Color",
+                    hasColor: true,
+                    color: Provider.of<InfoProvider>(context, listen: true)
+                        .systemInfo
+                        .iconsColor,
+                  ),
+                ),
+                SizedBox(height: height),
+                Container(
+                  width: width * 30,
+                  padding: EdgeInsets.symmetric(
+                      vertical: height, horizontal: width * 2),
+                  color: Colors.white,
+                  child: fancyDataBox(
+                    title: "Currency",
+                    data: Provider.of<InfoProvider>(context, listen: true)
+                        .systemInfo
+                        .currencySymbol,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Row fancyDataBox({required String title, required String data}) {
+  Row fancyDataBox({
+    required String title,
+    String data = "",
+    bool hasColor = false,
+    Color color = Colors.black,
+  }) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        buildCustomText("Version", Data.lightGreyTextColor, width * 1.4,
-            fontFamily: "RobotoMedium"),
-        buildLine(),
-        buildCustomText("#1.00", Data.lightGreyTextColor, width * 1.4,
-            fontFamily: "RobotoMedium"),
+        Row(
+          children: [
+            SizedBox(
+              width: width * 10,
+              child: buildCustomText(
+                  title, Data.lightGreyTextColor, width * 1.4,
+                  fontFamily: "RobotoMedium"),
+            ),
+            SizedBox(width: width * 2),
+            buildLine(),
+          ],
+        ),
+        hasColor
+            ? Container(
+                width: width * 2.5,
+                height: width * 2.5,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: color,
+                ),
+              )
+            : buildCustomText(data, Data.lightGreyTextColor, width * 1.4,
+                fontFamily: "RobotoMedium"),
       ],
     );
   }
