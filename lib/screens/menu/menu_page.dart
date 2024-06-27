@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:el_tooltip/el_tooltip.dart';
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
@@ -198,9 +199,10 @@ class _MenuPageState extends State<MenuPage> {
                     Opacity(
                       opacity: 0,
                       child: customIconButton(
-                          "assets/svg/info.svg", height, width, () {
-                        // open food description box
-                      }),
+                        "assets/svg/info.svg",
+                        height,
+                        width,
+                      ),
                     ),
                     SizedBox(
                       width: width * 10,
@@ -217,9 +219,34 @@ class _MenuPageState extends State<MenuPage> {
                     ),
                   ],
                 ),
-                customIconButton("assets/svg/info.svg", height, width, () {
-                  // open food description box
-                })
+                ElTooltip(
+                  showChildAboveOverlay: false,
+                  content: buildSmallText(
+                      "${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].description}"
+                      "\nIngredients: ${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].description}",
+                      Data.lightGreyTextColor,
+                      width),
+                  position: itemIndex % 3 == 0
+                      ? ElTooltipPosition.bottomEnd
+                      : itemIndex % 2 == 0
+                          ? ElTooltipPosition.bottomCenter
+                          : ElTooltipPosition.bottomStart,
+                  child: customIconButton(
+                    "assets/svg/info.svg",
+                    height,
+                    width,
+                  ),
+                ),
+                // MyTooltip(
+                //   message: Provider.of<MenuProvider>(context, listen: true)
+                //       .menuItemsByCategory[
+                //           Provider.of<MenuProvider>(context, listen: true)
+                //               .selectedCategoryIndex]
+                //       .menuItems[itemIndex]
+                //       .description,
+                //   child: customIconButton(
+                //       "assets/svg/info.svg", height, width, () {}),
+                // )
               ],
             ),
           ),
@@ -232,37 +259,33 @@ class _MenuPageState extends State<MenuPage> {
     String svg,
     double height,
     double width,
-    Function() onTap,
   ) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        height: height * 3,
-        width: width * 3,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(
-            color: Data.iconsColor, // Outline color
-            width: 0.5, // Outline width
-          ),
-          borderRadius: BorderRadius.circular(6.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.25), // Shadow color
-              spreadRadius: 0, // How much the shadow spreads
-              blurRadius: 4, // How much the shadow blurs
-              offset: const Offset(0, 5), // The offset of the shadow
-            ),
-          ],
+    return Container(
+      height: height * 3,
+      width: width * 3,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(
+          color: Data.iconsColor, // Outline color
+          width: 0.5, // Outline width
         ),
-        child: Center(
-            child: SvgPicture.asset(
-          svg,
-          height: width * 1.5,
-          width: width * 1.5,
-          fit: BoxFit.contain,
-        )),
+        borderRadius: BorderRadius.circular(6.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25), // Shadow color
+            spreadRadius: 0, // How much the shadow spreads
+            blurRadius: 4, // How much the shadow blurs
+            offset: const Offset(0, 5), // The offset of the shadow
+          ),
+        ],
       ),
+      child: Center(
+          child: SvgPicture.asset(
+        svg,
+        height: width * 1.5,
+        width: width * 1.5,
+        fit: BoxFit.contain,
+      )),
     );
   }
 
