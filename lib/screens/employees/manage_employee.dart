@@ -3,6 +3,7 @@ import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/employee_provider.dart';
+import 'package:epos_application/screens/employees/create_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -138,7 +139,12 @@ class _ManageEmployeeState extends State<ManageEmployee> {
           "assets/svg/add.svg",
           height,
           width,
-          () {},
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CreateEmployee()),
+            );
+          },
           context: context,
         ),
         SizedBox(width: width),

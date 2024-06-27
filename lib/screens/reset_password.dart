@@ -34,62 +34,67 @@ class _ResetPasswordState extends State<ResetPassword> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
             mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(width: width * 2),
-              iconButton(
-                "assets/arrow_back.svg",
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  iconButton(
+                    "assets/svg/arrow_back.svg",
+                    height,
+                    width,
+                    () {
+                      Navigator.pop(context);
+                    },
+                    context: context,
+                  ),
+                ],
+              ),
+              buildImage("assets/restaurant_image.png", 200, 300),
+              SizedBox(height: height * 2),
+              buildTitleText(
+                "Reset Password",
+                Data.greyTextColor,
+                width,
+              ),
+              SizedBox(height: height * 2),
+              buildBodyText(
+                "Please enter your email to reset your password.",
+                Data.lightGreyTextColor,
+                width,
+              ),
+              SizedBox(height: height * 2),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  buildTitleText(
+                    "Email",
+                    Data.lightGreyTextColor,
+                    width * 0.8,
+                  ),
+                  buildInputField("Email", height, width, context),
+                ],
+              ),
+              SizedBox(height: height * 4),
+              buildButton(
+                Icons.person,
+                "Reset",
                 height,
                 width,
-                () {
-                  Navigator.pop(context);
-                },
-                context: context,
+                () {},
+                context,
               ),
+              SizedBox(height: height * 2),
             ],
           ),
-          buildImage("assets/restaurant_image.png", 200, 300),
-          SizedBox(height: height * 2),
-          buildTitleText(
-            "Reset Password",
-            Data.greyTextColor,
-            width,
-          ),
-          SizedBox(height: height * 2),
-          buildBodyText(
-            "Please enter your email to reset your password.",
-            Data.lightGreyTextColor,
-            width,
-          ),
-          SizedBox(height: height * 2),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildTitleText(
-                "Email",
-                Data.lightGreyTextColor,
-                width * 0.8,
-              ),
-              buildInputField("Email", height, width, context),
-            ],
-          ),
-          SizedBox(height: height * 4),
-          buildButton(
-            Icons.person,
-            "Reset",
-            height,
-            width,
-            () {},
-            context,
-          ),
-          SizedBox(height: height * 2),
-        ],
+        ),
       ),
     );
   }

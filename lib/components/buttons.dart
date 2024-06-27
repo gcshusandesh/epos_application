@@ -62,6 +62,11 @@ Widget dashboardItem(
             width: width * 13,
             child: SvgPicture.asset(
               asset,
+              colorFilter: ColorFilter.mode(
+                  Provider.of<InfoProvider>(context, listen: true)
+                      .systemInfo
+                      .iconsColor,
+                  BlendMode.srcIn),
             ),
           ),
           const Flexible(child: SizedBox(height: 10)),
@@ -153,6 +158,11 @@ Widget iconButton(
         child: isSvg
             ? SvgPicture.asset(
                 svg,
+                colorFilter: ColorFilter.mode(
+                    Provider.of<InfoProvider>(context, listen: true)
+                        .systemInfo
+                        .iconsColor,
+                    BlendMode.srcIn),
                 height: width * 2,
                 width: width * 2,
                 fit: BoxFit.contain,

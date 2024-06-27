@@ -26,8 +26,17 @@ Widget buildInputField(
       borderRadius: BorderRadius.circular(5.0),
     ),
     child: TextField(
+      cursorColor: Provider.of<InfoProvider>(context, listen: true)
+          .systemInfo
+          .primaryColor,
       decoration: InputDecoration(
-        border: OutlineInputBorder(
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Data.greyTextColor, // Custom focused border color
+            width: 1, // Custom focused border width (optional)
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: Provider.of<InfoProvider>(context, listen: true)
                 .systemInfo

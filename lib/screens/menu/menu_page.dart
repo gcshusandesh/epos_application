@@ -286,6 +286,11 @@ class _MenuPageState extends State<MenuPage> {
       child: Center(
           child: SvgPicture.asset(
         svg,
+        colorFilter: ColorFilter.mode(
+            Provider.of<InfoProvider>(context, listen: true)
+                .systemInfo
+                .iconsColor,
+            BlendMode.srcIn),
         height: width * 1.5,
         width: width * 1.5,
         fit: BoxFit.contain,
