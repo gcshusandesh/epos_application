@@ -5,6 +5,7 @@ class AuthProvider extends ChangeNotifier {
   Employee user = Employee(
     id: "1",
     name: "Bob Smith",
+    imageUrl: "assets/profile_picture.png",
     email: "bob@gmail.com",
     phone: "+44 999999999",
     gender: "Male",
@@ -12,7 +13,7 @@ class AuthProvider extends ChangeNotifier {
     isOwner: true,
   );
 
-  void editUserDetails(Employee editedDetails) {
+  void updateUserDetails(Employee editedDetails) {
     user = editedDetails;
     notifyListeners();
   }

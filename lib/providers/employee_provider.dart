@@ -29,6 +29,7 @@ class EmployeeProvider extends ChangeNotifier {
         Employee(
           id: "1",
           name: "Shusandesh G C",
+          imageUrl: "assets/profile_picture.png",
           email: "shusandesh@gmail.com",
           phone: "+44 9999999990",
           gender: "Male",
@@ -37,6 +38,7 @@ class EmployeeProvider extends ChangeNotifier {
         Employee(
           id: "2",
           name: "Shreen Subedi",
+          imageUrl: "assets/profile_picture.png",
           email: "shreeno@gmail.com",
           phone: "+44 9999999991",
           gender: "Female",
@@ -45,6 +47,7 @@ class EmployeeProvider extends ChangeNotifier {
         Employee(
           id: "3",
           name: "Jayant Kundal",
+          imageUrl: "assets/profile_picture.png",
           email: "kundal@gmail.com",
           phone: "+44 9999999992",
           gender: "Male",
@@ -53,6 +56,7 @@ class EmployeeProvider extends ChangeNotifier {
         Employee(
           id: "4",
           name: "Rajes Shenoy",
+          imageUrl: "assets/profile_picture.png",
           email: "rajes@gmail.com",
           phone: "+44 9999999993",
           gender: "Male",
@@ -61,6 +65,7 @@ class EmployeeProvider extends ChangeNotifier {
         Employee(
           id: "5",
           name: "Utkarsh Bhoumick",
+          imageUrl: "assets/profile_picture.png",
           email: "utki@gmail.com",
           phone: "+44 9999999994",
           gender: "Male",
@@ -69,6 +74,7 @@ class EmployeeProvider extends ChangeNotifier {
         Employee(
           id: "6",
           name: "Meghna Ghosh",
+          imageUrl: "assets/profile_picture.png",
           email: "meg@gmail.com",
           phone: "+44 9999999995",
           gender: "Female",

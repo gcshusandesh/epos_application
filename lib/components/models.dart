@@ -37,6 +37,7 @@ class SystemInfo {
 class Employee {
   final String id;
   final String name;
+  final String imageUrl;
   final String email;
   final String phone;
   final String gender;
@@ -46,6 +47,7 @@ class Employee {
   Employee({
     required this.id,
     required this.name,
+    required this.imageUrl,
     required this.email,
     required this.phone,
     required this.gender,

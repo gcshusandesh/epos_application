@@ -222,7 +222,6 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 ),
                               ),
                               SizedBox(height: height),
-
                               buildButton(
                                 Icons.person,
                                 "Create",
@@ -241,6 +240,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                             1)
                                         .toString(),
                                     name: nameController.text,
+                                    imageUrl: "assets/profile_picture.png",
                                     email: emailController.text,
                                     // password: passwordController.text,
                                     phone: phoneController.text,
@@ -259,22 +259,6 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 },
                                 context,
                               ),
-                              // textButton(
-                              //   text: "Create",
-                              //   height: height,
-                              //   width: width,
-                              //   textColor: Data.greenColor,
-                              //   buttonColor: Data.greenColor,
-                              //   onTap: () {
-                              //     // show success message
-                              //     showTopSnackBar(
-                              //       Overlay.of(context),
-                              //       const CustomSnackBar.success(
-                              //         message: "Employee Created Successfully",
-                              //       ),
-                              //     );
-                              //   },
-                              // ),
                             ],
                           ),
                         ),
