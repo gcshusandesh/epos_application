@@ -1,7 +1,7 @@
 import 'package:epos_application/components/models.dart';
 import 'package:flutter/material.dart';
 
-class InfoProvider extends ChangeNotifier {
+class AuthProvider extends ChangeNotifier {
   Employee user = Employee(
     id: "1",
     name: "Bob Smith",

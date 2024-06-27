@@ -1,3 +1,4 @@
+import 'package:epos_application/components/size_config.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
