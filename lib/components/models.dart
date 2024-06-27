@@ -41,6 +41,7 @@ class Employee {
   final String phone;
   final String gender;
   bool status;
+  bool isOwner = false;
 
   Employee({
     required this.id,
@@ -49,6 +50,7 @@ class Employee {
     required this.phone,
     required this.gender,
     required this.status,
+    this.isOwner = false,
   });
 }
 
