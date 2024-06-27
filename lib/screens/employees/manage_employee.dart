@@ -147,16 +147,16 @@ class _ManageEmployeeState extends State<ManageEmployee> {
           },
           context: context,
         ),
-        SizedBox(width: width),
-        iconButton(
-          "assets/svg/edit.svg",
-          height,
-          width,
-          () {
-            //do something
-          },
-          context: context,
-        ),
+        // SizedBox(width: width),
+        // iconButton(
+        //   "assets/svg/edit.svg",
+        //   height,
+        //   width,
+        //   () {
+        //     //do something
+        //   },
+        //   context: context,
+        // ),
       ],
     );
   }
