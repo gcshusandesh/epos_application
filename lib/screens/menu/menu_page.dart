@@ -1,7 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:el_tooltip/el_tooltip.dart';
 import 'package:epos_application/components/buttons.dart';
-import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';
@@ -309,9 +308,9 @@ class _MenuPageState extends State<MenuPage> {
           height,
           width,
           () {
-            animatedNavigatorPush(
-              context: context,
-              screen: const EditSpecials(),
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const EditSpecials()),
             );
           },
           context: context,
@@ -335,9 +334,9 @@ class _MenuPageState extends State<MenuPage> {
           height,
           width,
           () {
-            animatedNavigatorPush(
-              context: context,
-              screen: const EditCategory(),
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const EditCategory()),
             );
           },
           context: context,
@@ -386,9 +385,9 @@ class _MenuPageState extends State<MenuPage> {
                 //can be used to initialise category as well
                 Provider.of<MenuProvider>(context, listen: false)
                     .resetCategory();
-                animatedNavigatorPush(
-                  context: context,
-                  screen: const EditMenu(),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EditMenu()),
                 );
               },
               context: context,

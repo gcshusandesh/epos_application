@@ -1,5 +1,4 @@
 import 'package:epos_application/components/buttons.dart';
-import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/employee_provider.dart';
@@ -96,9 +95,9 @@ class _DashboardState extends State<Dashboard> {
                 //can be used to initialise category as well
                 Provider.of<MenuProvider>(context, listen: false)
                     .resetCategory();
-                animatedNavigatorPush(
-                  context: context,
-                  screen: const MenuPage(),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MenuPage()),
                 );
               },
               context,
@@ -108,7 +107,13 @@ class _DashboardState extends State<Dashboard> {
               "order",
               height,
               width,
-              () {},
+              () {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //       builder: (context) => const ColorPickerExample()),
+                // );
+              },
               context,
             ),
             dashboardItem(
@@ -141,9 +146,10 @@ class _DashboardState extends State<Dashboard> {
               height,
               width,
               () {
-                animatedNavigatorPush(
-                  context: context,
-                  screen: const ManageEmployee(),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ManageEmployee()),
                 );
               },
               context,

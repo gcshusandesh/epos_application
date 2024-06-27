@@ -104,6 +104,7 @@ Widget buildButton(
             color: Colors.white,
             size: width * 2,
           ),
+          SizedBox(width: width),
           buildCustomText(
             text,
             Colors.white,

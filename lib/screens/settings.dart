@@ -5,6 +5,8 @@ import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -172,11 +174,73 @@ class _SettingsState extends State<Settings> {
                         .currencySymbol,
                   ),
                 ),
+                SizedBox(height: height * 2),
+                buildButton(
+                  Icons.restart_alt_sharp,
+                  "Reset Default Settings",
+                  height,
+                  width,
+                  () {
+                    //reset Default values
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return alert();
+                      },
+                    );
+                  },
+                  context,
+                ),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  // set up the AlertDialog
+  Widget alert() {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text("Reset to Default Settings"),
+      content:
+          const Text("Would you like to reset the system setting to default?"),
+      actions: [
+        textButton(
+          text: "Yes",
+          height: height,
+          width: width,
+          textColor: Data.greenColor,
+          buttonColor: Data.greenColor,
+          onTap: () {
+            // reset to default
+            Provider.of<InfoProvider>(context, listen: false)
+                .resetDefaultSystemSettings();
+            // pop dialog box
+            Navigator.pop(context);
+            showTopSnackBar(
+              Overlay.of(context),
+              const CustomSnackBar.success(
+                message:
+                    "System has been reset to default settings successfully",
+              ),
+            );
+          },
+        ),
+        SizedBox(height: height * 2),
+        textButton(
+          text: "No",
+          height: height,
+          width: width,
+          textColor: Data.redColor,
+          buttonColor: Data.redColor,
+          onTap: () {
+            // close dialog box
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 

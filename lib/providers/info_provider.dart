@@ -22,6 +22,17 @@ class InfoProvider extends ChangeNotifier {
     iconsColor: const Color(0xff4071B6),
   );
 
+  void resetDefaultSystemSettings() {
+    systemInfo = SystemInfo(
+      versionNumber: "1.0.0",
+      language: "English",
+      currencySymbol: "£",
+      primaryColor: const Color(0xff063B9D),
+      iconsColor: const Color(0xff4071B6),
+    );
+    notifyListeners();
+  }
+
   String baseUrl = "https://restaurantepos.xyz";
 
   Future<void> getTestData() async {
