@@ -56,8 +56,8 @@ class _MenuPageState extends State<MenuPage> {
       onPopInvoked: (bool value) async {
         //for faster swapping of orientation
         SystemChrome.setPreferredOrientations([
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
         ]);
       },
       child: Scaffold(
@@ -134,8 +134,8 @@ class _MenuPageState extends State<MenuPage> {
             Navigator.pop(context);
             //for faster swapping of orientation
             SystemChrome.setPreferredOrientations([
-              DeviceOrientation.portraitUp,
-              DeviceOrientation.portraitDown,
+              DeviceOrientation.landscapeLeft,
+              DeviceOrientation.landscapeRight,
             ]);
           },
         ),
