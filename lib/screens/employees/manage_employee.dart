@@ -72,6 +72,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                                       tableTitle("Email", width),
                                       tableTitle("Phone", width),
                                       tableTitle("Gender", width),
+                                      tableTitle("User Type", width),
                                       tableTitle("Status", width),
                                     ]),
                               ],
@@ -110,6 +111,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                                   tableTitle("Email", width),
                                   tableTitle("Phone", width),
                                   tableTitle("Gender", width),
+                                  tableTitle("User Type", width),
                                   tableTitle("Status", width),
                                 ]),
                             for (int i = 0;
@@ -205,6 +207,13 @@ class _ManageEmployeeState extends State<ManageEmployee> {
             Provider.of<EmployeeProvider>(context, listen: true)
                 .employeeList[index]
                 .gender,
+            width),
+        tableItem(
+            Provider.of<EmployeeProvider>(context, listen: true)
+                .employeeList[index]
+                .userType
+                .name
+                .toString(),
             width),
         buildCupertinoSwitch(
           index: index,

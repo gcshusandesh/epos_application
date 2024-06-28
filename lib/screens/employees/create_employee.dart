@@ -158,7 +158,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                               SizedBox(height: height),
                               dataBox(
                                 title: "Gender",
-                                hintText: "Phone",
+                                hintText: "Gender",
                                 isRequired: true,
                                 isDropDown: true,
                                 controller: placeHolderController,
@@ -210,6 +210,70 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                     'Male',
                                     'Female',
                                     'Others',
+                                  ].map<DropdownMenuItem<String>>(
+                                      (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(
+                                        value,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                              SizedBox(height: height),
+                              dataBox(
+                                title: "User Type",
+                                hintText: "User Type",
+                                isRequired: true,
+                                isDropDown: true,
+                                controller: placeHolderController,
+                                dropDown: DropdownButtonFormField<String>(
+                                  padding: EdgeInsets.zero,
+                                  icon: const Icon(
+                                      Icons.arrow_drop_down_circle_outlined),
+                                  iconSize: width * 2,
+                                  iconDisabledColor: Provider.of<InfoProvider>(
+                                          context,
+                                          listen: true)
+                                      .systemInfo
+                                      .iconsColor,
+                                  iconEnabledColor: Provider.of<InfoProvider>(
+                                          context,
+                                          listen: true)
+                                      .systemInfo
+                                      .iconsColor,
+                                  decoration: InputDecoration(
+                                    enabledBorder: const OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Data
+                                            .lightGreyBodyColor, // Custom focused border color
+                                        width:
+                                            1, // Custom focused border width (optional)
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Provider.of<InfoProvider>(
+                                                context,
+                                                listen: true)
+                                            .systemInfo
+                                            .primaryColor, // Custom focused border color
+                                        width:
+                                            2.0, // Custom focused border width (optional)
+                                      ),
+                                    ),
+                                  ),
+                                  hint: const Text('Select'),
+                                  dropdownColor: Colors.white,
+                                  value: dropdownValue,
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      dropdownValue = newValue!;
+                                    });
+                                  },
+                                  items: <String>[
+                                    UserType.values.toString(),
                                   ].map<DropdownMenuItem<String>>(
                                       (String value) {
                                     return DropdownMenuItem<String>(
