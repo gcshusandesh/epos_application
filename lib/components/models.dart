@@ -34,7 +34,14 @@ class SystemInfo {
   });
 }
 
-class Employee {
+enum UserType {
+  owner,
+  manager,
+  waiter,
+  chef,
+}
+
+class User {
   final String id;
   final String name;
   final String imageUrl;
@@ -42,9 +49,9 @@ class Employee {
   final String phone;
   final String gender;
   bool status;
-  bool isOwner = false;
+  final UserType userType;
 
-  Employee({
+  User({
     required this.id,
     required this.name,
     required this.imageUrl,
@@ -52,7 +59,7 @@ class Employee {
     required this.phone,
     required this.gender,
     required this.status,
-    this.isOwner = false,
+    required this.userType,
   });
 }
 

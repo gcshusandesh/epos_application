@@ -232,7 +232,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                   // TODO: add form validation here
                                   Provider.of<EmployeeProvider>(context,
                                           listen: false)
-                                      .addEmployee(Employee(
+                                      .addEmployee(User(
                                     id: (Provider.of<EmployeeProvider>(context,
                                                     listen: false)
                                                 .employeeList
@@ -246,6 +246,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                     phone: phoneController.text,
                                     gender: dropdownValue!,
                                     status: true,
+                                    userType: UserType.waiter,
                                   ));
 
                                   Navigator.pop(context);

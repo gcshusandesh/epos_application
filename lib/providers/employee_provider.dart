@@ -2,14 +2,14 @@ import 'package:epos_application/components/models.dart';
 import 'package:flutter/material.dart';
 
 class EmployeeProvider extends ChangeNotifier {
-  List<Employee> employeeList = [];
+  List<User> employeeList = [];
 
   void changeEmployeeStatus(int index) {
     employeeList[index].status = !employeeList[index].status;
     notifyListeners();
   }
 
-  void addEmployee(Employee employee) {
+  void addEmployee(User employee) {
     employeeList.add(employee);
     notifyListeners();
   }
@@ -26,7 +26,7 @@ class EmployeeProvider extends ChangeNotifier {
       //   print(extractedData);
       // }
       employeeList = [
-        Employee(
+        User(
           id: "1",
           name: "Shusandesh G C",
           imageUrl: "assets/profile_picture.png",
@@ -34,8 +34,9 @@ class EmployeeProvider extends ChangeNotifier {
           phone: "+44 9999999990",
           gender: "Male",
           status: true,
+          userType: UserType.chef,
         ),
-        Employee(
+        User(
           id: "2",
           name: "Shreen Subedi",
           imageUrl: "assets/profile_picture.png",
@@ -43,8 +44,9 @@ class EmployeeProvider extends ChangeNotifier {
           phone: "+44 9999999991",
           gender: "Female",
           status: true,
+          userType: UserType.chef,
         ),
-        Employee(
+        User(
           id: "3",
           name: "Jayant Kundal",
           imageUrl: "assets/profile_picture.png",
@@ -52,8 +54,9 @@ class EmployeeProvider extends ChangeNotifier {
           phone: "+44 9999999992",
           gender: "Male",
           status: true,
+          userType: UserType.waiter,
         ),
-        Employee(
+        User(
           id: "4",
           name: "Rajes Shenoy",
           imageUrl: "assets/profile_picture.png",
@@ -61,8 +64,9 @@ class EmployeeProvider extends ChangeNotifier {
           phone: "+44 9999999993",
           gender: "Male",
           status: true,
+          userType: UserType.waiter,
         ),
-        Employee(
+        User(
           id: "5",
           name: "Utkarsh Bhoumick",
           imageUrl: "assets/profile_picture.png",
@@ -70,8 +74,9 @@ class EmployeeProvider extends ChangeNotifier {
           phone: "+44 9999999994",
           gender: "Male",
           status: true,
+          userType: UserType.waiter,
         ),
-        Employee(
+        User(
           id: "6",
           name: "Meghna Ghosh",
           imageUrl: "assets/profile_picture.png",
@@ -79,6 +84,7 @@ class EmployeeProvider extends ChangeNotifier {
           phone: "+44 9999999995",
           gender: "Female",
           status: true,
+          userType: UserType.waiter,
         ),
       ];
       if (!init) {

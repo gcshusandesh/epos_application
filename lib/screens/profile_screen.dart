@@ -287,7 +287,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         // TODO: add form validation here
                                         Provider.of<AuthProvider>(context,
                                                 listen: false)
-                                            .updateUserDetails(Employee(
+                                            .updateUserDetails(User(
                                           id: Provider.of<AuthProvider>(context,
                                                   listen: false)
                                               .user
@@ -303,6 +303,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   listen: false)
                                               .user
                                               .status,
+                                          userType: Provider.of<AuthProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .user
+                                              .userType,
                                         ));
 
                                         // show success massage
