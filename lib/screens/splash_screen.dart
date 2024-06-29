@@ -128,6 +128,8 @@ class SplashScreenState extends State<SplashScreen>
           context,
           MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
+        //this line of code crashes the app this is for test purpose
+        // FirebaseCrashlytics.instance.crash();
       },
     );
   }

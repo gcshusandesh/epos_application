@@ -1,6 +1,8 @@
 import 'package:epos_application/components/provider_list.dart';
 import 'package:epos_application/screens/splash_screen.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,6 +26,9 @@ Future main() async {
   //initializing firebase
   await Firebase.initializeApp();
 
+  ///record error on firebase crashlytics
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+
 //enabling app to run only in landscape mode
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
@@ -35,6 +40,9 @@ Future main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  static FirebaseAnalyticsObserver observer =
+      FirebaseAnalyticsObserver(analytics: analytics);
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -48,6 +56,7 @@ class MyApp extends StatelessWidget {
               useMaterial3: true,
             ),
             home: const SplashScreen(),
+            navigatorObservers: [observer],
           ),
         ));
   }
