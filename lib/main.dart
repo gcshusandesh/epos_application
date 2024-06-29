@@ -1,11 +1,16 @@
 import 'package:epos_application/components/provider_list.dart';
 import 'package:epos_application/screens/splash_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  //initializing firebase
+  await Firebase.initializeApp();
+
 //enabling app to run only in landscape mode
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "590041475178",
+    "project_id": "epos-system-242bb",
+    "storage_bucket": "epos-system-242bb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:590041475178:android:b4e37b3d7a2105d6958213",
+        "android_client_info": {
+          "package_name": "xyz.restaurantepos.epos_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCslFIp74YnPJriG8okJz9bCPP2GIuvF-8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
