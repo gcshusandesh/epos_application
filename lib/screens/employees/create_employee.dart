@@ -309,7 +309,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                     // password: passwordController.text,
                                     phone: phoneController.text,
                                     gender: dropdownValue!,
-                                    status: true,
+                                    blocked: true,
                                     userType: UserType.waiter,
                                   ));
 

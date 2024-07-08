@@ -14,24 +14,23 @@ class Data {
   static const lightGreyTextColor = Color(0xff4B5563);
 }
 
-Widget buildInputField(
-  String hintText,
-  double height,
-  double width,
-  BuildContext context,
-  TextEditingController controller,
-) {
+Widget buildInputField(String hintText, double height, double width,
+    BuildContext context, TextEditingController controller,
+    {Function? validator}) {
   return Container(
     height: height * 6,
     width: width * 40,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(5.0),
     ),
-    child: TextField(
+    child: TextFormField(
       cursorColor: Provider.of<InfoProvider>(context, listen: true)
           .systemInfo
           .primaryColor,
       controller: controller,
+      validator: (value) {
+        return validator!(value);
+      },
       decoration: InputDecoration(
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(
@@ -61,6 +60,7 @@ Widget buildPasswordField(
   TextEditingController controller, {
   required Function() onPressed,
   required bool obscureText,
+  Function? validator,
 }) {
   return Container(
     height: height * 6,
@@ -68,12 +68,15 @@ Widget buildPasswordField(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(5.0),
     ),
-    child: TextField(
+    child: TextFormField(
       cursorColor: Provider.of<InfoProvider>(context, listen: true)
           .systemInfo
           .primaryColor,
       controller: controller,
       obscureText: obscureText,
+      validator: (value) {
+        return validator!(value);
+      },
       decoration: InputDecoration(
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(

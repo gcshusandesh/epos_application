@@ -298,11 +298,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           email: emailController.text,
                                           phone: phoneController.text,
                                           gender: dropdownValue!,
-                                          status: Provider.of<AuthProvider>(
+                                          blocked: Provider.of<AuthProvider>(
                                                   context,
                                                   listen: false)
                                               .user
-                                              .status,
+                                              .blocked,
                                           userType: Provider.of<AuthProvider>(
                                                   context,
                                                   listen: false)

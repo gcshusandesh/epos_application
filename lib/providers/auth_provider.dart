@@ -13,7 +13,7 @@ class AuthProvider extends ChangeNotifier {
     email: "bob@gmail.com",
     phone: "+44 999999999",
     gender: "Male",
-    status: true,
+    blocked: false,
     userType: UserType.owner,
     accessToken: "placeholder",
   );
@@ -23,16 +23,13 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> login(
+  Future<bool> login(
       {required bool init,
       required String username,
       required String password}) async {
     var url = Uri.parse("${Data.baseUrl}/api/auth/local");
     try {
-      Map<String, String> body = {
-        "identifier": "hello",
-        "password": "password"
-      };
+      Map<String, String> body = {"identifier": username, "password": password};
       final response = await http.post(
         Uri.parse(url.toString()),
         // no headers passed in login API
@@ -40,6 +37,7 @@ class AuthProvider extends ChangeNotifier {
       );
       final data = json.decode(response.body);
       if (response.statusCode == 200) {
+        // ignore: avoid_print
         print(data);
       }
       user = User(
@@ -49,12 +47,17 @@ class AuthProvider extends ChangeNotifier {
         email: "shusandesh@gmail.com",
         phone: "+44 9999999990",
         gender: "Male",
-        status: true,
+        blocked: false,
         userType: UserType.chef,
-        accessToken: "placeholder",
+        accessToken: data["jwt"],
       );
       if (!init) {
         notifyListeners();
+      }
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
       }
     } catch (e) {
       // ignore: avoid_print

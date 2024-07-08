@@ -5,7 +5,7 @@ class UserProvider extends ChangeNotifier {
   List<User> userList = [];
 
   void changeUserStatus(int index) {
-    userList[index].status = !userList[index].status;
+    userList[index].blocked = !userList[index].blocked;
     notifyListeners();
   }
 
@@ -33,7 +33,7 @@ class UserProvider extends ChangeNotifier {
           email: "shusandesh@gmail.com",
           phone: "+44 9999999990",
           gender: "Male",
-          status: true,
+          blocked: false,
           userType: UserType.chef,
         ),
         User(
@@ -43,7 +43,7 @@ class UserProvider extends ChangeNotifier {
           email: "shreeno@gmail.com",
           phone: "+44 9999999991",
           gender: "Female",
-          status: true,
+          blocked: false,
           userType: UserType.chef,
         ),
         User(
@@ -53,7 +53,7 @@ class UserProvider extends ChangeNotifier {
           email: "kundal@gmail.com",
           phone: "+44 9999999992",
           gender: "Male",
-          status: true,
+          blocked: false,
           userType: UserType.waiter,
         ),
         User(
@@ -63,7 +63,7 @@ class UserProvider extends ChangeNotifier {
           email: "rajes@gmail.com",
           phone: "+44 9999999993",
           gender: "Male",
-          status: true,
+          blocked: false,
           userType: UserType.waiter,
         ),
         User(
@@ -73,7 +73,7 @@ class UserProvider extends ChangeNotifier {
           email: "utki@gmail.com",
           phone: "+44 9999999994",
           gender: "Male",
-          status: true,
+          blocked: false,
           userType: UserType.waiter,
         ),
         User(
@@ -83,7 +83,7 @@ class UserProvider extends ChangeNotifier {
           email: "meg@gmail.com",
           phone: "+44 9999999995",
           gender: "Female",
-          status: true,
+          blocked: true,
           userType: UserType.waiter,
         ),
       ];

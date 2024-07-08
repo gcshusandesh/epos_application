@@ -51,6 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   bool obscureText = true;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -82,41 +83,53 @@ class _LoginScreenState extends State<LoginScreen> {
               width,
             ),
             SizedBox(height: height),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildTitleText(
-                  "Email",
-                  Data.lightGreyTextColor,
-                  width * 0.7,
-                ),
-                buildInputField(
-                    "Email", height, width, context, emailController),
-              ],
-            ),
-            SizedBox(height: height),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildTitleText(
-                  "Password",
-                  Data.lightGreyTextColor,
-                  width * 0.7,
-                ),
-                buildPasswordField(
-                  "Password",
-                  height,
-                  width,
-                  context,
-                  passwordController,
-                  obscureText: Provider.of<ExtraProvider>(context, listen: true)
-                      .obscureText,
-                  onPressed: () {
-                    Provider.of<ExtraProvider>(context, listen: false)
-                        .changeObscureText();
-                  },
-                ),
-              ],
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  buildTitleText(
+                    "Email",
+                    Data.lightGreyTextColor,
+                    width * 0.7,
+                  ),
+                  buildInputField(
+                      "Email", height, width, context, emailController,
+                      validator: (value) {
+                    if (value.isEmpty ||
+                        !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                            .hasMatch(value)) {
+                      return 'Enter a valid email!';
+                    }
+                    return null;
+                  }),
+                  buildTitleText(
+                    "Password",
+                    Data.lightGreyTextColor,
+                    width * 0.7,
+                  ),
+                  buildPasswordField(
+                    "Password",
+                    height,
+                    width,
+                    context,
+                    passwordController,
+                    obscureText:
+                        Provider.of<ExtraProvider>(context, listen: true)
+                            .obscureText,
+                    onPressed: () {
+                      Provider.of<ExtraProvider>(context, listen: false)
+                          .changeObscureText();
+                    },
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Enter a valid password!';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
             ),
             SizedBox(height: height * 2),
             buildButton(
@@ -125,25 +138,13 @@ class _LoginScreenState extends State<LoginScreen> {
               height,
               width,
               () {
-                // Call Login API
-                Provider.of<AuthProvider>(context, listen: false).login(
-                    init: true,
-                    username: emailController.text,
-                    password: passwordController.text);
-                // FocusScope.of(context).requestFocus(FocusNode());
-                showTopSnackBar(
-                  Overlay.of(context),
-                  const CustomSnackBar.success(
-                    message: "You have successfully logged in",
-                  ),
-                );
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Dashboard()),
-                );
-                // empty data remaining in controllers
-                emailController.clear();
-                passwordController.clear();
+                if (_formKey.currentState!.validate()) {
+                  // if validation is successful, the code within this block will be executed
+                  // Call Login API
+
+                  // FocusScope.of(context).requestFocus(FocusNode());
+                  loginLogin();
+                }
               },
               context,
             ),
@@ -198,5 +199,40 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  void loginLogin() async {
+    bool loginSuccessful =
+        await Provider.of<AuthProvider>(context, listen: false).login(
+            init: true,
+            username: emailController.text,
+            password: passwordController.text);
+    if (loginSuccessful) {
+      if (!mounted) {
+        return; // Check if the widget is still mounted
+      }
+      showTopSnackBar(
+        // ignore: use_build_context_synchronously
+        Overlay.of(context),
+        const CustomSnackBar.success(
+          message: "You have successfully logged in",
+        ),
+      );
+      Navigator.push(
+        // ignore: use_build_context_synchronously
+        context,
+        MaterialPageRoute(builder: (context) => const Dashboard()),
+      );
+    } else {
+      showTopSnackBar(
+        // ignore: use_build_context_synchronously
+        Overlay.of(context),
+        const CustomSnackBar.error(
+          message: "Please enter the correct username and password",
+        ),
+      );
+    }
+    emailController.clear();
+    passwordController.clear();
   }
 }

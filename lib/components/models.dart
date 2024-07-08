@@ -48,7 +48,7 @@ class User {
   final String email;
   final String phone;
   final String gender;
-  bool status;
+  bool blocked;
   final UserType userType;
   String? accessToken;
   User({
@@ -58,7 +58,7 @@ class User {
     required this.email,
     required this.phone,
     required this.gender,
-    required this.status,
+    required this.blocked,
     required this.userType,
     this.accessToken,
   });

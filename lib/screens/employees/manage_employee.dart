@@ -180,12 +180,12 @@ class _ManageEmployeeState extends State<ManageEmployee> {
               buildCustomText(
                 Provider.of<UserProvider>(context, listen: true)
                         .userList[index]
-                        .status
+                        .blocked
                     ? "Active"
                     : "Inactive",
                 Provider.of<UserProvider>(context, listen: true)
                         .userList[index]
-                        .status
+                        .blocked
                     ? Data.greenColor
                     : Data.redColor,
                 width,
@@ -217,9 +217,9 @@ class _ManageEmployeeState extends State<ManageEmployee> {
             width),
         buildCupertinoSwitch(
           index: index,
-          value: Provider.of<UserProvider>(context, listen: true)
+          value: !Provider.of<UserProvider>(context, listen: true)
               .userList[index]
-              .status,
+              .blocked,
           onChanged: (value) {
             Provider.of<UserProvider>(context, listen: false)
                 .changeUserStatus(index);
