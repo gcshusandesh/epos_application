@@ -297,19 +297,13 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                   Provider.of<UserProvider>(context,
                                           listen: false)
                                       .addUser(User(
-                                    id: (Provider.of<UserProvider>(context,
-                                                    listen: false)
-                                                .userList
-                                                .length +
-                                            1)
-                                        .toString(),
                                     name: nameController.text,
                                     imageUrl: "assets/profile_picture.png",
                                     email: emailController.text,
                                     // password: passwordController.text,
                                     phone: phoneController.text,
                                     gender: dropdownValue!,
-                                    blocked: true,
+                                    isBlocked: true,
                                     userType: UserType.waiter,
                                   ));
 

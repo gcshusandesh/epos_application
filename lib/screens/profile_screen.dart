@@ -288,21 +288,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         Provider.of<AuthProvider>(context,
                                                 listen: false)
                                             .updateUserDetails(User(
-                                          id: Provider.of<AuthProvider>(context,
-                                                  listen: false)
-                                              .user
-                                              .id,
                                           name: nameController.text,
                                           imageUrl:
                                               "assets/profile_picture.png",
                                           email: emailController.text,
                                           phone: phoneController.text,
                                           gender: dropdownValue!,
-                                          blocked: Provider.of<AuthProvider>(
+                                          isBlocked: Provider.of<AuthProvider>(
                                                   context,
                                                   listen: false)
                                               .user
-                                              .blocked,
+                                              .isBlocked,
                                           userType: Provider.of<AuthProvider>(
                                                   context,
                                                   listen: false)

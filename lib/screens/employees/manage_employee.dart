@@ -180,12 +180,12 @@ class _ManageEmployeeState extends State<ManageEmployee> {
               buildCustomText(
                 Provider.of<UserProvider>(context, listen: true)
                         .userList[index]
-                        .blocked
+                        .isBlocked
                     ? "Active"
                     : "Inactive",
                 Provider.of<UserProvider>(context, listen: true)
                         .userList[index]
-                        .blocked
+                        .isBlocked
                     ? Data.greenColor
                     : Data.redColor,
                 width,
@@ -219,7 +219,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
           index: index,
           value: !Provider.of<UserProvider>(context, listen: true)
               .userList[index]
-              .blocked,
+              .isBlocked,
           onChanged: (value) {
             Provider.of<UserProvider>(context, listen: false)
                 .changeUserStatus(index);

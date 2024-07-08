@@ -42,23 +42,21 @@ enum UserType {
 }
 
 class User {
-  final String id;
   final String name;
   final String imageUrl;
   final String email;
   final String phone;
   final String gender;
-  bool blocked;
+  bool isBlocked;
   final UserType userType;
   String? accessToken;
   User({
-    required this.id,
     required this.name,
     required this.imageUrl,
     required this.email,
     required this.phone,
     required this.gender,
-    required this.blocked,
+    required this.isBlocked,
     required this.userType,
     this.accessToken,
   });

@@ -7,13 +7,12 @@ import 'package:http/http.dart' as http;
 
 class AuthProvider extends ChangeNotifier {
   User user = User(
-    id: "1",
     name: "Bob Smith",
     imageUrl: "assets/profile_picture.png",
     email: "bob@gmail.com",
     phone: "+44 999999999",
     gender: "Male",
-    blocked: false,
+    isBlocked: false,
     userType: UserType.owner,
     accessToken: "placeholder",
   );
@@ -37,24 +36,21 @@ class AuthProvider extends ChangeNotifier {
       );
       final data = json.decode(response.body);
       if (response.statusCode == 200) {
-        // ignore: avoid_print
-        print(data);
-      }
-      user = User(
-        id: "1",
-        name: "Shusandesh G C",
-        imageUrl: "assets/profile_picture.png",
-        email: "shusandesh@gmail.com",
-        phone: "+44 9999999990",
-        gender: "Male",
-        blocked: false,
-        userType: UserType.chef,
-        accessToken: data["jwt"],
-      );
-      if (!init) {
-        notifyListeners();
-      }
-      if (response.statusCode == 200) {
+        final userData = data["user"];
+        user = User(
+          name: userData["name"],
+          imageUrl: "",
+          email: userData["email"],
+          phone: userData["phone"],
+          gender: userData["gender"],
+          isBlocked: userData["blocked"],
+          userType: assignUserType(userData["userType"]),
+          accessToken: data["jwt"],
+        );
+        if (!init) {
+          notifyListeners();
+        }
+        print(user);
         return true;
       } else {
         return false;
@@ -65,5 +61,9 @@ class AuthProvider extends ChangeNotifier {
       // TODO: need to handle this error
       rethrow;
     }
+  }
+
+  UserType assignUserType(String userType) {
+    return user.userType;
   }
 }

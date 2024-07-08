@@ -5,7 +5,7 @@ class UserProvider extends ChangeNotifier {
   List<User> userList = [];
 
   void changeUserStatus(int index) {
-    userList[index].blocked = !userList[index].blocked;
+    userList[index].isBlocked = !userList[index].isBlocked;
     notifyListeners();
   }
 
@@ -27,63 +27,57 @@ class UserProvider extends ChangeNotifier {
       // }
       userList = [
         User(
-          id: "1",
           name: "Shusandesh G C",
           imageUrl: "assets/profile_picture.png",
           email: "shusandesh@gmail.com",
           phone: "+44 9999999990",
           gender: "Male",
-          blocked: false,
+          isBlocked: false,
           userType: UserType.chef,
         ),
         User(
-          id: "2",
           name: "Shreen Subedi",
           imageUrl: "assets/profile_picture.png",
           email: "shreeno@gmail.com",
           phone: "+44 9999999991",
           gender: "Female",
-          blocked: false,
+          isBlocked: false,
           userType: UserType.chef,
         ),
         User(
-          id: "3",
           name: "Jayant Kundal",
           imageUrl: "assets/profile_picture.png",
           email: "kundal@gmail.com",
           phone: "+44 9999999992",
           gender: "Male",
-          blocked: false,
+          isBlocked: false,
           userType: UserType.waiter,
         ),
         User(
-          id: "4",
           name: "Rajes Shenoy",
           imageUrl: "assets/profile_picture.png",
           email: "rajes@gmail.com",
           phone: "+44 9999999993",
           gender: "Male",
-          blocked: false,
+          isBlocked: false,
           userType: UserType.waiter,
         ),
         User(
-          id: "5",
           name: "Utkarsh Bhoumick",
           imageUrl: "assets/profile_picture.png",
           email: "utki@gmail.com",
           phone: "+44 9999999994",
           gender: "Male",
-          blocked: false,
+          isBlocked: false,
           userType: UserType.waiter,
         ),
         User(
-          id: "6",
           name: "Meghna Ghosh",
           imageUrl: "assets/profile_picture.png",
           email: "meg@gmail.com",
           phone: "+44 9999999995",
           gender: "Female",
-          blocked: true,
+          isBlocked: true,
           userType: UserType.waiter,
         ),
       ];
