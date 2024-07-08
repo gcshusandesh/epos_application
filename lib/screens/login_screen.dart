@@ -1,4 +1,6 @@
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/extra_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/screens/dashboard.dart';
 import 'package:epos_application/screens/reset_password.dart';
@@ -47,6 +49,8 @@ class _LoginScreenState extends State<LoginScreen> {
     passwordController.dispose();
     super.dispose();
   }
+
+  bool obscureText = true;
 
   @override
   Widget build(BuildContext context) {
@@ -99,8 +103,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   Data.lightGreyTextColor,
                   width * 0.7,
                 ),
-                buildInputField(
-                    "Password", height, width, context, passwordController),
+                buildPasswordField(
+                  "Password",
+                  height,
+                  width,
+                  context,
+                  passwordController,
+                  obscureText: Provider.of<ExtraProvider>(context, listen: true)
+                      .obscureText,
+                  onPressed: () {
+                    Provider.of<ExtraProvider>(context, listen: false)
+                        .changeObscureText();
+                  },
+                ),
               ],
             ),
             SizedBox(height: height * 2),
@@ -110,6 +125,11 @@ class _LoginScreenState extends State<LoginScreen> {
               height,
               width,
               () {
+                // Call Login API
+                Provider.of<AuthProvider>(context, listen: false).login(
+                    init: true,
+                    username: emailController.text,
+                    password: passwordController.text);
                 // FocusScope.of(context).requestFocus(FocusNode());
                 showTopSnackBar(
                   Overlay.of(context),
@@ -121,6 +141,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   context,
                   MaterialPageRoute(builder: (context) => const Dashboard()),
                 );
+                // empty data remaining in controllers
+                emailController.clear();
+                passwordController.clear();
               },
               context,
             ),

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 class Data {
   static const appName = 'EPOS Application';
+  static const baseUrl = "https://restaurantepos.xyz";
   static const greenColor = Color(0xff22C55E);
   static const redColor = Color(0xffC52222);
   static const lightGreyBodyColor50 = Color(0xffECECEC);
@@ -47,6 +48,57 @@ Widget buildInputField(
           ),
         ),
         hintText: hintText,
+      ),
+    ),
+  );
+}
+
+Widget buildPasswordField(
+  String hintText,
+  double height,
+  double width,
+  BuildContext context,
+  TextEditingController controller, {
+  required Function() onPressed,
+  required bool obscureText,
+}) {
+  return Container(
+    height: height * 6,
+    width: width * 40,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(5.0),
+    ),
+    child: TextField(
+      cursorColor: Provider.of<InfoProvider>(context, listen: true)
+          .systemInfo
+          .primaryColor,
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Data.lightGreyBodyColor, // Custom focused border color
+            width: 1, // Custom focused border width (optional)
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Provider.of<InfoProvider>(context, listen: true)
+                .systemInfo
+                .primaryColor, // Custom focused border color
+            width: 2.0, // Custom focused border width (optional)
+          ),
+        ),
+        hintText: hintText,
+        suffixIcon: IconButton(
+          icon: Icon(
+            obscureText ? Icons.visibility_off : Icons.visibility,
+            color: Provider.of<InfoProvider>(context, listen: true)
+                .systemInfo
+                .iconsColor,
+          ),
+          onPressed: onPressed,
+        ),
       ),
     ),
   );

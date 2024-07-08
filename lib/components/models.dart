@@ -50,7 +50,7 @@ class User {
   final String gender;
   bool status;
   final UserType userType;
-
+  String? accessToken;
   User({
     required this.id,
     required this.name,
@@ -60,6 +60,7 @@ class User {
     required this.gender,
     required this.status,
     required this.userType,
+    this.accessToken,
   });
 }
 

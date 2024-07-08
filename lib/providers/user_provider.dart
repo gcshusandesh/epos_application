@@ -1,21 +1,21 @@
 import 'package:epos_application/components/models.dart';
 import 'package:flutter/material.dart';
 
-class EmployeeProvider extends ChangeNotifier {
-  List<User> employeeList = [];
+class UserProvider extends ChangeNotifier {
+  List<User> userList = [];
 
-  void changeEmployeeStatus(int index) {
-    employeeList[index].status = !employeeList[index].status;
+  void changeUserStatus(int index) {
+    userList[index].status = !userList[index].status;
     notifyListeners();
   }
 
-  void addEmployee(User employee) {
-    employeeList.add(employee);
+  void addUser(User employee) {
+    userList.add(employee);
     notifyListeners();
   }
 
-  Future<void> getEmployeeData({required bool init}) async {
-    // var url = Uri.parse("$baseUrl/api/testdatas/1");
+  Future<void> getUsersList({required bool init}) async {
+    // var url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
     try {
       // var headers = {
       //   "Accept": "application/json",
@@ -25,7 +25,7 @@ class EmployeeProvider extends ChangeNotifier {
       // if (response.statusCode == 200) {
       //   print(extractedData);
       // }
-      employeeList = [
+      userList = [
         User(
           id: "1",
           name: "Shusandesh G C",
@@ -93,6 +93,8 @@ class EmployeeProvider extends ChangeNotifier {
     } catch (e) {
       // ignore: avoid_print
       print(e);
+      // TODO: need to handle this error
+      rethrow;
     }
   }
 }

@@ -15,7 +15,7 @@ class MenuProvider extends ChangeNotifier {
   }
 
   Future<void> getSpecialsList({required bool init}) async {
-    // var url = Uri.parse("$baseUrl/api/testdatas/1");
+    // var url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
     try {
       // var headers = {
       //   "Accept": "application/json",
@@ -287,6 +287,8 @@ class MenuProvider extends ChangeNotifier {
     } catch (e) {
       // ignore: avoid_print
       print(e);
+      // TODO: need to handle this error
+      rethrow;
     }
   }
 }

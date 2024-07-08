@@ -2,8 +2,8 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
-import 'package:epos_application/providers/employee_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
+import 'package:epos_application/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -294,12 +294,12 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 () {
                                   //submit form
                                   // TODO: add form validation here
-                                  Provider.of<EmployeeProvider>(context,
+                                  Provider.of<UserProvider>(context,
                                           listen: false)
-                                      .addEmployee(User(
-                                    id: (Provider.of<EmployeeProvider>(context,
+                                      .addUser(User(
+                                    id: (Provider.of<UserProvider>(context,
                                                     listen: false)
-                                                .employeeList
+                                                .userList
                                                 .length +
                                             1)
                                         .toString(),

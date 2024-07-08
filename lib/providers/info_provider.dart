@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -33,10 +34,8 @@ class InfoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String baseUrl = "https://restaurantepos.xyz";
-
   Future<void> getTestData() async {
-    var url = Uri.parse("$baseUrl/api/testdatas/1");
+    var url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
     try {
       var headers = {
         "Accept": "application/json",
@@ -51,6 +50,8 @@ class InfoProvider extends ChangeNotifier {
     } catch (e) {
       // ignore: avoid_print
       print(e);
+      // TODO: need to handle this error
+      rethrow;
     }
   }
 }
