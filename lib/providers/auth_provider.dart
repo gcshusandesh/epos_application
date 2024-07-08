@@ -39,6 +39,7 @@ class AuthProvider extends ChangeNotifier {
         final userData = data["user"];
         user = User(
           name: userData["name"],
+          // TODO: solve image issue
           imageUrl: "",
           email: userData["email"],
           phone: userData["phone"],
