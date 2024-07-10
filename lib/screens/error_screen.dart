@@ -24,12 +24,14 @@ class ErrorScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              !isConnectedToInternet ? Icons.wifi_off : Icons.error_outline,
-              size: width * 15,
-              color: Provider.of<InfoProvider>(context, listen: true)
-                  .systemInfo
-                  .iconsColor,
+            Center(
+              child: Icon(
+                !isConnectedToInternet ? Icons.wifi_off : Icons.error_outline,
+                size: width * 15,
+                color: Provider.of<InfoProvider>(context, listen: true)
+                    .systemInfo
+                    .iconsColor,
+              ),
             ),
             SizedBox(
               height: height,
@@ -39,9 +41,17 @@ class ErrorScreen extends StatelessWidget {
                   ? "No Internet Connection"
                   : "An Error has occurred",
               Data.greyTextColor,
-              width * 5,
+              width * 3,
               textAlign: TextAlign.center,
             ),
+            !isConnectedToInternet
+                ? buildCustomText(
+                    "Please connect to the internet and try again.",
+                    Data.greyTextColor,
+                    width * 2,
+                    textAlign: TextAlign.center,
+                  )
+                : const SizedBox(),
             SizedBox(
               height: height * 10,
             ),
@@ -51,11 +61,14 @@ class ErrorScreen extends StatelessWidget {
               },
               child: Container(
                   padding: EdgeInsets.symmetric(vertical: height),
-                  margin: EdgeInsets.symmetric(
-                      horizontal: width * 5, vertical: height),
+                  margin:
+                      EdgeInsets.symmetric(horizontal: width, vertical: height),
+                  width: width * 10,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
-                    color: Data.greyTextColor,
+                    color: Provider.of<InfoProvider>(context, listen: true)
+                        .systemInfo
+                        .primaryColor,
                   ),
                   child: Center(
                       child: buildBodyText(

@@ -14,7 +14,6 @@ class ExtraProvider extends ChangeNotifier {
   bool isConnectedToInternet = true;
 
   Future<void> checkInternetConnection({required BuildContext context}) async {
-    print("checking internet");
     // check if the user is connected to the internet
     final List<ConnectivityResult> connectivityResult =
         await (Connectivity().checkConnectivity());
@@ -34,6 +33,5 @@ class ExtraProvider extends ChangeNotifier {
     } else {
       isConnectedToInternet = true;
     }
-    print("Internet status $isConnectedToInternet");
   }
 }

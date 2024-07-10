@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
+import 'package:epos_application/screens/error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -58,30 +59,22 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      // ignore: avoid_print
-      print(e);
       // TODO: need to handle this error
-      // if (e is SocketException) {
-      //   if (context.mounted) {
-      //     // Navigate to Error Page
-      //     await Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //           builder: (context) => ErrorScreen(
-      //                 hasInternet: false,
-      //               )),
-      //     );}
-      //
-      //   if (context.mounted) {
-      //     //retry api
-      //     await login(
-      //         init: false,
-      //         username: username,
-      //         password: password,
-      //         context: context);
-      //   }
-      // }
-      rethrow;
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ErrorScreen()),
+        );
+      }
+      if (context.mounted) {
+        //retry api
+        await login(
+            init: false,
+            username: username,
+            password: password,
+            context: context);
+      }
     }
   }
 
