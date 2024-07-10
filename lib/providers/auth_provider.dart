@@ -75,6 +75,7 @@ class AuthProvider extends ChangeNotifier {
             password: password,
             context: context);
       }
+      return false;
     }
   }
 
