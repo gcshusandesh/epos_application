@@ -25,7 +25,8 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> login(
       {required bool init,
       required String username,
-      required String password}) async {
+      required String password,
+      required BuildContext context}) async {
     var url = Uri.parse("${Data.baseUrl}/api/auth/local");
     try {
       Map<String, String> body = {"identifier": username, "password": password};
@@ -60,6 +61,26 @@ class AuthProvider extends ChangeNotifier {
       // ignore: avoid_print
       print(e);
       // TODO: need to handle this error
+      // if (e is SocketException) {
+      //   if (context.mounted) {
+      //     // Navigate to Error Page
+      //     await Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //           builder: (context) => ErrorScreen(
+      //                 hasInternet: false,
+      //               )),
+      //     );}
+      //
+      //   if (context.mounted) {
+      //     //retry api
+      //     await login(
+      //         init: false,
+      //         username: username,
+      //         password: password,
+      //         context: context);
+      //   }
+      // }
       rethrow;
     }
   }

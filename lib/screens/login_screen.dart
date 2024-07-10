@@ -22,6 +22,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool value = false;
+  bool isLoading = false;
 
   bool init = true;
   late double height;
@@ -131,17 +132,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
             ),
-            SizedBox(height: height * 2),
+            SizedBox(height: height),
             buildButton(
               Icons.person,
               "Log In",
               height,
               width,
-              () {
+              () async {
+                if (mounted) {
+                  await Provider.of<ExtraProvider>(context, listen: false)
+                      .checkInternetConnection(context: context);
+                }
                 if (_formKey.currentState!.validate()) {
                   // if validation is successful, the code within this block will be executed
                   // Call Login API
-
                   // FocusScope.of(context).requestFocus(FocusNode());
                   loginLogin();
                 }
@@ -204,33 +208,35 @@ class _LoginScreenState extends State<LoginScreen> {
   void loginLogin() async {
     bool loginSuccessful =
         await Provider.of<AuthProvider>(context, listen: false).login(
-            init: true,
-            username: emailController.text,
-            password: passwordController.text);
+      init: true,
+      username: emailController.text,
+      password: passwordController.text,
+      context: context,
+    );
     if (loginSuccessful) {
-      if (!mounted) {
-        return; // Check if the widget is still mounted
+      if (mounted) {
+        // Check if the widget is still mounted
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.success(
+            message: "You have successfully logged in",
+          ),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const Dashboard()),
+        );
       }
-      showTopSnackBar(
-        // ignore: use_build_context_synchronously
-        Overlay.of(context),
-        const CustomSnackBar.success(
-          message: "You have successfully logged in",
-        ),
-      );
-      Navigator.push(
-        // ignore: use_build_context_synchronously
-        context,
-        MaterialPageRoute(builder: (context) => const Dashboard()),
-      );
     } else {
-      showTopSnackBar(
-        // ignore: use_build_context_synchronously
-        Overlay.of(context),
-        const CustomSnackBar.error(
-          message: "Please enter the correct username and password",
-        ),
-      );
+      if (mounted) {
+        // Check if the widget is still mounted
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.error(
+            message: "Please enter the correct username and password",
+          ),
+        );
+      }
     }
     emailController.clear();
     passwordController.clear();
