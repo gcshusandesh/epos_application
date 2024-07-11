@@ -42,6 +42,7 @@ enum UserType {
 }
 
 class User {
+  final String? id;
   final String name;
   final String imageUrl;
   final String email;
@@ -51,6 +52,7 @@ class User {
   final UserType userType;
   String? accessToken;
   User({
+    this.id,
     required this.name,
     required this.imageUrl,
     required this.email,

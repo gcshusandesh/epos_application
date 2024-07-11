@@ -64,43 +64,26 @@ Row topSection(
 }
 
 Widget onLoading({required double width, required BuildContext context}) {
-  return ClipRRect(
-    borderRadius: BorderRadius.circular(10),
-    child: Material(
+  return Container(
+    height: width * 8,
+    width: width * 8,
+    padding: EdgeInsets.all(width * 2),
+    decoration: const BoxDecoration(
       color: Colors.white,
-      child: Container(
-        height: width * 32,
-        width: width * 32,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              offset: Offset(0, 0), //(x,y)
-              blurRadius: 6.0,
-            ),
-          ],
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey,
+          offset: Offset(0, 0), //(x,y)
+          blurRadius: 6.0,
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: width * 2,
-            ),
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(
-                  Provider.of<InfoProvider>(context, listen: true)
-                      .systemInfo
-                      .primaryColor),
-            ),
-            SizedBox(
-              height: width * 4,
-            ),
-            buildCustomText("Loading...", Colors.black, width * 3.5),
-          ],
-        ),
-      ),
+      ],
+    ),
+    child: CircularProgressIndicator(
+      valueColor: AlwaysStoppedAnimation<Color>(
+          Provider.of<InfoProvider>(context, listen: true)
+              .systemInfo
+              .primaryColor),
     ),
   );
 }
