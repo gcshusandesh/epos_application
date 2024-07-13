@@ -28,7 +28,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late double width;
 
   String? genderDropDownValue;
-  String? usertypeDropDownValue;
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
 
@@ -45,14 +44,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
 
-      init = false;
       User user = Provider.of<AuthProvider>(context, listen: false).user;
       // setting initial value as user details
       nameController.text = user.name;
       emailController.text = user.email;
       phoneController.text = user.phone;
       genderDropDownValue = user.gender;
-      usertypeDropDownValue = user.userType.name;
+      init = false;
     }
   }
 
@@ -290,22 +288,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     'Female',
                                     'Others',
                                   ],
-                                  value: genderDropDownValue!,
                                   controller: placeHolderGenderController,
-                                ),
-                                SizedBox(height: height),
-                                buildDataBoxDropDown(
-                                  context: context,
-                                  title: "User Type",
-                                  hintText: "User Type",
-                                  dataList: <String>[
-                                    UserType.owner.name,
-                                    UserType.manager.name,
-                                    UserType.chef.name,
-                                    UserType.waiter.name,
-                                  ],
-                                  value: usertypeDropDownValue!,
-                                  controller: placeHolderUserTypeController,
                                 ),
                                 SizedBox(height: height),
                                 isEditing
@@ -348,8 +331,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                     AuthProvider>(
                                                                 context,
                                                                 listen: false)
-                                                            .assignUserType(
-                                                                genderDropDownValue!),
+                                                            .user
+                                                            .userType,
                                                       ),
                                                       context: context);
                                           loaderOverlay.hide();
@@ -362,6 +345,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                     "User Details Updated Successfully",
                                               ),
                                             );
+                                            setState(() {
+                                              isEditing = false;
+                                            });
                                           } else {
                                             // show failure massage
                                             showTopSnackBar(
@@ -397,7 +383,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String title,
     required String hintText,
     required List<String> dataList,
-    required String value,
     required TextEditingController controller,
   }) {
     return dataBox(
@@ -435,10 +420,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         hint: const Text('Select'),
         dropdownColor: Colors.white,
-        value: value,
+        value: genderDropDownValue,
         onChanged: (String? newValue) {
           setState(() {
-            value = newValue!;
+            genderDropDownValue = newValue!;
           });
         },
         items: dataList.map<DropdownMenuItem<String>>((String value) {

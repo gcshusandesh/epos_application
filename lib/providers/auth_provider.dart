@@ -121,12 +121,12 @@ class AuthProvider extends ChangeNotifier {
         'Accept': 'application/json',
         'Authorization': 'Bearer ${user.accessToken!}',
       };
+      print("Gender ${editedDetails.gender}");
       Map<String, String> body = {
         "name": editedDetails.name,
         "email": editedDetails.email,
         "phone": editedDetails.phone,
         "gender": editedDetails.gender,
-        "userType": editedDetails.userType.name
       };
 
       final response = await http.put(Uri.parse(url.toString()),
