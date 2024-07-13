@@ -113,7 +113,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateUserDetails(
+  Future<bool> updateUserDetails(
       {required BuildContext context, required User editedDetails}) async {
     var url = Uri.parse("${Data.baseUrl}/api/users/${user.id}");
     try {
@@ -130,10 +130,14 @@ class AuthProvider extends ChangeNotifier {
         "userType": editedDetails.userType.name
       };
       final response = await http.put(Uri.parse(url.toString()),
-          headers: headers, body: body);
+          headers: headers, body: jsonEncode(body));
+      print("response ${response.body}");
+      print("response ${response.statusCode}");
       if (response.statusCode == 200) {
         updateUserDetailsLocally(editedDetails);
+        return true;
       }
+      return false;
     } catch (e) {
       // TODO: need to handle this error
       if (context.mounted) {
@@ -148,9 +152,10 @@ class AuthProvider extends ChangeNotifier {
         await updateUserDetails(editedDetails: editedDetails, context: context);
       }
     }
+    return false;
   }
 
-  Future<void> updateUserPassword(
+  Future<int> updateUserPassword(
       {required BuildContext context,
       required String currentPassword,
       required newPassword}) async {
@@ -162,14 +167,14 @@ class AuthProvider extends ChangeNotifier {
         'Authorization': 'Bearer ${user.accessToken!}',
       };
       Map<String, String> body = {
-        "currentPassword": "password",
-        "password": "newpassword",
-        "passwordConfirmation": "newpassword"
+        "currentPassword": currentPassword,
+        "password": newPassword,
+        "passwordConfirmation": newPassword
       };
       final response = await http.post(Uri.parse(url.toString()),
-          headers: headers, body: body);
-      final data = json.decode(response.body);
+          headers: headers, body: jsonEncode(body));
       if (response.statusCode == 200) {}
+      return response.statusCode;
     } catch (e) {
       // TODO: need to handle this error
       if (context.mounted) {
@@ -186,6 +191,7 @@ class AuthProvider extends ChangeNotifier {
             currentPassword: currentPassword,
             newPassword: newPassword);
       }
+      return 0;
     }
   }
 
