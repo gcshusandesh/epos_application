@@ -203,45 +203,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     color: Data.lightGreyBodyColor,
                                   ),
                                   child: Center(
-                                      child: ClipOval(
-                                    child: Stack(
-                                      children: [
-                                        buildImage(
-                                          Provider.of<AuthProvider>(context,
-                                                  listen: true)
-                                              .user
-                                              .imageUrl!,
-                                          width * 15,
-                                          width * 15,
-                                          networkImage: true,
-                                        ),
-                                        Align(
-                                          alignment: Alignment.bottomCenter,
-                                          child: Container(
-                                            height: width * 2.25,
-                                            // margin: EdgeInsets.only(
-                                            //     bottom: width * 0.5),
-                                            decoration: BoxDecoration(
-                                              color: Data.greenColor
-                                                  .withOpacity(0.8),
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                      Radius.circular(8)),
-                                            ),
-                                            child: Center(
-                                              child: buildSmallText(
-                                                  Provider.of<AuthProvider>(
-                                                          context,
-                                                          listen: true)
-                                                      .user
-                                                      .userType
-                                                      .name,
-                                                  Colors.white,
-                                                  width),
+                                      child: InkWell(
+                                    onTap: () {
+                                      // image picker
+                                    },
+                                    child: ClipOval(
+                                      child: Stack(
+                                        children: [
+                                          buildImage(
+                                            Provider.of<AuthProvider>(context,
+                                                    listen: true)
+                                                .user
+                                                .imageUrl!,
+                                            width * 15,
+                                            width * 15,
+                                            networkImage: true,
+                                          ),
+                                          Align(
+                                            alignment: Alignment.bottomCenter,
+                                            child: Container(
+                                              height: width * 2.25,
+                                              decoration: BoxDecoration(
+                                                color: Data.greenColor
+                                                    .withOpacity(0.8),
+                                              ),
+                                              child: Center(
+                                                child: buildSmallText(
+                                                    Provider.of<AuthProvider>(
+                                                            context,
+                                                            listen: true)
+                                                        .user
+                                                        .userType
+                                                        .name,
+                                                    Colors.white,
+                                                    width),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   )),
                                 ),
