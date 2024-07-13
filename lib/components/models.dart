@@ -42,9 +42,9 @@ enum UserType {
 }
 
 class User {
-  final String? id;
+  final int? id;
   String name;
-  String imageUrl;
+  String? imageUrl;
   String email;
   String phone;
   String gender;
@@ -54,7 +54,7 @@ class User {
   User({
     this.id,
     required this.name,
-    required this.imageUrl,
+    this.imageUrl,
     required this.email,
     required this.phone,
     required this.gender,

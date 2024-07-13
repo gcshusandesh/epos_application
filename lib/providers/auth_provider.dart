@@ -35,9 +35,8 @@ class AuthProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         final userData = data["user"];
         user = User(
+          id: userData["id"],
           name: userData["name"],
-          // TODO: solve image issue
-          imageUrl: "",
           email: userData["email"],
           phone: userData["phone"],
           gender: userData["gender"],
@@ -129,10 +128,9 @@ class AuthProvider extends ChangeNotifier {
         "gender": editedDetails.gender,
         "userType": editedDetails.userType.name
       };
+
       final response = await http.put(Uri.parse(url.toString()),
           headers: headers, body: jsonEncode(body));
-      print("response ${response.body}");
-      print("response ${response.statusCode}");
       if (response.statusCode == 200) {
         updateUserDetailsLocally(editedDetails);
         return true;

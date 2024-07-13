@@ -212,7 +212,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           Provider.of<AuthProvider>(context,
                                                   listen: true)
                                               .user
-                                              .imageUrl,
+                                              .imageUrl!,
                                           width * 15,
                                           width * 15,
                                           networkImage: true,
@@ -352,7 +352,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                 genderDropDownValue!),
                                                       ),
                                                       context: context);
-
+                                          loaderOverlay.hide();
                                           if (isUpdateSuccessful) {
                                             // show success massage
                                             showTopSnackBar(
