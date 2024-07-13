@@ -137,6 +137,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (value.isEmpty) {
                           return 'Enter a valid password!';
                         }
+                        if (value.length < 6) {
+                          return 'Must be at least 6 characters!';
+                        }
                         return null;
                       },
                     ),

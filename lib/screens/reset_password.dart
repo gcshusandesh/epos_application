@@ -54,6 +54,7 @@ class _ResetPasswordState extends State<ResetPassword> {
     super.dispose();
   }
 
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return LoaderOverlay(
@@ -106,28 +107,73 @@ class _ResetPasswordState extends State<ResetPassword> {
                 ),
                 SizedBox(height: height * 2),
                 widget.isChangePassword
-                    ? Column(
-                        children: [
-                          buildDataBox(
+                    ? Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            buildDataBox(
                               title: "Current Password",
                               controller: currentPasswordController,
-                              context: context),
-                          SizedBox(height: height * 2),
-                          buildDataBox(
+                              context: context,
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return 'Enter a valid password!';
+                                }
+                                if (value.length < 6) {
+                                  return 'Must be at least 6 characters!';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: height * 2),
+                            buildDataBox(
                               title: "New Password",
                               controller: newPasswordController,
-                              context: context),
-                          SizedBox(height: height * 2),
-                          buildDataBox(
+                              context: context,
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return 'Enter a valid password!';
+                                }
+                                if (value.length < 6) {
+                                  return 'Must be at least 6 characters!';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: height * 2),
+                            buildDataBox(
                               title: "Confirm New Password",
                               controller: newPasswordConfirmationController,
-                              context: context),
-                        ],
+                              context: context,
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return 'Enter a valid password!';
+                                }
+                                if (value.length < 6) {
+                                  return 'Must be at least 6 characters!';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
                       )
-                    : buildDataBox(
-                        title: "Email",
-                        controller: newPasswordConfirmationController,
-                        context: context),
+                    : Form(
+                        key: _formKey,
+                        child: buildDataBox(
+                          title: "Email",
+                          controller: newPasswordConfirmationController,
+                          context: context,
+                          validator: (value) {
+                            if (value.isEmpty ||
+                                !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                    .hasMatch(value)) {
+                              return 'Enter a valid email!';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
                 SizedBox(height: height * 4),
                 buildButton(
                   Icons.password,
@@ -137,57 +183,8 @@ class _ResetPasswordState extends State<ResetPassword> {
                   height,
                   width,
                   () async {
-                    final loaderOverlay = context.loaderOverlay;
-                    final overlayContext = Overlay.of(context);
-                    loaderOverlay.show();
-
-                    int passwordChangeCode =
-                        await Provider.of<AuthProvider>(context, listen: false)
-                            .updateUserPassword(
-                      context: context,
-                      currentPassword: currentPasswordController.text,
-                      newPassword: newPasswordController.text,
-                      confirmNewPassword:
-                          newPasswordConfirmationController.text,
-                    );
-
-                    loaderOverlay.hide();
-                    if (passwordChangeCode == 200) {
-                      // show success massage
-                      showTopSnackBar(
-                        overlayContext,
-                        const CustomSnackBar.success(
-                          message: "Password Updated Successfully",
-                        ),
-                      );
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                      }
-                    } else if (passwordChangeCode == 400) {
-                      // show same password massage
-                      showTopSnackBar(
-                        overlayContext,
-                        const CustomSnackBar.info(
-                          message:
-                              "New Password and Confirm New Password should be the same",
-                        ),
-                      );
-                    } else if (passwordChangeCode == 401) {
-                      // show same password massage
-                      showTopSnackBar(
-                        overlayContext,
-                        const CustomSnackBar.info(
-                          message: "Passwords do not match",
-                        ),
-                      );
-                    } else {
-                      // show failure massage
-                      showTopSnackBar(
-                        overlayContext,
-                        const CustomSnackBar.error(
-                          message: "Password Not Updated",
-                        ),
-                      );
+                    if (_formKey.currentState!.validate()) {
+                      resetLogic();
                     }
                   },
                   context,
@@ -201,10 +198,64 @@ class _ResetPasswordState extends State<ResetPassword> {
     );
   }
 
+  void resetLogic() async {
+    final loaderOverlay = context.loaderOverlay;
+    final overlayContext = Overlay.of(context);
+    loaderOverlay.show();
+    int passwordChangeCode =
+        await Provider.of<AuthProvider>(context, listen: false)
+            .updateUserPassword(
+      context: context,
+      currentPassword: currentPasswordController.text,
+      newPassword: newPasswordController.text,
+      confirmNewPassword: newPasswordConfirmationController.text,
+    );
+
+    loaderOverlay.hide();
+
+    if (passwordChangeCode == 200) {
+      // show success massage
+      showTopSnackBar(
+        overlayContext,
+        const CustomSnackBar.success(
+          message: "Password Updated Successfully",
+        ),
+      );
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } else if (passwordChangeCode == 400) {
+      // show same password massage
+      showTopSnackBar(
+        overlayContext,
+        const CustomSnackBar.error(
+          message: "New Password cannot be same as Old Password",
+        ),
+      );
+    } else if (passwordChangeCode == 401) {
+      // show same password massage
+      showTopSnackBar(
+        overlayContext,
+        const CustomSnackBar.error(
+          message: "Passwords do not match",
+        ),
+      );
+    } else {
+      // show failure massage
+      showTopSnackBar(
+        overlayContext,
+        const CustomSnackBar.error(
+          message: "Password Not Updated",
+        ),
+      );
+    }
+  }
+
   Column buildDataBox(
       {required BuildContext context,
       required String title,
-      required TextEditingController controller}) {
+      required TextEditingController controller,
+      required validator}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -226,7 +277,8 @@ class _ResetPasswordState extends State<ResetPassword> {
             ],
           ),
         ),
-        buildInputField(title, height, width, context, controller),
+        buildInputField(title, height, width, context, controller,
+            validator: validator),
       ],
     );
   }
