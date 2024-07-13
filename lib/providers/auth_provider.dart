@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
@@ -51,14 +52,34 @@ class AuthProvider extends ChangeNotifier {
       } else {
         return false;
       }
-    } catch (e) {
-      // TODO: need to handle this error
+    } on SocketException {
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ErrorScreen()),
-        );
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await login(
+            init: init,
+            username: username,
+            password: password,
+            context: context);
+      }
+      return false;
+    } catch (e) {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(),
+            ));
       }
       if (context.mounted) {
         //retry api
@@ -91,6 +112,21 @@ class AuthProvider extends ChangeNotifier {
           notifyListeners();
         }
       }
+    } on SocketException {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await getUserImage(init: init, context: context);
+      }
     } catch (e) {
       // TODO: need to handle this error
       if (context.mounted) {
@@ -121,7 +157,6 @@ class AuthProvider extends ChangeNotifier {
         'Accept': 'application/json',
         'Authorization': 'Bearer ${user.accessToken!}',
       };
-      print("Gender ${editedDetails.gender}");
       Map<String, String> body = {
         "name": editedDetails.name,
         "email": editedDetails.email,
@@ -134,6 +169,22 @@ class AuthProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         updateUserDetailsLocally(editedDetails);
         return true;
+      }
+      return false;
+    } on SocketException {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await updateUserDetails(editedDetails: editedDetails, context: context);
       }
       return false;
     } catch (e) {
@@ -156,7 +207,8 @@ class AuthProvider extends ChangeNotifier {
   Future<int> updateUserPassword(
       {required BuildContext context,
       required String currentPassword,
-      required newPassword}) async {
+      required String newPassword,
+      required String confirmNewPassword}) async {
     var url = Uri.parse("${Data.baseUrl}/api/auth/change-password");
     try {
       Map<String, String> headers = {
@@ -167,12 +219,36 @@ class AuthProvider extends ChangeNotifier {
       Map<String, String> body = {
         "currentPassword": currentPassword,
         "password": newPassword,
-        "passwordConfirmation": newPassword
+        "passwordConfirmation": confirmNewPassword
       };
       final response = await http.post(Uri.parse(url.toString()),
           headers: headers, body: jsonEncode(body));
       if (response.statusCode == 200) {}
+      if (response.statusCode == 400 &&
+          response.body.contains("Passwords do not match")) {
+        return 401;
+      }
       return response.statusCode;
+    } on SocketException {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await updateUserPassword(
+            context: context,
+            currentPassword: currentPassword,
+            newPassword: newPassword,
+            confirmNewPassword: confirmNewPassword);
+      }
+      return 0;
     } catch (e) {
       // TODO: need to handle this error
       if (context.mounted) {
@@ -187,7 +263,8 @@ class AuthProvider extends ChangeNotifier {
         await updateUserPassword(
             context: context,
             currentPassword: currentPassword,
-            newPassword: newPassword);
+            newPassword: newPassword,
+            confirmNewPassword: confirmNewPassword);
       }
       return 0;
     }

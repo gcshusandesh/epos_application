@@ -150,10 +150,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 height,
                 width,
                 () async {
-                  if (mounted) {
-                    await Provider.of<ExtraProvider>(context, listen: false)
-                        .checkInternetConnection(context: context);
-                  }
                   if (_formKey.currentState!.validate()) {
                     // if validation is successful, the code within this block will be executed
                     // Call Login API

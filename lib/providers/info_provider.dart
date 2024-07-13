@@ -1,9 +1,5 @@
-import 'dart:convert';
-
-import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class InfoProvider extends ChangeNotifier {
   RestaurantInfo restaurantInfo = RestaurantInfo(
@@ -32,26 +28,5 @@ class InfoProvider extends ChangeNotifier {
       iconsColor: const Color(0xff4071B6),
     );
     notifyListeners();
-  }
-
-  Future<void> getTestData() async {
-    var url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
-    try {
-      var headers = {
-        "Accept": "application/json",
-      };
-      var response = await http.get(url, headers: headers);
-      var extractedData = json.decode(response.body);
-      if (response.statusCode == 200) {
-        // ignore: avoid_print
-        print(extractedData);
-      }
-      notifyListeners();
-    } catch (e) {
-      // ignore: avoid_print
-      print(e);
-      // TODO: need to handle this error
-      rethrow;
-    }
   }
 }

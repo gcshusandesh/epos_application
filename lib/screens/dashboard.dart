@@ -1,7 +1,6 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
-import 'package:epos_application/providers/extra_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/providers/user_provider.dart';
 import 'package:epos_application/screens/menu/menu_page.dart';
@@ -35,10 +34,6 @@ class _DashboardState extends State<Dashboard> {
       width = SizeConfig.safeBlockHorizontal;
       // Test API Call
       // Provider.of<InfoProvider>(context, listen: false).getTestData();
-      if (mounted) {
-        await Provider.of<ExtraProvider>(context, listen: false)
-            .checkInternetConnection(context: context);
-      }
       if (mounted) {
         // Get Specials Data from API
         Provider.of<MenuProvider>(context, listen: false)

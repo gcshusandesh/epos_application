@@ -144,9 +144,12 @@ class _ResetPasswordState extends State<ResetPassword> {
                     int passwordChangeCode =
                         await Provider.of<AuthProvider>(context, listen: false)
                             .updateUserPassword(
-                                context: context,
-                                currentPassword: currentPasswordController.text,
-                                newPassword: newPasswordController.text);
+                      context: context,
+                      currentPassword: currentPasswordController.text,
+                      newPassword: newPasswordController.text,
+                      confirmNewPassword:
+                          newPasswordConfirmationController.text,
+                    );
 
                     loaderOverlay.hide();
                     if (passwordChangeCode == 200) {
@@ -166,7 +169,15 @@ class _ResetPasswordState extends State<ResetPassword> {
                         overlayContext,
                         const CustomSnackBar.info(
                           message:
-                              "New password cannot be same as old password",
+                              "New Password and Confirm New Password should be the same",
+                        ),
+                      );
+                    } else if (passwordChangeCode == 401) {
+                      // show same password massage
+                      showTopSnackBar(
+                        overlayContext,
+                        const CustomSnackBar.info(
+                          message: "Passwords do not match",
                         ),
                       );
                     } else {
