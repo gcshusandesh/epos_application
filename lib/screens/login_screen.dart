@@ -227,14 +227,9 @@ class _LoginScreenState extends State<LoginScreen> {
       password: passwordController.text,
       context: context,
     );
-    if (mounted) {
-      context.loaderOverlay.hide();
-    }
-
     if (loginSuccessful) {
       // once login is successful load the image of the user as well
       if (mounted) {
-        print("getting user image");
         await Provider.of<AuthProvider>(context, listen: false).getUserImage(
           init: true,
           context: context,
@@ -263,6 +258,9 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       }
+    }
+    if (mounted) {
+      context.loaderOverlay.hide();
     }
     emailController.clear();
     passwordController.clear();

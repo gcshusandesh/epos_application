@@ -53,7 +53,6 @@ class AuthProvider extends ChangeNotifier {
         if (!init) {
           notifyListeners();
         }
-        print(user);
         return true;
       } else {
         return false;
@@ -81,7 +80,6 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> getUserImage(
       {required bool init, required BuildContext context}) async {
-    print("getting user image API");
     var url = Uri.parse("${Data.baseUrl}/api/users/me?populate=image");
     try {
       Map<String, String> headers = {

@@ -108,18 +108,24 @@ Widget buildPasswordField(
 }
 
 Widget buildImage(
-  String asset,
+  String path,
   double height,
   double width, {
+  bool networkImage = false,
   BoxFit fit = BoxFit.fill,
 }) {
   return SizedBox(
     height: height,
     width: width,
-    child: Image.asset(
-      asset,
-      fit: fit,
-    ),
+    child: networkImage
+        ? Image.network(
+            path,
+            fit: fit,
+          )
+        : Image.asset(
+            path,
+            fit: fit,
+          ),
   );
 }
 
