@@ -18,11 +18,6 @@ class AuthProvider extends ChangeNotifier {
     accessToken: "placeholder",
   );
 
-  void updateUserDetails(User editedDetails) {
-    user = editedDetails;
-    notifyListeners();
-  }
-
   Future<bool> login(
       {required bool init,
       required String username,
@@ -109,6 +104,87 @@ class AuthProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await getUserImage(init: init, context: context);
+      }
+    }
+  }
+
+  void updateUserDetailsLocally(User editedDetails) {
+    user = editedDetails;
+    notifyListeners();
+  }
+
+  Future<void> updateUserDetails(
+      {required BuildContext context, required User editedDetails}) async {
+    var url = Uri.parse("${Data.baseUrl}/api/users/${user.id}");
+    try {
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${user.accessToken!}',
+      };
+      Map<String, String> body = {
+        "name": editedDetails.name,
+        "email": editedDetails.email,
+        "phone": editedDetails.phone,
+        "gender": editedDetails.gender,
+        "userType": editedDetails.userType.name
+      };
+      final response = await http.put(Uri.parse(url.toString()),
+          headers: headers, body: body);
+      if (response.statusCode == 200) {
+        updateUserDetailsLocally(editedDetails);
+      }
+    } catch (e) {
+      // TODO: need to handle this error
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ErrorScreen()),
+        );
+      }
+      if (context.mounted) {
+        //retry api
+        await updateUserDetails(editedDetails: editedDetails, context: context);
+      }
+    }
+  }
+
+  Future<void> updateUserPassword(
+      {required BuildContext context,
+      required String currentPassword,
+      required newPassword}) async {
+    var url = Uri.parse("${Data.baseUrl}/api/auth/change-password");
+    try {
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${user.accessToken!}',
+      };
+      Map<String, String> body = {
+        "currentPassword": "password",
+        "password": "newpassword",
+        "passwordConfirmation": "newpassword"
+      };
+      final response = await http.post(Uri.parse(url.toString()),
+          headers: headers, body: body);
+      final data = json.decode(response.body);
+      if (response.statusCode == 200) {}
+    } catch (e) {
+      // TODO: need to handle this error
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ErrorScreen()),
+        );
+      }
+      if (context.mounted) {
+        //retry api
+        await updateUserPassword(
+            context: context,
+            currentPassword: currentPassword,
+            newPassword: newPassword);
       }
     }
   }

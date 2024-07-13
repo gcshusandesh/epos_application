@@ -273,7 +273,10 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                     });
                                   },
                                   items: <String>[
-                                    UserType.values.toString(),
+                                    UserType.owner.name,
+                                    UserType.manager.name,
+                                    UserType.chef.name,
+                                    UserType.waiter.name,
                                   ].map<DropdownMenuItem<String>>(
                                       (String value) {
                                     return DropdownMenuItem<String>(

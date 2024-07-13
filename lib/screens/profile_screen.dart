@@ -3,6 +3,7 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/extra_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/screens/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late double height;
   late double width;
 
+  String? genderDropDownValue;
+  String? usertypeDropDownValue;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController currentPasswordController = TextEditingController();
+  TextEditingController newPasswordController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController placeHolderGenderController = TextEditingController();
+  TextEditingController placeHolderUserTypeController = TextEditingController();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -33,18 +44,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       width = SizeConfig.safeBlockHorizontal;
 
       init = false;
+      User user = Provider.of<AuthProvider>(context, listen: false).user;
+      // setting initial value as user details
+      nameController.text = user.name;
+      emailController.text = user.email;
+      phoneController.text = user.phone;
+      genderDropDownValue = user.gender;
+      usertypeDropDownValue = user.userType.name;
     }
   }
 
   final GlobalKey<FormState> _formKey =
       GlobalKey<FormState>(); // A key for managing the form
-
-  String? dropdownValue;
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController placeHolderController = TextEditingController();
 
   @override
   void dispose() {
@@ -52,9 +63,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     //to save memory
     nameController.dispose();
     emailController.dispose();
-    passwordController.dispose();
+    currentPasswordController.dispose();
+    newPasswordController.dispose();
     phoneController.dispose();
-    placeHolderController.dispose();
+    placeHolderGenderController.dispose();
+    placeHolderUserTypeController.dispose();
     super.dispose();
   }
 
@@ -221,12 +234,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               SizedBox(height: height),
                               dataBox(
-                                title: "Password",
-                                hintText: "Password",
+                                title: "Current Password",
+                                hintText: "Current Password",
                                 isRequired: true,
-                                controller: passwordController,
+                                controller: currentPasswordController,
                                 data: "********",
+                                isPasswordField: true,
                               ),
+                              dataBox(
+                                title: "New Password",
+                                hintText: "New Password",
+                                isRequired: true,
+                                controller: newPasswordController,
+                                data: "********",
+                                isPasswordField: true,
+                              ),
+                              SizedBox(height: height),
                               SizedBox(height: height),
                               dataBox(
                                 title: "Phone",
@@ -239,74 +262,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     .phone,
                               ),
                               SizedBox(height: height),
-                              dataBox(
+                              buildDataBoxDropDown(
+                                context: context,
                                 title: "Gender",
-                                hintText: "Phone",
-                                isRequired: true,
-                                isDropDown: true,
-                                controller: placeHolderController,
-                                data: Provider.of<AuthProvider>(context,
-                                        listen: true)
-                                    .user
-                                    .gender,
-                                dropDown: DropdownButtonFormField<String>(
-                                  padding: EdgeInsets.zero,
-                                  icon: const Icon(
-                                      Icons.arrow_drop_down_circle_outlined),
-                                  iconSize: width * 2,
-                                  iconDisabledColor: Provider.of<InfoProvider>(
-                                          context,
-                                          listen: true)
-                                      .systemInfo
-                                      .iconsColor,
-                                  iconEnabledColor: Provider.of<InfoProvider>(
-                                          context,
-                                          listen: true)
-                                      .systemInfo
-                                      .iconsColor,
-                                  decoration: InputDecoration(
-                                    enabledBorder: const OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Data
-                                            .lightGreyBodyColor, // Custom focused border color
-                                        width:
-                                            1, // Custom focused border width (optional)
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Provider.of<InfoProvider>(
-                                                context,
-                                                listen: true)
-                                            .systemInfo
-                                            .primaryColor, // Custom focused border color
-                                        width:
-                                            2.0, // Custom focused border width (optional)
-                                      ),
-                                    ),
-                                  ),
-                                  hint: const Text('Select'),
-                                  dropdownColor: Colors.white,
-                                  value: dropdownValue,
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      dropdownValue = newValue!;
-                                    });
-                                  },
-                                  items: <String>[
-                                    'Male',
-                                    'Female',
-                                    'Others',
-                                  ].map<DropdownMenuItem<String>>(
-                                      (String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(
-                                        value,
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
+                                hintText: "Gender",
+                                dataList: <String>[
+                                  'Male',
+                                  'Female',
+                                  'Others',
+                                ],
+                                value: genderDropDownValue!,
+                                controller: placeHolderGenderController,
+                              ),
+                              SizedBox(height: height),
+                              buildDataBoxDropDown(
+                                context: context,
+                                title: "User Type",
+                                hintText: "User Type",
+                                dataList: <String>[
+                                  UserType.owner.name,
+                                  UserType.manager.name,
+                                  UserType.chef.name,
+                                  UserType.waiter.name,
+                                ],
+                                value: usertypeDropDownValue!,
+                                controller: placeHolderUserTypeController,
                               ),
                               SizedBox(height: height),
                               isEditing
@@ -315,38 +295,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       "Update",
                                       height,
                                       width,
-                                      () {
+                                      () async {
                                         //submit form
                                         // TODO: add form validation here
-                                        Provider.of<AuthProvider>(context,
+                                        await Provider.of<AuthProvider>(context,
                                                 listen: false)
-                                            .updateUserDetails(User(
-                                          name: nameController.text,
-                                          imageUrl:
-                                              "assets/profile_picture.png",
-                                          email: emailController.text,
-                                          phone: phoneController.text,
-                                          gender: dropdownValue!,
-                                          isBlocked: Provider.of<AuthProvider>(
-                                                  context,
-                                                  listen: false)
-                                              .user
-                                              .isBlocked,
-                                          userType: Provider.of<AuthProvider>(
-                                                  context,
-                                                  listen: false)
-                                              .user
-                                              .userType,
-                                        ));
-
-                                        // show success massage
-                                        showTopSnackBar(
-                                          Overlay.of(context),
-                                          const CustomSnackBar.success(
-                                            message:
-                                                "User Details Updated Successfully",
-                                          ),
-                                        );
+                                            .updateUserDetails(
+                                                editedDetails: User(
+                                                  name: nameController.text,
+                                                  imageUrl:
+                                                      "assets/profile_picture.png",
+                                                  email: emailController.text,
+                                                  phone: phoneController.text,
+                                                  gender: genderDropDownValue!,
+                                                  isBlocked:
+                                                      Provider.of<AuthProvider>(
+                                                              context,
+                                                              listen: false)
+                                                          .user
+                                                          .isBlocked,
+                                                  userType:
+                                                      Provider.of<AuthProvider>(
+                                                              context,
+                                                              listen: false)
+                                                          .user
+                                                          .userType,
+                                                ),
+                                                context: context);
+                                        if (mounted) {
+                                          // show success massage
+                                          showTopSnackBar(
+                                            Overlay.of(context),
+                                            const CustomSnackBar.success(
+                                              message:
+                                                  "User Details Updated Successfully",
+                                            ),
+                                          );
+                                        }
                                       },
                                       context,
                                     )
@@ -366,10 +351,72 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Container buildDataBoxDropDown({
+    required BuildContext context,
+    required String title,
+    required String hintText,
+    required List<String> dataList,
+    required String value,
+    required TextEditingController controller,
+  }) {
+    return dataBox(
+      title: title,
+      hintText: hintText,
+      isRequired: true,
+      isDropDown: true,
+      controller: controller,
+      data: Provider.of<AuthProvider>(context, listen: true).user.gender,
+      dropDown: DropdownButtonFormField<String>(
+        padding: EdgeInsets.zero,
+        icon: const Icon(Icons.arrow_drop_down_circle_outlined),
+        iconSize: width * 2,
+        iconDisabledColor: Provider.of<InfoProvider>(context, listen: true)
+            .systemInfo
+            .iconsColor,
+        iconEnabledColor: Provider.of<InfoProvider>(context, listen: true)
+            .systemInfo
+            .iconsColor,
+        decoration: InputDecoration(
+          enabledBorder: const OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Data.lightGreyBodyColor, // Custom focused border color
+              width: 1, // Custom focused border width (optional)
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Provider.of<InfoProvider>(context, listen: true)
+                  .systemInfo
+                  .primaryColor, // Custom focused border color
+              width: 2.0, // Custom focused border width (optional)
+            ),
+          ),
+        ),
+        hint: const Text('Select'),
+        dropdownColor: Colors.white,
+        value: value,
+        onChanged: (String? newValue) {
+          setState(() {
+            value = newValue!;
+          });
+        },
+        items: dataList.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(
+              value,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   Container dataBox(
       {required String title,
       required String hintText,
       required TextEditingController controller,
+      bool isPasswordField = false,
       String data = "",
       bool isRequired = false,
       bool isDropDown = false,
@@ -411,8 +458,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 )
               : isDropDown
                   ? dropDown
-                  : buildInputField(
-                      hintText, height, width, context, controller),
+                  : isPasswordField
+                      ? buildPasswordField(
+                          "Password",
+                          height,
+                          width,
+                          context,
+                          currentPasswordController,
+                          obscureText:
+                              Provider.of<ExtraProvider>(context, listen: true)
+                                  .obscureText,
+                          onPressed: () {
+                            Provider.of<ExtraProvider>(context, listen: false)
+                                .changeObscureText();
+                          },
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Enter a valid password!';
+                            }
+                            return null;
+                          },
+                        )
+                      : buildInputField(
+                          hintText, height, width, context, controller),
         ],
       ),
     );

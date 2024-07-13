@@ -243,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
             message: "You have successfully logged in",
           ),
         );
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const Dashboard()),
         );

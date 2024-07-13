@@ -43,13 +43,13 @@ enum UserType {
 
 class User {
   final String? id;
-  final String name;
+  String name;
   String imageUrl;
-  final String email;
-  final String phone;
-  final String gender;
+  String email;
+  String phone;
+  String gender;
   bool isBlocked;
-  final UserType userType;
+  UserType userType;
   String? accessToken;
   User({
     this.id,
