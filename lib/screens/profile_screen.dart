@@ -6,7 +6,6 @@ import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/extra_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
-import 'package:epos_application/screens/login_screen.dart';
 import 'package:epos_application/screens/reset_password.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -172,19 +171,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 height * 0.8,
                                 width * 0.8,
                                 () {
-                                  // Clear navigation stack
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const LoginScreen()),
-                                      (Route<dynamic> route) => false);
-                                  //show success messsage
-                                  showTopSnackBar(
-                                    Overlay.of(context),
-                                    const CustomSnackBar.success(
-                                      message: "Logged Out Successfully",
-                                    ),
-                                  );
+                                  Provider.of<AuthProvider>(context,
+                                          listen: false)
+                                      .logout(context: context);
                                 },
                                 context: context,
                               ),

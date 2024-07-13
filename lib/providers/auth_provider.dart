@@ -4,8 +4,11 @@ import 'dart:io';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/screens/error_screen.dart';
+import 'package:epos_application/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class AuthProvider extends ChangeNotifier {
   User user = User(
@@ -94,8 +97,19 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void logout() {
+  void logout({required BuildContext context}) {
     user.isLoggedIn = false;
+    // Clear navigation stack
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (Route<dynamic> route) => false);
+    //show success messsage
+    showTopSnackBar(
+      Overlay.of(context),
+      const CustomSnackBar.success(
+        message: "Logged Out Successfully",
+      ),
+    );
   }
 
   Future<void> getUserImage(
