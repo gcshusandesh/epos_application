@@ -41,7 +41,7 @@ enum UserType {
   chef,
 }
 
-class User {
+class UserDataModel {
   final int? id;
   String name;
   String? imageUrl;
@@ -52,7 +52,8 @@ class User {
   UserType userType;
   String? accessToken;
   bool isLoggedIn;
-  User({
+
+  UserDataModel({
     this.id,
     required this.name,
     this.imageUrl,
@@ -64,6 +65,53 @@ class User {
     this.accessToken,
     this.isLoggedIn = false,
   });
+
+  static Map<String, dynamic> toMap(UserDataModel user) => {
+        'id': user.id,
+        'name': user.name,
+        'imageUrl': user.imageUrl,
+        'email': user.email,
+        'phone': user.phone,
+        'gender': user.gender,
+        'isBlocked': user.isBlocked,
+        'userType': user.userType.toString(),
+        'accessToken': user.accessToken,
+        'isLoggedIn': user.isLoggedIn,
+      };
+
+  factory UserDataModel.fromJson(Map<String, dynamic> jsonData) {
+    UserType userType;
+    try {
+      userType = UserType.values
+          .firstWhere((e) => e.toString() == jsonData['userType']);
+    } catch (e) {
+      userType = UserType.waiter; // Provide a default value here
+    }
+    return UserDataModel(
+      id: jsonData['id'],
+      name: jsonData['name'],
+      imageUrl: jsonData['imageUrl'],
+      email: jsonData['email'],
+      phone: jsonData['phone'],
+      gender: jsonData['gender'],
+      isBlocked: jsonData['isBlocked'],
+      userType: userType,
+      accessToken: jsonData['accessToken'],
+      isLoggedIn: jsonData['isLoggedIn'],
+    );
+  }
+
+  UserType assignUserType(String userType) {
+    if (userType == "owner") {
+      return UserType.owner;
+    } else if (userType == "manager") {
+      return UserType.manager;
+    } else if (userType == "waiter") {
+      return UserType.waiter;
+    } else {
+      return UserType.chef;
+    }
+  }
 }
 
 class Specials {

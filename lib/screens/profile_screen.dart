@@ -35,7 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController placeHolderUserTypeController = TextEditingController();
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
     if (init) {
       //initialize size config at the very beginning
@@ -43,13 +43,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
 
-      User user = Provider.of<AuthProvider>(context, listen: false).user;
+      UserDataModel user =
+          Provider.of<AuthProvider>(context, listen: false).user;
       // setting initial value as user details
       nameController.text = user.name;
       emailController.text = user.email;
       phoneController.text = user.phone;
       genderDropDownValue = user.gender;
       init = false;
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await authProvider.getUserDataFromSF();
     }
   }
 
@@ -299,7 +302,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                       context,
                                                       listen: false)
                                                   .updateUserDetails(
-                                                      editedDetails: User(
+                                                      editedDetails:
+                                                          UserDataModel(
                                                         name:
                                                             nameController.text,
                                                         imageUrl:

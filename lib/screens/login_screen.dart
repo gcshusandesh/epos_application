@@ -167,7 +167,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Checkbox(
-                    value: value,
+                    value: Provider.of<AuthProvider>(context, listen: true)
+                        .stayLoggedIn,
                     activeColor:
                         Provider.of<InfoProvider>(context, listen: true)
                             .systemInfo
@@ -177,9 +178,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: 1.0, color: Data.lightGreyTextColor),
                     ),
                     onChanged: (bool? changedValue) {
-                      setState(() {
-                        value = changedValue!;
-                      });
+                      Provider.of<AuthProvider>(context, listen: false)
+                          .changeStayLoggedInStatus(
+                              stayLoggedIn: changedValue!);
                     },
                   ),
                   const SizedBox(

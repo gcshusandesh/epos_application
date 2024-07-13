@@ -299,7 +299,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                   // TODO: add form validation here
                                   Provider.of<UserProvider>(context,
                                           listen: false)
-                                      .addUser(User(
+                                      .addUser(UserDataModel(
                                     name: nameController.text,
                                     imageUrl: "assets/profile_picture.png",
                                     email: emailController.text,

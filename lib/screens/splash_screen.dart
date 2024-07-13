@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/screens/dashboard.dart';
 import 'package:epos_application/screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 const int splashPageVisibilityTime = 2000;
 
@@ -24,8 +27,6 @@ class SplashScreenState extends State<SplashScreen>
 
   @override
   void initState() {
-    _navigateToHomeScreen();
-
     _controller = AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 1800),
@@ -34,6 +35,9 @@ class SplashScreenState extends State<SplashScreen>
     _controller.reverse(from: 10);
     _controller.addListener(() {
       setState(() {});
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigateToHomeScreen();
     });
     super.initState();
   }
@@ -121,14 +125,25 @@ class SplashScreenState extends State<SplashScreen>
   }
 
   void _navigateToHomeScreen() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.getUserDataFromSF();
     Timer(
       const Duration(milliseconds: splashPageVisibilityTime),
       () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
-        //this line of code crashes the app this is for test purpose
+        if (authProvider.user.isLoggedIn && authProvider.stayLoggedIn) {
+          // Automatically log in
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Dashboard()),
+          );
+        } else {
+          // Navigate to login screen
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        }
+        // This line of code crashes the app for test purposes
         // FirebaseCrashlytics.instance.crash();
       },
     );

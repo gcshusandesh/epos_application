@@ -7,26 +7,33 @@ import 'package:epos_application/screens/error_screen.dart';
 import 'package:epos_application/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class AuthProvider extends ChangeNotifier {
-  User user = User(
-    name: "Bob Smith",
-    imageUrl: "assets/profile_picture.png",
-    email: "bob@gmail.com",
-    phone: "+44 999999999",
+  UserDataModel user = UserDataModel(
+    name: "Placeholder",
+    email: "Placeholder",
+    phone: "Placeholder",
     gender: "Male",
     isBlocked: false,
     userType: UserType.owner,
-    accessToken: "placeholder",
   );
 
-  Future<bool> login(
-      {required bool init,
-      required String username,
-      required String password,
-      required BuildContext context}) async {
+  bool stayLoggedIn = false;
+
+  void changeStayLoggedInStatus({required bool stayLoggedIn}) {
+    this.stayLoggedIn = stayLoggedIn;
+    notifyListeners();
+  }
+
+  Future<bool> login({
+    required bool init,
+    required String username,
+    required String password,
+    required BuildContext context,
+  }) async {
     var url = Uri.parse("${Data.baseUrl}/api/auth/local?populate=*");
     try {
       Map<String, String> body = {"identifier": username, "password": password};
@@ -38,7 +45,7 @@ class AuthProvider extends ChangeNotifier {
       final data = json.decode(response.body);
       if (response.statusCode == 200) {
         final userData = data["user"];
-        user = User(
+        user = UserDataModel(
           id: userData["id"],
           name: userData["name"],
           email: userData["email"],
@@ -52,6 +59,7 @@ class AuthProvider extends ChangeNotifier {
         if (!init) {
           notifyListeners();
         }
+        addUserDataToSF();
         return true;
       } else {
         return false;
@@ -97,8 +105,47 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  ///cache management started
+  // save user data to cache
+  void addUserDataToSF() async {
+    if (stayLoggedIn) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String store = jsonEncode(UserDataModel.toMap(user));
+      prefs.setString("userData", store);
+      prefs.setBool("stayLoggedIn", stayLoggedIn);
+      notifyListeners();
+    }
+  }
+
+  // get user data from cache
+  Future<void> getUserDataFromSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? retrieved = prefs.getString('userData');
+    bool? retrievedStayLoggedInData = prefs.getBool('stayLoggedIn');
+
+    print('Retrieved userData: $retrieved');
+    print('Retrieved stayLoggedIn: $retrievedStayLoggedInData');
+
+    if (retrieved != null) {
+      Map<String, dynamic> decodedData = jsonDecode(retrieved);
+      user = UserDataModel.fromJson(decodedData);
+    }
+    if (retrievedStayLoggedInData != null) {
+      stayLoggedIn = prefs.getBool('stayLoggedIn')!;
+    }
+    notifyListeners();
+  }
+
+  void clearALLDataFromSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+    notifyListeners();
+  }
+
   void logout({required BuildContext context}) {
+    stayLoggedIn = false;
     user.isLoggedIn = false;
+    clearALLDataFromSF();
     // Clear navigation stack
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -162,13 +209,14 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void updateUserDetailsLocally(User editedDetails) {
+  void updateUserDetailsLocally(UserDataModel editedDetails) {
     user = editedDetails;
     notifyListeners();
   }
 
   Future<bool> updateUserDetails(
-      {required BuildContext context, required User editedDetails}) async {
+      {required BuildContext context,
+      required UserDataModel editedDetails}) async {
     var url = Uri.parse("${Data.baseUrl}/api/users/${user.id}");
     try {
       Map<String, String> headers = {
@@ -290,6 +338,14 @@ class AuthProvider extends ChangeNotifier {
   }
 
   UserType assignUserType(String userType) {
-    return user.userType;
+    if (userType == "owner") {
+      return UserType.owner;
+    } else if (userType == "manager") {
+      return UserType.manager;
+    } else if (userType == "waiter") {
+      return UserType.waiter;
+    } else {
+      return UserType.chef;
+    }
   }
 }

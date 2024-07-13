@@ -2,14 +2,14 @@ import 'package:epos_application/components/models.dart';
 import 'package:flutter/material.dart';
 
 class UserProvider extends ChangeNotifier {
-  List<User> userList = [];
+  List<UserDataModel> userList = [];
 
   void changeUserStatus(int index) {
     userList[index].isBlocked = !userList[index].isBlocked;
     notifyListeners();
   }
 
-  void addUser(User employee) {
+  void addUser(UserDataModel employee) {
     userList.add(employee);
     notifyListeners();
   }
@@ -26,7 +26,7 @@ class UserProvider extends ChangeNotifier {
       //   print(extractedData);
       // }
       userList = [
-        User(
+        UserDataModel(
           name: "Shusandesh G C",
           imageUrl: "assets/profile_picture.png",
           email: "shusandesh@gmail.com",
@@ -35,7 +35,7 @@ class UserProvider extends ChangeNotifier {
           isBlocked: false,
           userType: UserType.chef,
         ),
-        User(
+        UserDataModel(
           name: "Shreen Subedi",
           imageUrl: "assets/profile_picture.png",
           email: "shreeno@gmail.com",
@@ -44,7 +44,7 @@ class UserProvider extends ChangeNotifier {
           isBlocked: false,
           userType: UserType.chef,
         ),
-        User(
+        UserDataModel(
           name: "Jayant Kundal",
           imageUrl: "assets/profile_picture.png",
           email: "kundal@gmail.com",
@@ -53,7 +53,7 @@ class UserProvider extends ChangeNotifier {
           isBlocked: false,
           userType: UserType.waiter,
         ),
-        User(
+        UserDataModel(
           name: "Rajes Shenoy",
           imageUrl: "assets/profile_picture.png",
           email: "rajes@gmail.com",
@@ -62,7 +62,7 @@ class UserProvider extends ChangeNotifier {
           isBlocked: false,
           userType: UserType.waiter,
         ),
-        User(
+        UserDataModel(
           name: "Utkarsh Bhoumick",
           imageUrl: "assets/profile_picture.png",
           email: "utki@gmail.com",
@@ -71,7 +71,7 @@ class UserProvider extends ChangeNotifier {
           isBlocked: false,
           userType: UserType.waiter,
         ),
-        User(
+        UserDataModel(
           name: "Meghna Ghosh",
           imageUrl: "assets/profile_picture.png",
           email: "meg@gmail.com",
