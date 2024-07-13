@@ -156,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (_formKey.currentState!.validate()) {
                     // if validation is successful, the code within this block will be executed
                     // Call Login API
-                    // FocusScope.of(context).requestFocus(FocusNode());
+                    FocusScope.of(context).requestFocus(FocusNode());
                     loginLogin();
                   }
                 },

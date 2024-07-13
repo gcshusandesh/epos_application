@@ -51,6 +51,7 @@ class User {
   bool isBlocked;
   UserType userType;
   String? accessToken;
+  bool isLoggedIn;
   User({
     this.id,
     required this.name,
@@ -61,6 +62,7 @@ class User {
     required this.isBlocked,
     required this.userType,
     this.accessToken,
+    this.isLoggedIn = false,
   });
 }
 

@@ -184,6 +184,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                   width,
                   () async {
                     if (_formKey.currentState!.validate()) {
+                      FocusScope.of(context).requestFocus(FocusNode());
                       resetLogic();
                     }
                   },

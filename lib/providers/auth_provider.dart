@@ -44,6 +44,7 @@ class AuthProvider extends ChangeNotifier {
           isBlocked: userData["blocked"],
           userType: assignUserType(userData["userType"]),
           accessToken: data["jwt"],
+          isLoggedIn: true,
         );
         if (!init) {
           notifyListeners();
@@ -91,6 +92,10 @@ class AuthProvider extends ChangeNotifier {
       }
       return false;
     }
+  }
+
+  void logout() {
+    user.isLoggedIn = false;
   }
 
   Future<void> getUserImage(
