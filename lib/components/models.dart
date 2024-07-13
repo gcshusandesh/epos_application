@@ -44,7 +44,7 @@ enum UserType {
 class User {
   final String? id;
   final String name;
-  final String imageUrl;
+  String imageUrl;
   final String email;
   final String phone;
   final String gender;

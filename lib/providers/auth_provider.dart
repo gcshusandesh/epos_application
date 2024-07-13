@@ -28,7 +28,7 @@ class AuthProvider extends ChangeNotifier {
       required String username,
       required String password,
       required BuildContext context}) async {
-    var url = Uri.parse("${Data.baseUrl}/api/auth/local");
+    var url = Uri.parse("${Data.baseUrl}/api/auth/local?populate=*");
     try {
       Map<String, String> body = {"identifier": username, "password": password};
       final response = await http.post(
@@ -70,12 +70,48 @@ class AuthProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await login(
-            init: false,
+            init: init,
             username: username,
             password: password,
             context: context);
       }
       return false;
+    }
+  }
+
+  Future<void> getUserImage(
+      {required bool init, required BuildContext context}) async {
+    print("getting user image API");
+    var url = Uri.parse("${Data.baseUrl}/api/users/me?populate=image");
+    try {
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${user.accessToken!}',
+      };
+      final response =
+          await http.get(Uri.parse(url.toString()), headers: headers);
+      final data = json.decode(response.body);
+      if (response.statusCode == 200) {
+        user.imageUrl =
+            "${Data.baseUrl}${data["image"]["formats"]["small"]["url"]}";
+        if (!init) {
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      // TODO: need to handle this error
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ErrorScreen()),
+        );
+      }
+      if (context.mounted) {
+        //retry api
+        await getUserImage(init: init, context: context);
+      }
     }
   }
 
