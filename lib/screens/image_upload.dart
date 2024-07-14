@@ -1,3 +1,6 @@
+import 'dart:io' as io;
+import 'dart:io';
+
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
@@ -6,6 +9,7 @@ import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/upload_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +31,8 @@ class _ImageUploadState extends State<ImageUpload> {
   late double height;
   late double width;
   bool imageSelected = false;
-  late XFile? image;
+  late XFile? originalImage;
+  late File? compressedImage;
 
   @override
   void didChangeDependencies() async {
@@ -95,7 +100,7 @@ class _ImageUploadState extends State<ImageUpload> {
                           ],
                         ),
                         child: imageSelected
-                            ? buildImage(image!.path, height, width,
+                            ? buildImage(originalImage!.path, height, width,
                                 fileImage: true)
                             : Padding(
                                 padding: EdgeInsets.only(bottom: height * 8),
@@ -154,12 +159,19 @@ class _ImageUploadState extends State<ImageUpload> {
                                       .systemInfo
                                       .primaryColor,
                                   onTap: () async {
-                                    image = await picker.pickImage(
+                                    originalImage = await picker.pickImage(
                                         source: ImageSource.camera);
-                                    if (image != null) {
-                                      setState(() {
-                                        imageSelected = true;
-                                      });
+                                    if (originalImage != null) {
+                                      // Resize image to 700x700
+                                      compressedImage = await compressFile(
+                                          File(originalImage!.path));
+                                      if (compressedImage != null) {
+                                        setState(() {
+                                          originalImage =
+                                              XFile(compressedImage!.path);
+                                          imageSelected = true;
+                                        });
+                                      }
                                     }
                                   }),
                               SizedBox(
@@ -180,12 +192,19 @@ class _ImageUploadState extends State<ImageUpload> {
                                       .systemInfo
                                       .primaryColor,
                                   onTap: () async {
-                                    image = await picker.pickImage(
+                                    originalImage = await picker.pickImage(
                                         source: ImageSource.gallery);
-                                    if (image != null) {
-                                      setState(() {
-                                        imageSelected = true;
-                                      });
+                                    if (originalImage != null) {
+                                      // Resize image to 700x700
+                                      compressedImage = await compressFile(
+                                          File(originalImage!.path));
+                                      if (compressedImage != null) {
+                                        setState(() {
+                                          originalImage =
+                                              XFile(compressedImage!.path);
+                                          imageSelected = true;
+                                        });
+                                      }
                                     }
                                   }),
                             ],
@@ -210,7 +229,7 @@ class _ImageUploadState extends State<ImageUpload> {
                           .uploadImage(
                     user:
                         Provider.of<AuthProvider>(context, listen: false).user,
-                    incomingFilePath: image!.path,
+                    incomingFilePath: compressedImage!.path,
                     context: context,
                     isUserDP: true,
                   );
@@ -221,11 +240,10 @@ class _ImageUploadState extends State<ImageUpload> {
                       overlayContext,
                       const CustomSnackBar.error(
                         message:
-                        "Image Size is too big. Please upload a smaller image",
+                            "Image Size is too big. Please upload a smaller image",
                       ),
                     );
-                  }
-                  else if (imageUrl != null) {
+                  } else if (imageUrl != null) {
                     showTopSnackBar(
                       overlayContext,
                       const CustomSnackBar.success(
@@ -253,5 +271,14 @@ class _ImageUploadState extends State<ImageUpload> {
         ),
       ),
     );
+  }
+
+  // Function to compress the image
+  Future<File?> compressFile(File file) async {
+    img.Image? image = img.decodeImage(await file.readAsBytes());
+    img.Image resizedImage = img.copyResize(image!, width: 700, height: 700);
+    return File(
+        '${(io.Directory.systemTemp).path}/${file.path.split('/').last}')
+      ..writeAsBytesSync(img.encodeJpg(resizedImage, quality: 85));
   }
 }
