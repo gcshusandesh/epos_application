@@ -116,7 +116,7 @@ Widget buildImage(
   bool networkImage = false,
   bool fileImage = false,
   BoxFit fit = BoxFit.fill,
-  required Color? loadingColor,
+  required BuildContext context,
 }) {
   return SizedBox(
     height: height,
@@ -130,11 +130,15 @@ Widget buildImage(
               if (loadingProgress == null) return child;
               return Center(
                 child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                      : null,
-                ),
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Provider.of<InfoProvider>(context, listen: true)
+                          .systemInfo
+                          .primaryColor,
+                    )),
               );
             },
           )

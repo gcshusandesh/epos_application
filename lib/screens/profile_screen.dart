@@ -237,12 +237,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   width * 15,
                                                   width * 15,
                                                   networkImage: true,
-                                                  loadingColor:
-                                                      Provider.of<InfoProvider>(
-                                                              context,
-                                                              listen: true)
-                                                          .systemInfo
-                                                          .primaryColor,
+                                                  context: context,
                                                 ),
                                           isEditing
                                               ? Align(

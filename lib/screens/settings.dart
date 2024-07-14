@@ -318,10 +318,7 @@ class _SettingsState extends State<Settings> {
                     "assets/restaurant_image.png",
                     height * 25,
                     width * 31,
-                    loadingColor:
-                        Provider.of<InfoProvider>(context, listen: true)
-                            .systemInfo
-                            .primaryColor,
+                    context: context,
                   ),
                   SizedBox(height: height * 2),
                   dataBox(
@@ -423,9 +420,7 @@ class _SettingsState extends State<Settings> {
                   data,
                   width * 10,
                   width * 10,
-                  loadingColor: Provider.of<InfoProvider>(context, listen: true)
-                      .systemInfo
-                      .primaryColor,
+                  context: context,
                 )
               : buildCustomText(
                   data,

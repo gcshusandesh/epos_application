@@ -105,10 +105,7 @@ class _ImageUploadState extends State<ImageUpload> {
                                 height,
                                 width,
                                 fileImage: true,
-                                loadingColor: Provider.of<InfoProvider>(context,
-                                        listen: true)
-                                    .systemInfo
-                                    .primaryColor,
+                                context: context,
                               )
                             : Padding(
                                 padding: EdgeInsets.only(bottom: height * 8),

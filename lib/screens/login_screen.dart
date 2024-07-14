@@ -87,9 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 "assets/restaurant_image.png",
                 height * 25,
                 width * 30,
-                loadingColor: Provider.of<InfoProvider>(context, listen: true)
-                    .systemInfo
-                    .primaryColor,
+                context: context,
               ),
               buildTitleText(
                 "Log In",
