@@ -44,7 +44,7 @@ class UploadProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         final reply = await http.Response.fromStream(response);
         var responseData = json.decode(reply.body);
-        imageUrl = responseData[0]['url'];
+        imageUrl = "${Data.baseUrl}${responseData[0]['url']}";
         notifyListeners();
       } else if (response.statusCode == 413) {
         return "too big";

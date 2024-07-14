@@ -353,6 +353,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   void updateUserProfilePicture({required String imageUrl}) {
+    print("updated Url = $imageUrl");
     user.imageUrl = imageUrl;
     notifyListeners();
   }
