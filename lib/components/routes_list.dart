@@ -1,6 +1,7 @@
 import 'package:epos_application/screens/dashboard.dart';
 import 'package:epos_application/screens/employees/create_employee.dart';
 import 'package:epos_application/screens/employees/manage_employee.dart';
+import 'package:epos_application/screens/image_upload.dart';
 import 'package:epos_application/screens/login_screen.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';
 import 'package:epos_application/screens/menu/edit_specials.dart';
@@ -18,6 +19,7 @@ Map<String, Widget Function(BuildContext)> routes = {
   Dashboard.routeName: (ctx) => const Dashboard(),
   Settings.routeName: (ctx) => const Settings(),
   ProfileScreen.routeName: (ctx) => const ProfileScreen(),
+  ImageUpload.routeName: (ctx) => const ImageUpload(),
 
   // Analytics Section
 

@@ -6,6 +6,7 @@ import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/extra_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
+import 'package:epos_application/screens/image_upload.dart';
 import 'package:epos_application/screens/reset_password.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -196,8 +197,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   child: Center(
                                       child: InkWell(
-                                    onTap: () {
+                                    onTap: () async {
                                       // image picker
+                                      if (isEditing) {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                          builder: (context) {
+                                            return const ImageUpload();
+                                          },
+                                        ));
+                                      }
                                     },
                                     child: ClipOval(
                                       child: Stack(

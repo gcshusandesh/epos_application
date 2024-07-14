@@ -218,6 +218,47 @@ Widget textButton({
   );
 }
 
+Widget customTextButton({
+  required String text,
+  required double height,
+  required double width,
+  required double buttonWidth,
+  required Color textColor,
+  required Color buttonColor,
+  required Function() onTap,
+}) {
+  return InkWell(
+    onTap: onTap,
+    child: Container(
+      height: height * 5,
+      width: buttonWidth,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(
+          color: buttonColor, // Outline color
+          width: 0.5, // Outline width
+        ),
+        borderRadius: BorderRadius.circular(6.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25), // Shadow color
+            spreadRadius: 0, // How much the shadow spreads
+            blurRadius: 4, // How much the shadow blurs
+            offset: const Offset(0, 5), // The offset of the shadow
+          ),
+        ],
+      ),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: buildSmallText(text, textColor, width,
+              fontFamily: "RobotoMedium"),
+        ),
+      ),
+    ),
+  );
+}
+
 Widget menuOption(
     String name, String image, double height, double width, Function() onTap,
     {required BuildContext context, required int index}) {

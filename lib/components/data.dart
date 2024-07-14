@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -112,6 +114,7 @@ Widget buildImage(
   double height,
   double width, {
   bool networkImage = false,
+  bool fileImage = false,
   BoxFit fit = BoxFit.fill,
 }) {
   return SizedBox(
@@ -134,10 +137,15 @@ Widget buildImage(
               );
             },
           )
-        : Image.asset(
-            path,
-            fit: fit,
-          ),
+        : fileImage
+            ? Image.file(
+                File(path),
+                fit: fit,
+              )
+            : Image.asset(
+                path,
+                fit: fit,
+              ),
   );
 }
 
