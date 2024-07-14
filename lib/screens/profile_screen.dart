@@ -238,6 +238,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   width * 15,
                                                   networkImage: true,
                                                 ),
+                                          isEditing
+                                              ? Align(
+                                                  alignment:
+                                                      Alignment.topCenter,
+                                                  child: Container(
+                                                    height: width * 2.25,
+                                                    decoration: BoxDecoration(
+                                                      color: Provider.of<
+                                                                  InfoProvider>(
+                                                              context,
+                                                              listen: true)
+                                                          .systemInfo
+                                                          .primaryColor
+                                                          .withOpacity(0.8),
+                                                    ),
+                                                    child: Center(
+                                                      child: buildSmallText(
+                                                          "Edit",
+                                                          Colors.white,
+                                                          width),
+                                                    ),
+                                                  ),
+                                                )
+                                              : const SizedBox(),
                                           Align(
                                             alignment: Alignment.bottomCenter,
                                             child: Container(
