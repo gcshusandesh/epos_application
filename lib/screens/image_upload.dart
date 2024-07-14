@@ -100,8 +100,16 @@ class _ImageUploadState extends State<ImageUpload> {
                           ],
                         ),
                         child: imageSelected
-                            ? buildImage(originalImage!.path, height, width,
-                                fileImage: true)
+                            ? buildImage(
+                                originalImage!.path,
+                                height,
+                                width,
+                                fileImage: true,
+                                loadingColor: Provider.of<InfoProvider>(context,
+                                        listen: true)
+                                    .systemInfo
+                                    .primaryColor,
+                              )
                             : Padding(
                                 padding: EdgeInsets.only(bottom: height * 8),
                                 child: Center(

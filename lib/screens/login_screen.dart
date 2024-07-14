@@ -84,7 +84,13 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: height),
               buildImage(
-                  "assets/restaurant_image.png", height * 25, width * 30),
+                "assets/restaurant_image.png",
+                height * 25,
+                width * 30,
+                loadingColor: Provider.of<InfoProvider>(context, listen: true)
+                    .systemInfo
+                    .primaryColor,
+              ),
               buildTitleText(
                 "Log In",
                 Data.greyTextColor,

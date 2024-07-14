@@ -315,7 +315,14 @@ class _SettingsState extends State<Settings> {
               child: Column(
                 children: [
                   buildImage(
-                      "assets/restaurant_image.png", height * 25, width * 31),
+                    "assets/restaurant_image.png",
+                    height * 25,
+                    width * 31,
+                    loadingColor:
+                        Provider.of<InfoProvider>(context, listen: true)
+                            .systemInfo
+                            .primaryColor,
+                  ),
                   SizedBox(height: height * 2),
                   dataBox(
                       title: "Name",
@@ -412,7 +419,14 @@ class _SettingsState extends State<Settings> {
           buildCustomText(title, Data.lightGreyTextColor, width * 1.4,
               fontFamily: "RobotoMedium"),
           isImage
-              ? buildImage(data, width * 10, width * 10)
+              ? buildImage(
+                  data,
+                  width * 10,
+                  width * 10,
+                  loadingColor: Provider.of<InfoProvider>(context, listen: true)
+                      .systemInfo
+                      .primaryColor,
+                )
               : buildCustomText(
                   data,
                   Data.lightGreyTextColor,

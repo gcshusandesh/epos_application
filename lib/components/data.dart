@@ -116,6 +116,7 @@ Widget buildImage(
   bool networkImage = false,
   bool fileImage = false,
   BoxFit fit = BoxFit.fill,
+  required Color? loadingColor,
 }) {
   return SizedBox(
     height: height,

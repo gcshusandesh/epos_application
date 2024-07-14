@@ -2,6 +2,7 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -90,7 +91,14 @@ class _ResetPasswordState extends State<ResetPassword> {
                     ),
                   ],
                 ),
-                buildImage("assets/restaurant_image.png", 200, 300),
+                buildImage(
+                  "assets/restaurant_image.png",
+                  200,
+                  300,
+                  loadingColor: Provider.of<InfoProvider>(context, listen: true)
+                      .systemInfo
+                      .primaryColor,
+                ),
                 SizedBox(height: height * 2),
                 buildTitleText(
                   "Reset Password",
