@@ -355,10 +355,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   .updateUserDetails(
                                                       editedDetails:
                                                           UserDataModel(
+                                                        id: Provider.of<
+                                                                    AuthProvider>(
+                                                                context,
+                                                                listen: false)
+                                                            .user
+                                                            .id,
                                                         name:
                                                             nameController.text,
-                                                        imageUrl:
-                                                            "assets/profile_picture.png",
+                                                        imageUrl: Provider.of<
+                                                                    AuthProvider>(
+                                                                context,
+                                                                listen: false)
+                                                            .user
+                                                            .imageUrl,
                                                         email: emailController
                                                             .text,
                                                         phone: phoneController
@@ -377,6 +387,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                 listen: false)
                                                             .user
                                                             .userType,
+                                                        accessToken: Provider
+                                                                .of<AuthProvider>(
+                                                                    context,
+                                                                    listen:
+                                                                        false)
+                                                            .user
+                                                            .accessToken,
+                                                        isLoggedIn: Provider.of<
+                                                                    AuthProvider>(
+                                                                context,
+                                                                listen: false)
+                                                            .user
+                                                            .isLoggedIn,
                                                       ),
                                                       context: context);
                                           loaderOverlay.hide();
