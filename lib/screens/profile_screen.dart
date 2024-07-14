@@ -211,15 +211,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     child: ClipOval(
                                       child: Stack(
                                         children: [
-                                          buildImage(
-                                            Provider.of<AuthProvider>(context,
-                                                    listen: true)
-                                                .user
-                                                .imageUrl!,
-                                            width * 15,
-                                            width * 15,
-                                            networkImage: true,
-                                          ),
+                                          Provider.of<AuthProvider>(context,
+                                                          listen: true)
+                                                      .user
+                                                      .imageUrl ==
+                                                  null
+                                              ? Center(
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    size: width * 15,
+                                                    color: Provider.of<
+                                                                InfoProvider>(
+                                                            context,
+                                                            listen: true)
+                                                        .systemInfo
+                                                        .iconsColor,
+                                                  ),
+                                                )
+                                              : buildImage(
+                                                  Provider.of<AuthProvider>(
+                                                          context,
+                                                          listen: true)
+                                                      .user
+                                                      .imageUrl!,
+                                                  width * 15,
+                                                  width * 15,
+                                                  networkImage: true,
+                                                ),
                                           Align(
                                             alignment: Alignment.bottomCenter,
                                             child: Container(

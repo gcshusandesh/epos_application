@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:epos_application/components/data.dart';
@@ -7,14 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class UploadProvider extends ChangeNotifier {
-  Future<String> uploadImage({
+  Future<String?> uploadImage({
     required UserDataModel user,
     required BuildContext context,
     required String incomingFilePath,
     bool isUserDP = false,
   }) async {
     var url = "${Data.baseUrl}/api/upload";
-    String output = "";
+    String? imageUrl;
     try {
       File filePath = File(incomingFilePath);
       var stream = http.ByteStream(Stream.castFrom((filePath.openRead())));
@@ -40,16 +41,15 @@ class UploadProvider extends ChangeNotifier {
       }
 
       var response = await request.send();
-      print("status code = ${response.statusCode}");
-
       if (response.statusCode == 200) {
-        print('success');
         final reply = await http.Response.fromStream(response);
-        output = reply.body.toString();
-      } else if (response.statusCode == 401) {
-        //authentication error handling
+        var responseData = json.decode(reply.body);
+        imageUrl = responseData[0]['url'];
+        notifyListeners();
+      } else if (response.statusCode == 413) {
+        return "too big";
       }
-      notifyListeners();
+      return imageUrl;
     } on SocketException {
       if (context.mounted) {
         await Navigator.push(
@@ -68,6 +68,7 @@ class UploadProvider extends ChangeNotifier {
             incomingFilePath: incomingFilePath,
             isUserDP: isUserDP);
       }
+      return imageUrl;
     } catch (e) {
       if (context.mounted) {
         //general error handling
@@ -86,6 +87,6 @@ class UploadProvider extends ChangeNotifier {
         );
       }
     }
-    return output;
+    return imageUrl;
   }
 }

@@ -351,4 +351,9 @@ class AuthProvider extends ChangeNotifier {
       return UserType.chef;
     }
   }
+
+  void updateUserProfilePicture({required String imageUrl}) {
+    user.imageUrl = imageUrl;
+    notifyListeners();
+  }
 }

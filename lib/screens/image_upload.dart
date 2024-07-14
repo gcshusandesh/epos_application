@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class ImageUpload extends StatefulWidget {
   const ImageUpload({super.key});
@@ -203,15 +205,46 @@ class _ImageUploadState extends State<ImageUpload> {
                   final loaderOverlay = context.loaderOverlay;
                   final overlayContext = Overlay.of(context);
                   loaderOverlay.show();
-                  await Provider.of<UploadProvider>(context, listen: false)
-                      .uploadImage(
+                  String? imageUrl =
+                      await Provider.of<UploadProvider>(context, listen: false)
+                          .uploadImage(
                     user:
                         Provider.of<AuthProvider>(context, listen: false).user,
                     incomingFilePath: image!.path,
                     context: context,
                     isUserDP: true,
                   );
+                  print("imageUrl = $imageUrl");
                   loaderOverlay.hide();
+                  if (imageUrl == "too big") {
+                    showTopSnackBar(
+                      overlayContext,
+                      const CustomSnackBar.error(
+                        message:
+                        "Image Size is too big. Please upload a smaller image",
+                      ),
+                    );
+                  }
+                  else if (imageUrl != null) {
+                    showTopSnackBar(
+                      overlayContext,
+                      const CustomSnackBar.success(
+                        message: "Image Successfully Uploaded",
+                      ),
+                    );
+                    if (context.mounted) {
+                      Provider.of<AuthProvider>(context, listen: false)
+                          .updateUserProfilePicture(imageUrl: imageUrl);
+                      Navigator.pop(context);
+                    }
+                  } else {
+                    showTopSnackBar(
+                      overlayContext,
+                      const CustomSnackBar.error(
+                        message: "Image Upload failed",
+                      ),
+                    );
+                  }
                 },
                 context,
               ),
