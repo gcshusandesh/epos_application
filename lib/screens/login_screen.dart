@@ -31,12 +31,13 @@ class _LoginScreenState extends State<LoginScreen> {
   late double width;
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
     if (init) {
       //initialize size config at the very beginning
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-      super.didChangeDependencies();
+
       init = false;
     }
   }

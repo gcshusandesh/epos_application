@@ -1,15 +1,17 @@
 import 'dart:io';
 
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/screens/error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class UploadProvider extends ChangeNotifier {
-  Future<String> uploadDocuments({
-    required String accessToken,
+  Future<String> uploadImage({
+    required UserDataModel user,
     required BuildContext context,
     required String incomingFilePath,
+    bool isUserDP = false,
   }) async {
     var url = "${Data.baseUrl}/api/upload";
     String output = "";
@@ -21,7 +23,7 @@ class UploadProvider extends ChangeNotifier {
       request.headers.addAll({
         "Accept": "application/json",
         "Content-Type": "multipart/form-data",
-        "Authorization": "Bearer $accessToken"
+        "Authorization": "Bearer ${user.accessToken}"
       });
 
       request.files.add(http.MultipartFile(
@@ -31,7 +33,14 @@ class UploadProvider extends ChangeNotifier {
         filename: filePath.path.split("/").last,
       ));
 
+      if (isUserDP) {
+        request.fields['ref'] = "plugin::users-permissions.user";
+        request.fields['refId'] = "${user.id}";
+        request.fields['field'] = "image";
+      }
+
       var response = await request.send();
+      print("status code = ${response.statusCode}");
 
       if (response.statusCode == 200) {
         print('success');
@@ -53,14 +62,14 @@ class UploadProvider extends ChangeNotifier {
       }
       if (context.mounted) {
         //retry api
-        await uploadDocuments(
-            accessToken: accessToken,
+        await uploadImage(
+            user: user,
             context: context,
-            incomingFilePath: incomingFilePath);
+            incomingFilePath: incomingFilePath,
+            isUserDP: isUserDP);
       }
     } catch (e) {
       if (context.mounted) {
-        print(e);
         //general error handling
         await Navigator.push(
           context,
@@ -69,10 +78,12 @@ class UploadProvider extends ChangeNotifier {
       }
       if (context.mounted) {
         //retry api
-        await uploadDocuments(
-            accessToken: accessToken,
-            context: context,
-            incomingFilePath: incomingFilePath);
+        await uploadImage(
+          user: user,
+          context: context,
+          incomingFilePath: incomingFilePath,
+          isUserDP: isUserDP,
+        );
       }
     }
     return output;

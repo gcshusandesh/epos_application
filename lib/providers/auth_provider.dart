@@ -43,6 +43,7 @@ class AuthProvider extends ChangeNotifier {
         body: body,
       );
       final data = json.decode(response.body);
+      print("login = $data");
       if (response.statusCode == 200) {
         final userData = data["user"];
         user = UserDataModel(
@@ -59,7 +60,7 @@ class AuthProvider extends ChangeNotifier {
         if (!init) {
           notifyListeners();
         }
-        addUserDataToSF();
+        // addUserDataToSF();
         return true;
       } else {
         return false;
@@ -85,6 +86,7 @@ class AuthProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
+      print("error $e");
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
@@ -122,9 +124,9 @@ class AuthProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? retrieved = prefs.getString('userData');
     bool? retrievedStayLoggedInData = prefs.getBool('stayLoggedIn');
-
-    print('Retrieved userData: $retrieved');
-    print('Retrieved stayLoggedIn: $retrievedStayLoggedInData');
+    //
+    // print('Retrieved userData: $retrieved');
+    // print('Retrieved stayLoggedIn: $retrievedStayLoggedInData');
 
     if (retrieved != null) {
       Map<String, dynamic> decodedData = jsonDecode(retrieved);
@@ -172,8 +174,9 @@ class AuthProvider extends ChangeNotifier {
           await http.get(Uri.parse(url.toString()), headers: headers);
       final data = json.decode(response.body);
       if (response.statusCode == 200) {
-        user.imageUrl =
-            "${Data.baseUrl}${data["image"]["formats"]["small"]["url"]}";
+        user.imageUrl = data["image"] == null
+            ? null
+            : "${Data.baseUrl}${data["image"]["formats"]["small"]["url"]}";
         if (!init) {
           notifyListeners();
         }
