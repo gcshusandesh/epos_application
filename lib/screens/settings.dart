@@ -1,9 +1,13 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -35,37 +39,48 @@ class _SettingsState extends State<Settings> {
 
   bool isEditingRestaurantDetails = false;
   bool isEditingSystemSettings = false;
+  bool showColorPicker = false;
 
   @override
   void dispose() {
     super.dispose();
     isEditingRestaurantDetails = false;
     isEditingSystemSettings = false;
+    showColorPicker = false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            topSection(
-                context: context,
-                height: height,
-                text: "Settings",
-                width: width),
-            SizedBox(height: height * 2),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                leftSection(),
-                line(),
-                rightSection(),
-              ],
-            ),
-          ],
+    return LoaderOverlay(
+      useDefaultLoading: false,
+      overlayWidgetBuilder: (_) {
+        //ignored progress for the moment
+        return Center(
+          child: onLoading(width: width, context: context),
+        );
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              topSection(
+                  context: context,
+                  height: height,
+                  text: "Settings",
+                  width: width),
+              SizedBox(height: height * 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  leftSection(),
+                  line(),
+                  rightSection(),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -153,14 +168,45 @@ class _SettingsState extends State<Settings> {
                   padding: EdgeInsets.symmetric(
                       vertical: height, horizontal: width * 2),
                   color: Colors.white,
-                  child: fancyDataBox(
-                    title: "Primary Color",
-                    hasColor: true,
-                    color: Provider.of<InfoProvider>(context, listen: true)
-                        .systemInfo
-                        .primaryColor,
+                  child: InkWell(
+                    onTap: () {
+                      if (isEditingSystemSettings) {
+                        setState(() {
+                          showColorPicker = !showColorPicker;
+                        });
+                      }
+                    },
+                    child: fancyDataBox(
+                      title: "Primary Color",
+                      hasColor: true,
+                      color: Provider.of<InfoProvider>(context, listen: true)
+                          .systemInfo
+                          .primaryColor,
+                    ),
                   ),
                 ),
+                showColorPicker
+                    ? BlockPicker(
+                        pickerColor:
+                            Provider.of<InfoProvider>(context, listen: true)
+                                .systemInfo
+                                .primaryColor,
+                        onColorChanged: (Color newColor) {
+                          print("New color = $newColor");
+                          SystemInfo systemInfo =
+                              Provider.of<InfoProvider>(context, listen: false)
+                                  .systemInfo;
+                          Provider.of<InfoProvider>(context, listen: false)
+                              .updateSystemSettingsLocally(
+                                  editedSystemInfo: SystemInfo(
+                                      versionNumber: systemInfo.versionNumber,
+                                      language: systemInfo.language,
+                                      currencySymbol: systemInfo.currencySymbol,
+                                      primaryColor: newColor,
+                                      iconsColor: systemInfo.iconsColor));
+                        },
+                      )
+                    : const SizedBox(),
                 SizedBox(height: height),
                 Container(
                   width: width * 30,
@@ -198,14 +244,61 @@ class _SettingsState extends State<Settings> {
                       : "Reset Default Settings",
                   height,
                   width,
-                  () {
-                    //reset Default values
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return alert();
-                      },
-                    );
+                  () async {
+                    final loaderOverlay = context.loaderOverlay;
+                    final overlayContext = Overlay.of(context);
+                    if (isEditingSystemSettings) {
+                      loaderOverlay.show();
+                      late bool isUpdateSuccessful;
+                      // update setting to user chosen values
+                      isUpdateSuccessful = await Provider.of<InfoProvider>(
+                              context,
+                              listen: false)
+                          .updateSystemSettings(
+                        context: context,
+                        user: Provider.of<AuthProvider>(context, listen: false)
+                            .user,
+                        editedSystemInfo: SystemInfo(
+                          versionNumber:
+                              Provider.of<InfoProvider>(context, listen: false)
+                                  .systemInfo
+                                  .versionNumber,
+                          language:
+                              Provider.of<InfoProvider>(context, listen: false)
+                                  .systemInfo
+                                  .language,
+                          primaryColor: const Color(0xff179B0D),
+                          iconsColor: const Color(0xff0071B6),
+                          currencySymbol: "£",
+                        ),
+                      );
+                      loaderOverlay.hide();
+                      if (isUpdateSuccessful) {
+                        showTopSnackBar(
+                          overlayContext,
+                          const CustomSnackBar.success(
+                            message:
+                                "System settings have been updated successfully",
+                          ),
+                        );
+                      } else {
+                        showTopSnackBar(
+                          overlayContext,
+                          const CustomSnackBar.error(
+                            message:
+                                "System settings could not be updated. Please try again",
+                          ),
+                        );
+                      }
+                    } else {
+                      //reset Default values
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return alert();
+                        },
+                      );
+                    }
                   },
                   context,
                 ),
@@ -219,8 +312,13 @@ class _SettingsState extends State<Settings> {
 
   void resetDefaultSystemSettings() {
     /// reset only system settings
-    Provider.of<InfoProvider>(context, listen: false)
-        .resetDefaultSystemSettings();
+    Provider.of<InfoProvider>(context, listen: false).updateSystemSettings(
+      isDefault: true,
+      context: context,
+      user: Provider.of<AuthProvider>(context, listen: false).user,
+      editedSystemInfo:
+          Provider.of<InfoProvider>(context, listen: false).systemInfo,
+    );
   }
 
   // set up the AlertDialog
@@ -240,7 +338,13 @@ class _SettingsState extends State<Settings> {
           onTap: () {
             // reset to default
             Provider.of<InfoProvider>(context, listen: false)
-                .resetDefaultSystemSettings();
+                .updateSystemSettings(
+              isDefault: true,
+              context: context,
+              user: Provider.of<AuthProvider>(context, listen: false).user,
+              editedSystemInfo:
+                  Provider.of<InfoProvider>(context, listen: false).systemInfo,
+            );
             // pop dialog box
             Navigator.pop(context);
             showTopSnackBar(
