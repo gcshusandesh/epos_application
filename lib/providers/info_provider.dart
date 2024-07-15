@@ -120,6 +120,11 @@ class InfoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateCountryInfoLocally({required String countryInfo}) {
+    restaurantInfo.countryOfOperation = countryInfo;
+    notifyListeners();
+  }
+
   Future<bool> updateRestaurantSettings(
       {required BuildContext context,
       required UserDataModel user,

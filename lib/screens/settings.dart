@@ -1,3 +1,4 @@
+import 'package:country_picker/country_picker.dart';
 import 'package:currency_picker/currency_picker.dart';
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
@@ -5,7 +6,6 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
-import 'package:epos_application/providers/extra_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -246,7 +246,7 @@ class _SettingsState extends State<Settings> {
                   padding: EdgeInsets.symmetric(
                       vertical: height, horizontal: width * 2),
                   color: Colors.white,
-                  child: fancyDataBox(
+                  child: systemDataBox(
                     title: "Version",
                     data:
                         "#${Provider.of<InfoProvider>(context, listen: true).systemInfo.versionNumber}",
@@ -258,7 +258,7 @@ class _SettingsState extends State<Settings> {
                   padding: EdgeInsets.symmetric(
                       vertical: height, horizontal: width * 2),
                   color: Colors.white,
-                  child: fancyDataBox(
+                  child: systemDataBox(
                     title: "Language",
                     data: Provider.of<InfoProvider>(context, listen: true)
                         .systemInfo
@@ -299,7 +299,7 @@ class _SettingsState extends State<Settings> {
                         });
                       }
                     },
-                    child: fancyDataBox(
+                    child: systemDataBox(
                       title: "Primary Color",
                       hasColor: true,
                       color: Provider.of<InfoProvider>(context, listen: true)
@@ -328,7 +328,7 @@ class _SettingsState extends State<Settings> {
                         });
                       }
                     },
-                    child: fancyDataBox(
+                    child: systemDataBox(
                       title: "Icons Color",
                       hasColor: true,
                       color: Provider.of<InfoProvider>(context, listen: true)
@@ -371,7 +371,7 @@ class _SettingsState extends State<Settings> {
                     padding: EdgeInsets.symmetric(
                         vertical: height, horizontal: width * 2),
                     color: Colors.white,
-                    child: fancyDataBox(
+                    child: systemDataBox(
                       title: "Currency",
                       data: Provider.of<InfoProvider>(context, listen: true)
                           .systemInfo
@@ -529,7 +529,7 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  Row fancyDataBox({
+  Row systemDataBox({
     required String title,
     String data = "",
     bool hasColor = false,
@@ -663,6 +663,7 @@ class _SettingsState extends State<Settings> {
                     data: Provider.of<InfoProvider>(context, listen: true)
                         .restaurantInfo
                         .countryOfOperation!,
+                    isCountry: true,
                   ),
                   SizedBox(height: height),
                   dataBox(
@@ -703,7 +704,8 @@ class _SettingsState extends State<Settings> {
                                 vatNumber: vatController.text,
                                 address: addressController.text,
                                 postcode: postcodeController.text,
-                                countryOfOperation: countryController.text,
+                                countryOfOperation:
+                                    restaurantInfo.countryOfOperation,
                                 logoUrl: restaurantInfo.logoUrl,
                               ),
                             );
@@ -815,15 +817,14 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  Container formDataBox(
-      {required String title,
-      required String hintText,
-      required TextEditingController controller,
-      bool isPasswordField = false,
-      String? data = "",
-      bool isRequired = false,
-      bool isDropDown = false,
-      Widget dropDown = const SizedBox()}) {
+  Container formDataBox({
+    required String title,
+    required String hintText,
+    required TextEditingController controller,
+    bool isPasswordField = false,
+    String? data = "",
+    bool isCountry = false,
+  }) {
     return Container(
       width: width * 31,
       padding: EdgeInsets.symmetric(vertical: height, horizontal: width * 2),
@@ -831,19 +832,8 @@ class _SettingsState extends State<Settings> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              buildCustomText(title, Data.lightGreyTextColor, width * 1.4,
-                  fontFamily: "RobotoMedium"),
-              isRequired
-                  ? buildSmallText(
-                      "*",
-                      Data.redColor,
-                      width,
-                    )
-                  : const SizedBox(),
-            ],
-          ),
+          buildCustomText(title, Data.lightGreyTextColor, width * 1.4,
+              fontFamily: "RobotoMedium"),
           !isEditingRestaurantDetails
               ? Container(
                   width: width * 31,
@@ -859,31 +849,38 @@ class _SettingsState extends State<Settings> {
                       data!, Data.lightGreyTextColor, width * 1.4,
                       fontFamily: "RobotoMedium"),
                 )
-              : isDropDown
-                  ? dropDown
-                  : isPasswordField
-                      ? buildPasswordField(
-                          "Password",
-                          height,
-                          width,
-                          context,
-                          controller,
-                          obscureText:
-                              Provider.of<ExtraProvider>(context, listen: true)
-                                  .obscureText,
-                          onPressed: () {
-                            Provider.of<ExtraProvider>(context, listen: false)
-                                .changeObscureText();
+              : isCountry
+                  ? InkWell(
+                      onTap: () {
+                        return showCountryPicker(
+                          context: context,
+                          showPhoneCode: false,
+                          onSelect: (Country country) {
+                            print('Select country: ${country.name}');
+                            Provider.of<InfoProvider>(context, listen: false)
+                                .updateCountryInfoLocally(
+                                    countryInfo: country.name);
                           },
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Enter a valid password!';
-                            }
-                            return null;
-                          },
-                        )
-                      : buildInputField(
-                          hintText, height, width, context, controller),
+                        );
+                      },
+                      child: Container(
+                        width: width * 31,
+                        padding: EdgeInsets.symmetric(
+                          vertical: height,
+                          horizontal: width,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Data.lightGreyBodyColor),
+                          borderRadius: BorderRadius.circular(6.0),
+                        ),
+                        // child: buildCustomText(
+                        //     data!, Data.lightGreyTextColor, width * 1.4,
+                        //     fontFamily: "RobotoMedium"),
+                        child: Text(data!),
+                      ),
+                    )
+                  : buildInputField(
+                      hintText, height, width, context, controller),
         ],
       ),
     );
