@@ -194,7 +194,6 @@ class InfoProvider extends ChangeNotifier {
           await http.get(Uri.parse(url.toString()), headers: headers);
       final data = json.decode(response.body);
       final result = data["data"]["attributes"];
-      print("System settings = $result");
       if (response.statusCode == 200) {
         restaurantInfo = RestaurantInfo(
           name: result["name"],

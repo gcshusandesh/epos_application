@@ -1,3 +1,4 @@
+import 'package:currency_picker/currency_picker.dart';
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
@@ -315,17 +316,45 @@ class _SettingsState extends State<Settings> {
                   ),
                 ),
                 SizedBox(height: height),
-                Container(
-                  width: width * 30,
-                  padding: EdgeInsets.symmetric(
-                      vertical: height, horizontal: width * 2),
-                  color: Colors.white,
-                  child: fancyDataBox(
-                    title: "Currency",
-                    data: Provider.of<InfoProvider>(context, listen: true)
-                        .systemInfo
-                        .currencySymbol,
-                    isEditable: true,
+                InkWell(
+                  onTap: () {
+                    if (isEditingSystemSettings) {
+                      return showCurrencyPicker(
+                        context: context,
+                        showFlag: true,
+                        showCurrencyName: true,
+                        showCurrencyCode: true,
+                        onSelect: (Currency newCurrency) {
+                          final systemInfo =
+                              Provider.of<InfoProvider>(context, listen: false)
+                                  .systemInfo;
+                          // Handle currency change
+                          Provider.of<InfoProvider>(context, listen: false)
+                              .updateSystemSettingsLocally(
+                            editedSystemInfo: SystemInfo(
+                              versionNumber: systemInfo.versionNumber,
+                              language: systemInfo.language,
+                              currencySymbol: newCurrency.symbol,
+                              primaryColor: systemInfo.primaryColor,
+                              iconsColor: systemInfo.iconsColor,
+                            ),
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: Container(
+                    width: width * 30,
+                    padding: EdgeInsets.symmetric(
+                        vertical: height, horizontal: width * 2),
+                    color: Colors.white,
+                    child: fancyDataBox(
+                      title: "Currency",
+                      data: Provider.of<InfoProvider>(context, listen: true)
+                          .systemInfo
+                          .currencySymbol,
+                      isEditable: true,
+                    ),
                   ),
                 ),
                 SizedBox(height: height * 2),
@@ -369,7 +398,10 @@ class _SettingsState extends State<Settings> {
                               Provider.of<InfoProvider>(context, listen: false)
                                   .systemInfo
                                   .iconsColor,
-                          currencySymbol: "£",
+                          currencySymbol:
+                              Provider.of<InfoProvider>(context, listen: false)
+                                  .systemInfo
+                                  .currencySymbol,
                         ),
                       );
                       loaderOverlay.hide();
@@ -496,14 +528,14 @@ class _SettingsState extends State<Settings> {
             buildLine(),
           ],
         ),
-        isEditable && isEditingSystemSettings && hasColor
+        isEditable && isEditingSystemSettings
             ? label(
                 text: "edit",
                 height: height,
                 width: width,
                 labelColor: Provider.of<InfoProvider>(context, listen: false)
                     .systemInfo
-                    .primaryColor)
+                    .iconsColor)
             : const SizedBox(),
         hasColor
             ? Container(
