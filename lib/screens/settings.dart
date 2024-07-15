@@ -5,6 +5,7 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/extra_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -26,6 +27,12 @@ class _SettingsState extends State<Settings> {
   late double height;
   late double width;
 
+  TextEditingController nameController = TextEditingController();
+  TextEditingController vatController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController postcodeController = TextEditingController();
+  TextEditingController countryController = TextEditingController();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -34,6 +41,15 @@ class _SettingsState extends State<Settings> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
+
+      /// Initialise values to controllers
+      RestaurantInfo restaurantInfo =
+          Provider.of<InfoProvider>(context, listen: false).restaurantInfo;
+      nameController.text = restaurantInfo.name!;
+      vatController.text = restaurantInfo.vatNumber!;
+      addressController.text = restaurantInfo.address!;
+      postcodeController.text = restaurantInfo.postcode!;
+      countryController.text = restaurantInfo.countryOfOperation!;
       init = false;
     }
   }
@@ -143,6 +159,13 @@ class _SettingsState extends State<Settings> {
     isEditingSystemSettings = false;
     showColorPicker = false;
     _closeColorPickerOverlay();
+
+    /// dispose controllers
+    nameController.dispose();
+    vatController.dispose();
+    addressController.dispose();
+    postcodeController.dispose();
+    countryController.dispose();
   }
 
   @override
@@ -597,35 +620,50 @@ class _SettingsState extends State<Settings> {
                     context: context,
                   ),
                   SizedBox(height: height * 2),
-                  dataBox(
-                      title: "Name",
-                      data: Provider.of<InfoProvider>(context, listen: true)
-                          .restaurantInfo
-                          .name),
+                  formDataBox(
+                    title: "Name",
+                    hintText: "Name",
+                    controller: nameController,
+                    data: Provider.of<InfoProvider>(context, listen: true)
+                        .restaurantInfo
+                        .name!,
+                  ),
                   SizedBox(height: height),
-                  dataBox(
-                      title: "VAT/PAN Number",
-                      data: Provider.of<InfoProvider>(context, listen: true)
-                          .restaurantInfo
-                          .vatNumber),
+                  formDataBox(
+                    title: "VAT/PAN Number",
+                    hintText: "VAT/PAN Number",
+                    controller: vatController,
+                    data: Provider.of<InfoProvider>(context, listen: true)
+                        .restaurantInfo
+                        .vatNumber!,
+                  ),
                   SizedBox(height: height),
-                  dataBox(
-                      title: "Address",
-                      data: Provider.of<InfoProvider>(context, listen: true)
-                          .restaurantInfo
-                          .address),
+                  formDataBox(
+                    title: "Address",
+                    hintText: "Address",
+                    controller: addressController,
+                    data: Provider.of<InfoProvider>(context, listen: true)
+                        .restaurantInfo
+                        .address!,
+                  ),
                   SizedBox(height: height),
-                  dataBox(
-                      title: "Postcode",
-                      data: Provider.of<InfoProvider>(context, listen: true)
-                          .restaurantInfo
-                          .postcode),
+                  formDataBox(
+                    title: "Postcode",
+                    hintText: "Postcode",
+                    controller: postcodeController,
+                    data: Provider.of<InfoProvider>(context, listen: true)
+                        .restaurantInfo
+                        .postcode!,
+                  ),
                   SizedBox(height: height),
-                  dataBox(
-                      title: "Country of Operation",
-                      data: Provider.of<InfoProvider>(context, listen: true)
-                          .restaurantInfo
-                          .countryOfOperation),
+                  formDataBox(
+                    title: "Country of Operation",
+                    hintText: "Country of Operation",
+                    controller: countryController,
+                    data: Provider.of<InfoProvider>(context, listen: true)
+                        .restaurantInfo
+                        .countryOfOperation!,
+                  ),
                   SizedBox(height: height),
                   dataBox(
                       title: "Logo",
@@ -633,6 +671,67 @@ class _SettingsState extends State<Settings> {
                       data: Provider.of<InfoProvider>(context, listen: true)
                           .restaurantInfo
                           .logoUrl),
+                  isEditingRestaurantDetails
+                      ? buildButton(
+                          Icons.update,
+                          "Update",
+                          height,
+                          width,
+                          () async {
+                            final loaderOverlay = context.loaderOverlay;
+                            final overlayContext = Overlay.of(context);
+                            //submit form
+                            // TODO: add form validation here
+                            loaderOverlay.show();
+
+                            RestaurantInfo restaurantInfo =
+                                Provider.of<InfoProvider>(context,
+                                        listen: false)
+                                    .restaurantInfo;
+                            // update setting to user chosen values
+                            bool isUpdateSuccessful =
+                                await Provider.of<InfoProvider>(context,
+                                        listen: false)
+                                    .updateRestaurantSettings(
+                              context: context,
+                              user: Provider.of<AuthProvider>(context,
+                                      listen: false)
+                                  .user,
+                              editedRestaurantInfo: RestaurantInfo(
+                                name: nameController.text,
+                                imageUrl: restaurantInfo.imageUrl,
+                                vatNumber: vatController.text,
+                                address: addressController.text,
+                                postcode: postcodeController.text,
+                                countryOfOperation: countryController.text,
+                                logoUrl: restaurantInfo.logoUrl,
+                              ),
+                            );
+                            loaderOverlay.hide();
+                            if (isUpdateSuccessful) {
+                              // show success massage
+                              showTopSnackBar(
+                                overlayContext,
+                                const CustomSnackBar.success(
+                                  message: "User Details Updated Successfully",
+                                ),
+                              );
+                              setState(() {
+                                isEditingRestaurantDetails = false;
+                              });
+                            } else {
+                              // show failure massage
+                              showTopSnackBar(
+                                overlayContext,
+                                const CustomSnackBar.error(
+                                  message: "User Details not updated",
+                                ),
+                              );
+                            }
+                          },
+                          context,
+                        )
+                      : const SizedBox(),
                 ],
               ),
             ),
@@ -711,6 +810,80 @@ class _SettingsState extends State<Settings> {
                   Data.lightGreyTextColor,
                   width,
                 ),
+        ],
+      ),
+    );
+  }
+
+  Container formDataBox(
+      {required String title,
+      required String hintText,
+      required TextEditingController controller,
+      bool isPasswordField = false,
+      String? data = "",
+      bool isRequired = false,
+      bool isDropDown = false,
+      Widget dropDown = const SizedBox()}) {
+    return Container(
+      width: width * 31,
+      padding: EdgeInsets.symmetric(vertical: height, horizontal: width * 2),
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              buildCustomText(title, Data.lightGreyTextColor, width * 1.4,
+                  fontFamily: "RobotoMedium"),
+              isRequired
+                  ? buildSmallText(
+                      "*",
+                      Data.redColor,
+                      width,
+                    )
+                  : const SizedBox(),
+            ],
+          ),
+          !isEditingRestaurantDetails
+              ? Container(
+                  width: width * 31,
+                  padding: EdgeInsets.symmetric(
+                    vertical: height,
+                    horizontal: width,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Data.lightGreyBodyColor),
+                    borderRadius: BorderRadius.circular(6.0),
+                  ),
+                  child: buildCustomText(
+                      data!, Data.lightGreyTextColor, width * 1.4,
+                      fontFamily: "RobotoMedium"),
+                )
+              : isDropDown
+                  ? dropDown
+                  : isPasswordField
+                      ? buildPasswordField(
+                          "Password",
+                          height,
+                          width,
+                          context,
+                          controller,
+                          obscureText:
+                              Provider.of<ExtraProvider>(context, listen: true)
+                                  .obscureText,
+                          onPressed: () {
+                            Provider.of<ExtraProvider>(context, listen: false)
+                                .changeObscureText();
+                          },
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Enter a valid password!';
+                            }
+                            return null;
+                          },
+                        )
+                      : buildInputField(
+                          hintText, height, width, context, controller),
         ],
       ),
     );

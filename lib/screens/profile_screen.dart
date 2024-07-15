@@ -349,6 +349,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           //submit form
                                           // TODO: add form validation here
                                           loaderOverlay.show();
+
+                                          UserDataModel user =
+                                              Provider.of<AuthProvider>(context,
+                                                      listen: false)
+                                                  .user;
                                           bool isUpdateSuccessful =
                                               await Provider.of<AuthProvider>(
                                                       context,
@@ -356,51 +361,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   .updateUserDetails(
                                                       editedDetails:
                                                           UserDataModel(
-                                                        id: Provider.of<
-                                                                    AuthProvider>(
-                                                                context,
-                                                                listen: false)
-                                                            .user
-                                                            .id,
+                                                        id: user.id,
                                                         name:
                                                             nameController.text,
-                                                        imageUrl: Provider.of<
-                                                                    AuthProvider>(
-                                                                context,
-                                                                listen: false)
-                                                            .user
-                                                            .imageUrl,
+                                                        imageUrl: user.imageUrl,
                                                         email: emailController
                                                             .text,
                                                         phone: phoneController
                                                             .text,
                                                         gender:
                                                             genderDropDownValue!,
-                                                        isBlocked: Provider.of<
-                                                                    AuthProvider>(
-                                                                context,
-                                                                listen: false)
-                                                            .user
-                                                            .isBlocked,
-                                                        userType: Provider.of<
-                                                                    AuthProvider>(
-                                                                context,
-                                                                listen: false)
-                                                            .user
-                                                            .userType,
-                                                        accessToken: Provider
-                                                                .of<AuthProvider>(
-                                                                    context,
-                                                                    listen:
-                                                                        false)
-                                                            .user
-                                                            .accessToken,
-                                                        isLoggedIn: Provider.of<
-                                                                    AuthProvider>(
-                                                                context,
-                                                                listen: false)
-                                                            .user
-                                                            .isLoggedIn,
+                                                        isBlocked:
+                                                            user.isBlocked,
+                                                        userType: user.userType,
+                                                        accessToken:
+                                                            user.accessToken,
+                                                        isLoggedIn:
+                                                            user.isLoggedIn,
                                                       ),
                                                       context: context);
                                           loaderOverlay.hide();

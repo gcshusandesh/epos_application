@@ -76,7 +76,6 @@ class InfoProvider extends ChangeNotifier {
       final response = await http.put(Uri.parse(url.toString()),
           headers: headers, body: jsonEncode(payloadBody));
       if (response.statusCode == 200) {
-        print("body = ${response.body}");
         return true;
       }
       return false;
@@ -115,11 +114,17 @@ class InfoProvider extends ChangeNotifier {
     return false;
   }
 
+  void updateRestaurantInfoLocally(
+      {required RestaurantInfo editedRestaurantInfo}) {
+    restaurantInfo = editedRestaurantInfo;
+    notifyListeners();
+  }
+
   Future<bool> updateRestaurantSettings(
       {required BuildContext context,
       required UserDataModel user,
       required RestaurantInfo editedRestaurantInfo}) async {
-    var url = Uri.parse("${Data.baseUrl}/api/users/${user.id}");
+    var url = Uri.parse("${Data.baseUrl}/api/setting");
     try {
       Map<String, String> headers = {
         'Content-Type': 'application/json',
@@ -131,16 +136,16 @@ class InfoProvider extends ChangeNotifier {
         "vat": editedRestaurantInfo.vatNumber!,
         "address": editedRestaurantInfo.address!,
         "postcode": editedRestaurantInfo.postcode!,
-        "country": editedRestaurantInfo.name!,
+        "country": editedRestaurantInfo.countryOfOperation!,
       };
 
-      Map<String, String> payloadBody = {
-        "data": jsonEncode(body),
+      Map<String, dynamic> payloadBody = {
+        "data": body,
       };
-
       final response = await http.put(Uri.parse(url.toString()),
           headers: headers, body: jsonEncode(payloadBody));
       if (response.statusCode == 200) {
+        updateRestaurantInfoLocally(editedRestaurantInfo: editedRestaurantInfo);
         return true;
       }
       return false;
@@ -233,7 +238,6 @@ class InfoProvider extends ChangeNotifier {
         await getSettings(context: context);
       }
     } catch (e) {
-      // TODO: need to handle this error
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
