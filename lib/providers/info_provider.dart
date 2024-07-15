@@ -28,7 +28,7 @@ class InfoProvider extends ChangeNotifier {
 
   void resetDefaultSystemSettingsLocally() {
     systemInfo = SystemInfo(
-      versionNumber: "X.X.X",
+      versionNumber: "1.0.0",
       language: "English",
       currencySymbol: "£",
       primaryColor: const Color(0xff063B9D),
