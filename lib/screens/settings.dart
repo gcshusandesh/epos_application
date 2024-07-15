@@ -37,9 +37,99 @@ class _SettingsState extends State<Settings> {
     }
   }
 
+  OverlayEntry? _overlayEntry;
+
+  // Method to build the color picker overlay
+  void _buildColorPickerOverlay(BuildContext context) {
+    final systemInfo =
+        Provider.of<InfoProvider>(context, listen: false).systemInfo;
+
+    _overlayEntry = OverlayEntry(
+      builder: (BuildContext context) => Stack(
+        children: [
+          // Modal barrier to prevent interaction with underlying content
+          const ModalBarrier(
+            color: Colors.black54, // Semi-transparent black color
+            dismissible: false, // Prevents dismissing overlay with taps
+          ),
+          Center(
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                width: width * 20,
+                padding: EdgeInsets.all(width * 2),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.25),
+                      spreadRadius: 0,
+                      blurRadius: 4,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    BlockPicker(
+                      pickerColor: systemInfo.primaryColor,
+                      onColorChanged: (Color newColor) {
+                        // Handle color change
+                        Provider.of<InfoProvider>(context, listen: false)
+                            .updateSystemSettingsLocally(
+                          editedSystemInfo: SystemInfo(
+                            versionNumber: systemInfo.versionNumber,
+                            language: systemInfo.language,
+                            currencySymbol: systemInfo.currencySymbol,
+                            primaryColor: newColor,
+                            iconsColor: systemInfo.iconsColor,
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    Align(
+                      alignment: Alignment.center,
+                      child: textButton(
+                          text: "Confirm",
+                          height: height,
+                          width: width,
+                          textColor:
+                              Provider.of<InfoProvider>(context, listen: true)
+                                  .systemInfo
+                                  .primaryColor,
+                          buttonColor:
+                              Provider.of<InfoProvider>(context, listen: true)
+                                  .systemInfo
+                                  .primaryColor,
+                          onTap: () {
+                            _closeColorPickerOverlay();
+                          }),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
   bool isEditingRestaurantDetails = false;
   bool isEditingSystemSettings = false;
   bool showColorPicker = false;
+
+  // Function to close the color picker overlay
+  void _closeColorPickerOverlay() {
+    _overlayEntry?.remove(); // Remove overlay entry from the overlay
+    _overlayEntry = null; // Set overlay entry to null to release resources
+  }
 
   @override
   void dispose() {
@@ -47,6 +137,7 @@ class _SettingsState extends State<Settings> {
     isEditingRestaurantDetails = false;
     isEditingSystemSettings = false;
     showColorPicker = false;
+    _closeColorPickerOverlay();
   }
 
   @override
@@ -172,7 +263,11 @@ class _SettingsState extends State<Settings> {
                     onTap: () {
                       if (isEditingSystemSettings) {
                         setState(() {
-                          showColorPicker = !showColorPicker;
+                          if (isEditingSystemSettings) {
+                            _buildColorPickerOverlay(context);
+                          } else {
+                            _overlayEntry?.remove();
+                          }
                         });
                       }
                     },
@@ -185,28 +280,6 @@ class _SettingsState extends State<Settings> {
                     ),
                   ),
                 ),
-                showColorPicker
-                    ? BlockPicker(
-                        pickerColor:
-                            Provider.of<InfoProvider>(context, listen: true)
-                                .systemInfo
-                                .primaryColor,
-                        onColorChanged: (Color newColor) {
-                          print("New color = $newColor");
-                          SystemInfo systemInfo =
-                              Provider.of<InfoProvider>(context, listen: false)
-                                  .systemInfo;
-                          Provider.of<InfoProvider>(context, listen: false)
-                              .updateSystemSettingsLocally(
-                                  editedSystemInfo: SystemInfo(
-                                      versionNumber: systemInfo.versionNumber,
-                                      language: systemInfo.language,
-                                      currencySymbol: systemInfo.currencySymbol,
-                                      primaryColor: newColor,
-                                      iconsColor: systemInfo.iconsColor));
-                        },
-                      )
-                    : const SizedBox(),
                 SizedBox(height: height),
                 Container(
                   width: width * 30,
