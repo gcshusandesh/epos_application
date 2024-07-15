@@ -29,14 +29,23 @@ class _LoginScreenState extends State<LoginScreen> {
   bool init = true;
   late double height;
   late double width;
+
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
     if (init) {
       //initialize size config at the very beginning
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
+      final loaderOverlay = context.loaderOverlay;
+
+      // loaderOverlay.show();
+
+      await Provider.of<InfoProvider>(context, listen: false).getSettings(
+        context: context,
+      );
+      // loaderOverlay.hide();
 
       init = false;
     }
@@ -77,8 +86,9 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               buildTitleText(
                 Provider.of<InfoProvider>(context, listen: false)
-                    .restaurantInfo
-                    .name,
+                        .restaurantInfo
+                        .name ??
+                    "EPOS System",
                 Data.greyTextColor,
                 width,
               ),

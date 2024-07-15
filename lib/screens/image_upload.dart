@@ -238,7 +238,6 @@ class _ImageUploadState extends State<ImageUpload> {
                     context: context,
                     isUserDP: true,
                   );
-                  print("imageUrl = $imageUrl");
                   loaderOverlay.hide();
                   if (imageUrl == "too big") {
                     showTopSnackBar(

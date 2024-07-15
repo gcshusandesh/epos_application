@@ -43,7 +43,6 @@ class AuthProvider extends ChangeNotifier {
         body: body,
       );
       final data = json.decode(response.body);
-      print("login = $data");
       if (response.statusCode == 200) {
         final userData = data["user"];
         user = UserDataModel(
@@ -86,7 +85,6 @@ class AuthProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
-      print("error $e");
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
@@ -353,7 +351,6 @@ class AuthProvider extends ChangeNotifier {
   }
 
   void updateUserProfilePicture({required String imageUrl}) {
-    print("updated Url = $imageUrl");
     user.imageUrl = imageUrl;
     notifyListeners();
   }

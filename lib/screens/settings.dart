@@ -63,7 +63,7 @@ class _SettingsState extends State<Settings> {
 
   Container line() {
     return Container(
-      height: height * 80,
+      height: height * 78,
       width: 1,
       color: Colors.black,
     );
@@ -71,7 +71,7 @@ class _SettingsState extends State<Settings> {
 
   Container rightSection() {
     return Container(
-      height: height * 80,
+      height: height * 78,
       width: width * 35,
       padding:
           EdgeInsets.symmetric(vertical: height * 2, horizontal: width * 2),
@@ -199,6 +199,12 @@ class _SettingsState extends State<Settings> {
     );
   }
 
+  void resetDefaultSystemSettings() {
+    /// reset only system settings
+    Provider.of<InfoProvider>(context, listen: false)
+        .resetDefaultSystemSettings();
+  }
+
   // set up the AlertDialog
   Widget alert() {
     return AlertDialog(
@@ -290,7 +296,7 @@ class _SettingsState extends State<Settings> {
 
   Container leftSection() {
     return Container(
-      height: height * 80,
+      height: height * 78,
       width: width * 35,
       padding:
           EdgeInsets.symmetric(vertical: height * 2, horizontal: width * 2),
@@ -356,7 +362,7 @@ class _SettingsState extends State<Settings> {
                       isImage: true,
                       data: Provider.of<InfoProvider>(context, listen: true)
                           .restaurantInfo
-                          .logoUrl),
+                          .logoUrl!),
                 ],
               ),
             ),
@@ -403,7 +409,7 @@ class _SettingsState extends State<Settings> {
 
   Container dataBox({
     required String title,
-    required String data,
+    required String? data,
     bool isImage = false,
   }) {
     return Container(
@@ -416,14 +422,22 @@ class _SettingsState extends State<Settings> {
           buildCustomText(title, Data.lightGreyTextColor, width * 1.4,
               fontFamily: "RobotoMedium"),
           isImage
-              ? buildImage(
-                  data,
-                  width * 10,
-                  width * 10,
-                  context: context,
-                )
+              ? data == null
+                  ? Icon(
+                      Icons.no_photography_outlined,
+                      size: width * 10,
+                      color: Provider.of<InfoProvider>(context, listen: true)
+                          .systemInfo
+                          .iconsColor,
+                    )
+                  : buildImage(
+                      data,
+                      width * 10,
+                      width * 10,
+                      context: context,
+                    )
               : buildCustomText(
-                  data,
+                  data ?? "",
                   Data.lightGreyTextColor,
                   width,
                 ),

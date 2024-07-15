@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 
 class RestaurantInfo {
-  final String name;
-  final String vatNumber;
-  final String address;
-  final String postcode;
-  final String countryOfOperation;
-  final String logoUrl;
+  String? name;
+  String? imageUrl;
+  String? vatNumber;
+  String? address;
+  String? postcode;
+  String? countryOfOperation;
+  String? logoUrl;
 
   RestaurantInfo({
     required this.name,
+    required this.imageUrl,
     required this.vatNumber,
     required this.address,
     required this.postcode,
@@ -19,9 +21,9 @@ class RestaurantInfo {
 }
 
 class SystemInfo {
-  final String versionNumber;
-  final String language;
-  final String currencySymbol;
+  String versionNumber;
+  String language;
+  String currencySymbol;
   Color primaryColor;
   Color iconsColor;
 
@@ -115,8 +117,8 @@ class UserDataModel {
 }
 
 class Specials {
-  final String name;
-  final String image;
+  String name;
+  String image;
   bool status;
 
   Specials({
@@ -127,8 +129,8 @@ class Specials {
 }
 
 class Category {
-  final String name;
-  final String image;
+  String name;
+  String image;
   bool status;
   bool isSelected = false;
 
@@ -149,11 +151,11 @@ class MenuItemsByCategory {
 }
 
 class MenuItems {
-  final String name;
-  final String image;
-  final String description;
-  final String ingredients;
-  final int price;
+  String name;
+  String image;
+  String description;
+  String ingredients;
+  int price;
   bool status;
 
   MenuItems({
