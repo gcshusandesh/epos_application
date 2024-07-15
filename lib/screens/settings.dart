@@ -281,6 +281,7 @@ class _SettingsState extends State<Settings> {
                       color: Provider.of<InfoProvider>(context, listen: true)
                           .systemInfo
                           .primaryColor,
+                      isEditable: true,
                     ),
                   ),
                 ),
@@ -309,6 +310,7 @@ class _SettingsState extends State<Settings> {
                       color: Provider.of<InfoProvider>(context, listen: true)
                           .systemInfo
                           .iconsColor,
+                      isEditable: true,
                     ),
                   ),
                 ),
@@ -323,6 +325,7 @@ class _SettingsState extends State<Settings> {
                     data: Provider.of<InfoProvider>(context, listen: true)
                         .systemInfo
                         .currencySymbol,
+                    isEditable: true,
                   ),
                 ),
                 SizedBox(height: height * 2),
@@ -476,6 +479,7 @@ class _SettingsState extends State<Settings> {
     String data = "",
     bool hasColor = false,
     Color color = Colors.black,
+    bool isEditable = false,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -492,6 +496,15 @@ class _SettingsState extends State<Settings> {
             buildLine(),
           ],
         ),
+        isEditable && isEditingSystemSettings && hasColor
+            ? label(
+                text: "edit",
+                height: height,
+                width: width,
+                labelColor: Provider.of<InfoProvider>(context, listen: false)
+                    .systemInfo
+                    .primaryColor)
+            : const SizedBox(),
         hasColor
             ? Container(
                 width: width * 2.5,

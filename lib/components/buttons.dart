@@ -218,6 +218,36 @@ Widget textButton({
   );
 }
 
+Widget label({
+  required String text,
+  required double height,
+  required double width,
+  required Color labelColor,
+}) {
+  return Container(
+    height: height * 3,
+    decoration: BoxDecoration(
+      color: labelColor,
+      borderRadius: BorderRadius.circular(6.0),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.25), // Shadow color
+          spreadRadius: 0, // How much the shadow spreads
+          blurRadius: 4, // How much the shadow blurs
+          offset: const Offset(0, 5), // The offset of the shadow
+        ),
+      ],
+    ),
+    child: Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: buildSmallText(text, Colors.white, width*0.8,
+            fontFamily: "RobotoMedium"),
+      ),
+    ),
+  );
+}
+
 Widget customTextButton({
   required String text,
   required double height,
