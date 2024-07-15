@@ -33,6 +33,16 @@ class _SettingsState extends State<Settings> {
     }
   }
 
+  bool isEditingRestaurantDetails = false;
+  bool isEditingSystemSettings = false;
+
+  @override
+  void dispose() {
+    super.dispose();
+    isEditingRestaurantDetails = false;
+    isEditingSystemSettings = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,7 +135,11 @@ class _SettingsState extends State<Settings> {
             ),
           ),
           SizedBox(height: height * 2),
-          editSection("System Settings", () {}),
+          editSection("System Settings", () {
+            setState(() {
+              isEditingSystemSettings = !isEditingSystemSettings;
+            });
+          }),
           SizedBox(height: height * 2),
           Container(
             width: width * 31,
@@ -176,8 +190,12 @@ class _SettingsState extends State<Settings> {
                 ),
                 SizedBox(height: height * 2),
                 buildButton(
-                  Icons.restart_alt_sharp,
-                  "Reset Default Settings",
+                  isEditingSystemSettings
+                      ? Icons.update
+                      : Icons.restart_alt_sharp,
+                  isEditingSystemSettings
+                      ? "Update Settings"
+                      : "Reset Default Settings",
                   height,
                   width,
                   () {
@@ -314,7 +332,11 @@ class _SettingsState extends State<Settings> {
       ),
       child: Column(
         children: [
-          editSection("Restaurant's Details", () {}),
+          editSection("Restaurant's Details", () {
+            setState(() {
+              isEditingRestaurantDetails = !isEditingRestaurantDetails;
+            });
+          }),
           SizedBox(height: height * 2),
           Expanded(
             child: SingleChildScrollView(
