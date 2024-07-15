@@ -19,7 +19,7 @@ class InfoProvider extends ChangeNotifier {
   );
 
   SystemInfo systemInfo = SystemInfo(
-    versionNumber: "1.0.0",
+    versionNumber: "X.X.X",
     language: "English",
     currencySymbol: "£",
     primaryColor: const Color(0xff063B9D),
@@ -28,7 +28,7 @@ class InfoProvider extends ChangeNotifier {
 
   void resetDefaultSystemSettings() {
     systemInfo = SystemInfo(
-      versionNumber: "1.0.0",
+      versionNumber: "X.X.X",
       language: "English",
       currencySymbol: "£",
       primaryColor: const Color(0xff063B9D),
@@ -50,13 +50,26 @@ class InfoProvider extends ChangeNotifier {
       final result = data["data"]["attributes"];
       print("System settings = $result");
       if (response.statusCode == 200) {
-        restaurantInfo.imageUrl = result["image"]["data"] == null
-            ? null
-            : "${Data.baseUrl}${result["image"]["formats"]["small"]["url"]}";
-        restaurantInfo.logoUrl = result["logo"]["data"] == null
-            ? null
-            : "${Data.baseUrl}${result["image"]["formats"]["small"]["url"]}";
-
+        restaurantInfo = RestaurantInfo(
+          name: result["name"],
+          imageUrl: result["image"]["data"] == null
+              ? null
+              : "${Data.baseUrl}${result["image"]["formats"]["small"]["url"]}",
+          vatNumber: result["vat"],
+          address: result["address"],
+          postcode: result["postcode"],
+          countryOfOperation: result["country"],
+          logoUrl: result["logo"]["data"] == null
+              ? null
+              : "${Data.baseUrl}${result["image"]["formats"]["small"]["url"]}",
+        );
+        systemInfo = SystemInfo(
+          versionNumber: result["version"],
+          language: result["language"],
+          currencySymbol: result["currency"],
+          primaryColor: hexStringToColor(result["primaryColor"]),
+          iconsColor: hexStringToColor(result["iconColor"]),
+        );
         notifyListeners();
       }
     } on SocketException {
@@ -88,5 +101,11 @@ class InfoProvider extends ChangeNotifier {
         await getSettings(context: context);
       }
     }
+  }
+
+  Color hexStringToColor(String hexColor) {
+    final int colorInt = int.parse('0xff$hexColor');
+    // Return the Color object
+    return Color(colorInt);
   }
 }

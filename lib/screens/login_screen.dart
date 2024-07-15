@@ -38,14 +38,17 @@ class _LoginScreenState extends State<LoginScreen> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-      final loaderOverlay = context.loaderOverlay;
-
-      // loaderOverlay.show();
+      setState(() {
+        isLoading = true;
+      });
 
       await Provider.of<InfoProvider>(context, listen: false).getSettings(
         context: context,
       );
-      // loaderOverlay.hide();
+
+      setState(() {
+        isLoading = false;
+      });
 
       init = false;
     }
@@ -68,6 +71,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        mainBody(context),
+        isLoading
+            ? Center(
+                child: onLoading(width: width, context: context),
+              )
+            : const SizedBox(),
+      ],
+    );
+  }
+
+  LoaderOverlay mainBody(BuildContext context) {
     return LoaderOverlay(
       useDefaultLoading: false,
       overlayWidgetBuilder: (_) {

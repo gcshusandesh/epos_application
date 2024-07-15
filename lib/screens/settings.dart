@@ -362,7 +362,7 @@ class _SettingsState extends State<Settings> {
                       isImage: true,
                       data: Provider.of<InfoProvider>(context, listen: true)
                           .restaurantInfo
-                          .logoUrl!),
+                          .logoUrl),
                 ],
               ),
             ),
