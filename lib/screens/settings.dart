@@ -40,7 +40,8 @@ class _SettingsState extends State<Settings> {
   OverlayEntry? _overlayEntry;
 
   // Method to build the color picker overlay
-  void _buildColorPickerOverlay(BuildContext context) {
+  void _buildColorPickerOverlay(
+      {required BuildContext context, bool isIconsColor = false}) {
     final systemInfo =
         Provider.of<InfoProvider>(context, listen: false).systemInfo;
 
@@ -84,8 +85,11 @@ class _SettingsState extends State<Settings> {
                             versionNumber: systemInfo.versionNumber,
                             language: systemInfo.language,
                             currencySymbol: systemInfo.currencySymbol,
-                            primaryColor: newColor,
-                            iconsColor: systemInfo.iconsColor,
+                            primaryColor: isIconsColor
+                                ? systemInfo.primaryColor
+                                : newColor,
+                            iconsColor:
+                                isIconsColor ? newColor : systemInfo.iconsColor,
                           ),
                         );
                       },
@@ -264,7 +268,7 @@ class _SettingsState extends State<Settings> {
                       if (isEditingSystemSettings) {
                         setState(() {
                           if (isEditingSystemSettings) {
-                            _buildColorPickerOverlay(context);
+                            _buildColorPickerOverlay(context: context);
                           } else {
                             _overlayEntry?.remove();
                           }
@@ -286,12 +290,26 @@ class _SettingsState extends State<Settings> {
                   padding: EdgeInsets.symmetric(
                       vertical: height, horizontal: width * 2),
                   color: Colors.white,
-                  child: fancyDataBox(
-                    title: "Icons Color",
-                    hasColor: true,
-                    color: Provider.of<InfoProvider>(context, listen: true)
-                        .systemInfo
-                        .iconsColor,
+                  child: InkWell(
+                    onTap: () {
+                      if (isEditingSystemSettings) {
+                        setState(() {
+                          if (isEditingSystemSettings) {
+                            _buildColorPickerOverlay(
+                                context: context, isIconsColor: true);
+                          } else {
+                            _overlayEntry?.remove();
+                          }
+                        });
+                      }
+                    },
+                    child: fancyDataBox(
+                      title: "Icons Color",
+                      hasColor: true,
+                      color: Provider.of<InfoProvider>(context, listen: true)
+                          .systemInfo
+                          .iconsColor,
+                    ),
                   ),
                 ),
                 SizedBox(height: height),
@@ -340,8 +358,14 @@ class _SettingsState extends State<Settings> {
                               Provider.of<InfoProvider>(context, listen: false)
                                   .systemInfo
                                   .language,
-                          primaryColor: const Color(0xff179B0D),
-                          iconsColor: const Color(0xff0071B6),
+                          primaryColor:
+                              Provider.of<InfoProvider>(context, listen: false)
+                                  .systemInfo
+                                  .primaryColor,
+                          iconsColor:
+                              Provider.of<InfoProvider>(context, listen: false)
+                                  .systemInfo
+                                  .iconsColor,
                           currencySymbol: "£",
                         ),
                       );
@@ -418,6 +442,8 @@ class _SettingsState extends State<Settings> {
               editedSystemInfo:
                   Provider.of<InfoProvider>(context, listen: false).systemInfo,
             );
+            Provider.of<InfoProvider>(context, listen: false)
+                .resetDefaultSystemSettingsLocally();
             // pop dialog box
             Navigator.pop(context);
             showTopSnackBar(

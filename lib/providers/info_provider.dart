@@ -48,7 +48,7 @@ class InfoProvider extends ChangeNotifier {
     required SystemInfo editedSystemInfo,
     bool isDefault = false,
   }) async {
-    var url = Uri.parse("${Data.baseUrl}/api/users/${user.id}");
+    var url = Uri.parse("${Data.baseUrl}/api/setting");
     try {
       Map<String, String> headers = {
         'Content-Type': 'application/json',
@@ -64,14 +64,14 @@ class InfoProvider extends ChangeNotifier {
         };
       } else {
         body = {
-          "primaryColor": colorToHexString(systemInfo.primaryColor),
-          "iconColor": colorToHexString(systemInfo.iconsColor),
-          "currency": systemInfo.currencySymbol,
+          "primaryColor": colorToHexString(editedSystemInfo.primaryColor),
+          "iconColor": colorToHexString(editedSystemInfo.iconsColor),
+          "currency": editedSystemInfo.currencySymbol,
         };
       }
 
-      Map<String, String> payloadBody = {
-        "data": jsonEncode(body),
+      Map<String, dynamic> payloadBody = {
+        "data": body,
       };
       final response = await http.put(Uri.parse(url.toString()),
           headers: headers, body: jsonEncode(payloadBody));
@@ -263,7 +263,7 @@ class InfoProvider extends ChangeNotifier {
     int blue = color.blue;
 
     // Format the ARGB values into a hex string
-    return '#${alpha.toRadixString(16).padLeft(2, '0')}'
+    return '${alpha.toRadixString(16).padLeft(2, '0')}'
         '${red.toRadixString(16).padLeft(2, '0')}'
         '${green.toRadixString(16).padLeft(2, '0')}'
         '${blue.toRadixString(16).padLeft(2, '0')}';
