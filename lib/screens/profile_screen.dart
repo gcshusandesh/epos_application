@@ -206,6 +206,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ));
                                       }
                                     },
+                                    onDoubleTap: () async {
+                                      Provider.of<AuthProvider>(context,
+                                              listen: false)
+                                          .getUserDetails(
+                                              init: false, context: context);
+                                    },
                                     child: ClipOval(
                                       child: Stack(
                                         children: [

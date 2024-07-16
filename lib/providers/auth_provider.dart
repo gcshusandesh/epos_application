@@ -156,7 +156,7 @@ class AuthProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> getUserImage(
+  Future<void> getUserDetails(
       {required bool init, required BuildContext context}) async {
     var url = Uri.parse("${Data.baseUrl}/api/users/me?populate=image");
     try {
@@ -169,9 +169,21 @@ class AuthProvider extends ChangeNotifier {
           await http.get(Uri.parse(url.toString()), headers: headers);
       final data = json.decode(response.body);
       if (response.statusCode == 200) {
-        user.imageUrl = data["image"] == null
-            ? null
-            : "${Data.baseUrl}${data["image"]["formats"]["small"]["url"]}";
+        String jwt = user.accessToken!;
+        user = UserDataModel(
+          id: data["id"],
+          name: data["name"],
+          imageUrl: data["image"] == null
+              ? null
+              : "${Data.baseUrl}${data["image"]["formats"]["small"]["url"]}",
+          email: data["email"],
+          phone: data["phone"],
+          gender: data["gender"],
+          isBlocked: data["blocked"],
+          userType: assignUserType(data["userType"]),
+          accessToken: jwt,
+          isLoggedIn: true,
+        );
 
         /// add above login data along with image data to cache at once
         addUserDataToSF();
@@ -193,7 +205,7 @@ class AuthProvider extends ChangeNotifier {
       }
       if (context.mounted) {
         //retry api
-        await getUserImage(init: init, context: context);
+        await getUserDetails(init: init, context: context);
       }
     } catch (e) {
       // TODO: need to handle this error
@@ -206,7 +218,7 @@ class AuthProvider extends ChangeNotifier {
       }
       if (context.mounted) {
         //retry api
-        await getUserImage(init: init, context: context);
+        await getUserDetails(init: init, context: context);
       }
     }
   }
