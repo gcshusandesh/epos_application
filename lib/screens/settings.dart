@@ -613,11 +613,19 @@ class _SettingsState extends State<Settings> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  buildImage(
-                    "assets/restaurant_image.png",
-                    height * 25,
-                    width * 31,
-                    context: context,
+                  InkWell(
+                    onDoubleTap: () async {
+                      await Provider.of<InfoProvider>(context, listen: false)
+                          .getSettings(
+                        context: context,
+                      );
+                    },
+                    child: buildImage(
+                      "assets/restaurant_image.png",
+                      height * 25,
+                      width * 31,
+                      context: context,
+                    ),
                   ),
                   SizedBox(height: height * 2),
                   formDataBox(
