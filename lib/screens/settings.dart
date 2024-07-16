@@ -856,7 +856,6 @@ class _SettingsState extends State<Settings> {
                           context: context,
                           showPhoneCode: false,
                           onSelect: (Country country) {
-                            print('Select country: ${country.name}');
                             Provider.of<InfoProvider>(context, listen: false)
                                 .updateCountryInfoLocally(
                                     countryInfo: country.name);

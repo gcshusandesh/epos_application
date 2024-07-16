@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/screens/error_screen.dart';
-import 'package:epos_application/screens/login_screen.dart';
+import 'package:epos_application/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -123,9 +123,6 @@ class AuthProvider extends ChangeNotifier {
     String? retrieved = prefs.getString("userData");
     bool? retrievedStayLoggedInData = prefs.getBool("stayLoggedIn");
 
-    print("retrieved: $retrieved");
-    print("retrievedStayLoggedInData: $retrievedStayLoggedInData");
-
     if (retrieved != null) {
       Map<String, dynamic> decodedData = jsonDecode(retrieved);
       user = UserDataModel.fromJson(decodedData);
@@ -148,7 +145,7 @@ class AuthProvider extends ChangeNotifier {
     clearALLDataFromSF();
     // Clear navigation stack
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        MaterialPageRoute(builder: (context) => const SplashScreen()),
         (Route<dynamic> route) => false);
     //show success messsage
     showTopSnackBar(
