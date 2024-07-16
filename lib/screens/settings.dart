@@ -615,6 +615,7 @@ class _SettingsState extends State<Settings> {
                 children: [
                   InkWell(
                     onDoubleTap: () async {
+                      print("tapped");
                       await Provider.of<InfoProvider>(context, listen: false)
                           .getSettings(
                         context: context,
