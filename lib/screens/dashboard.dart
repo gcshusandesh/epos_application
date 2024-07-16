@@ -1,6 +1,8 @@
 import 'package:epos_application/components/buttons.dart';
+import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/providers/user_provider.dart';
 import 'package:epos_application/screens/menu/menu_page.dart';
@@ -23,6 +25,7 @@ class _DashboardState extends State<Dashboard> {
   bool init = true;
   late double height;
   late double width;
+  bool isLoading = false;
 
   @override
   void didChangeDependencies() async {
@@ -32,8 +35,17 @@ class _DashboardState extends State<Dashboard> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-      // Test API Call
-      // Provider.of<InfoProvider>(context, listen: false).getTestData();
+      setState(() {
+        isLoading = true;
+      });
+      // TODO: remove this api call and replace with settings saved in cache
+      await Provider.of<InfoProvider>(context, listen: false).getSettings(
+        context: context,
+      );
+      setState(() {
+        isLoading = false;
+      });
+
       if (mounted) {
         // Get Specials Data from API
         Provider.of<MenuProvider>(context, listen: false)
@@ -57,23 +69,43 @@ class _DashboardState extends State<Dashboard> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    isLoading = false;
+    init = true;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedBox(
-                height: height * 2,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 2),
-                child: topSection(context),
-              ),
-              optionsSection(context),
-            ]),
+      body: Stack(
+        children: [
+          buildBody(context),
+          isLoading
+              ? Center(
+                  child: onLoading(width: width, context: context),
+                )
+              : const SizedBox(),
+        ],
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Center buildBody(BuildContext context) {
+    return Center(
+      child: Column(
+          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            SizedBox(
+              height: height * 2,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 2),
+              child: topSection(context),
+            ),
+            optionsSection(context),
+          ]),
     );
   }
 

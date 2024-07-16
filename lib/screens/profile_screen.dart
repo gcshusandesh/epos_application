@@ -52,8 +52,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       phoneController.text = user.phone;
       genderDropDownValue = user.gender;
       init = false;
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.getUserDataFromSF();
     }
   }
 

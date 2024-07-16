@@ -59,7 +59,6 @@ class AuthProvider extends ChangeNotifier {
         if (!init) {
           notifyListeners();
         }
-        // addUserDataToSF();
         return true;
       } else {
         return false;
@@ -108,6 +107,7 @@ class AuthProvider extends ChangeNotifier {
   ///cache management started
   // save user data to cache
   void addUserDataToSF() async {
+    /// add user data to cache if only user has selected remember me
     if (stayLoggedIn) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String store = jsonEncode(UserDataModel.toMap(user));
@@ -120,11 +120,11 @@ class AuthProvider extends ChangeNotifier {
   // get user data from cache
   Future<void> getUserDataFromSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? retrieved = prefs.getString('userData');
-    bool? retrievedStayLoggedInData = prefs.getBool('stayLoggedIn');
-    //
-    // print('Retrieved userData: $retrieved');
-    // print('Retrieved stayLoggedIn: $retrievedStayLoggedInData');
+    String? retrieved = prefs.getString("userData");
+    bool? retrievedStayLoggedInData = prefs.getBool("stayLoggedIn");
+
+    print("retrieved: $retrieved");
+    print("retrievedStayLoggedInData: $retrievedStayLoggedInData");
 
     if (retrieved != null) {
       Map<String, dynamic> decodedData = jsonDecode(retrieved);
@@ -175,6 +175,10 @@ class AuthProvider extends ChangeNotifier {
         user.imageUrl = data["image"] == null
             ? null
             : "${Data.baseUrl}${data["image"]["formats"]["small"]["url"]}";
+
+        /// add above login data along with image data to cache at once
+        addUserDataToSF();
+
         if (!init) {
           notifyListeners();
         }
@@ -212,6 +216,9 @@ class AuthProvider extends ChangeNotifier {
 
   void updateUserDetailsLocally(UserDataModel editedDetails) {
     user = editedDetails;
+
+    ///save changes to cache
+    addUserDataToSF();
     notifyListeners();
   }
 
