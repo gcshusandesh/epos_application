@@ -104,7 +104,7 @@ Widget buildCupertinoSwitch(
     required Function(bool) onChanged,
     required BuildContext context}) {
   return Transform.scale(
-    scale: 1.5,
+    scale: 1.2,
     child: CupertinoSwitch(
       activeColor: Provider.of<InfoProvider>(context, listen: true)
           .systemInfo
