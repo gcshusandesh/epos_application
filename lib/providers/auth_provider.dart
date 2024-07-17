@@ -368,6 +368,7 @@ class AuthProvider extends ChangeNotifier {
 
   void updateUserProfilePictureLocally({required String imageUrl}) {
     user.imageUrl = imageUrl;
+    addUserDataToSF();
     notifyListeners();
   }
 }

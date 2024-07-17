@@ -38,6 +38,18 @@ class InfoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateRestaurantImageLocally({required String imageUrl}) {
+    restaurantInfo.imageUrl = imageUrl;
+    addSettingsDataToSF();
+    notifyListeners();
+  }
+
+  void updateRestaurantLogoLocally({required String logoUrl}) {
+    restaurantInfo.logoUrl = logoUrl;
+    addSettingsDataToSF();
+    notifyListeners();
+  }
+
   void updateSystemSettingsLocally({required SystemInfo editedSystemInfo}) {
     systemInfo = editedSystemInfo;
     notifyListeners();

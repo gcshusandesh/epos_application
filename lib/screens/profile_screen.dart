@@ -225,7 +225,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         Navigator.push(context,
                                             MaterialPageRoute(
                                           builder: (context) {
-                                            return const ImageUpload();
+                                            return ImageUpload();
                                           },
                                         ));
                                       }
@@ -258,7 +258,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                       .imageUrl!,
                                                   width * 15,
                                                   width * 15,
-                                                  networkImage: true,
+                                                  isNetworkImage: true,
                                                   context: context,
                                                 ),
                                           isEditing

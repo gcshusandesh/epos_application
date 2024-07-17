@@ -8,6 +8,7 @@ import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/screens/custom_color_picker.dart';
+import 'package:epos_application/screens/image_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -635,14 +636,28 @@ class _SettingsState extends State<Settings> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  buildImage(
-                    Provider.of<InfoProvider>(context, listen: true)
-                        .restaurantInfo
-                        .imageUrl!,
-                    height * 25,
-                    width * 31,
-                    context: context,
-                    networkImage: true,
+                  InkWell(
+                    onTap: () {
+                      if (isEditingRestaurantDetails) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ImageUpload(
+                              isChangeRestaurantImage: true,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    child: buildImage(
+                      Provider.of<InfoProvider>(context, listen: true)
+                          .restaurantInfo
+                          .imageUrl!,
+                      height * 25,
+                      width * 31,
+                      context: context,
+                      isNetworkImage: true,
+                    ),
                   ),
                   SizedBox(height: height * 2),
                   formDataBox(
@@ -691,12 +706,26 @@ class _SettingsState extends State<Settings> {
                     isCountry: true,
                   ),
                   SizedBox(height: height),
-                  dataBox(
-                      title: "Logo",
-                      isImage: true,
-                      data: Provider.of<InfoProvider>(context, listen: true)
-                          .restaurantInfo
-                          .logoUrl),
+                  InkWell(
+                    onTap: () {
+                      if (isEditingRestaurantDetails) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ImageUpload(
+                              isChangeRestaurantLogo: true,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    child: dataBox(
+                        title: "Logo",
+                        isImage: true,
+                        data: Provider.of<InfoProvider>(context, listen: true)
+                            .restaurantInfo
+                            .logoUrl),
+                  ),
                   isEditingRestaurantDetails
                       ? buildButton(
                           Icons.update,
@@ -831,7 +860,7 @@ class _SettingsState extends State<Settings> {
                     )
                   : buildImage(
                       data,
-                      networkImage: true,
+                      isNetworkImage: true,
                       width * 10,
                       width * 10,
                       context: context,

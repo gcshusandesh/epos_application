@@ -113,15 +113,15 @@ Widget buildImage(
   String path,
   double height,
   double width, {
-  bool networkImage = false,
-  bool fileImage = false,
+  bool isNetworkImage = false,
+  bool isFileImage = false,
   BoxFit fit = BoxFit.fill,
   required BuildContext context,
 }) {
   return SizedBox(
     height: height,
     width: width,
-    child: networkImage
+    child: isNetworkImage
         ? Image.network(
             path,
             fit: fit,
@@ -142,7 +142,7 @@ Widget buildImage(
               );
             },
           )
-        : fileImage
+        : isFileImage
             ? Image.file(
                 File(path),
                 fit: fit,

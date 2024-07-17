@@ -12,7 +12,9 @@ class UploadProvider extends ChangeNotifier {
     required UserDataModel user,
     required BuildContext context,
     required String incomingFilePath,
-    bool isUserDP = false,
+    required bool isChangeDP,
+    required bool isChangeRestaurantImage,
+    required bool isChangeRestaurantLogo,
   }) async {
     var url = "${Data.baseUrl}/api/upload";
     String? imageUrl;
@@ -34,10 +36,20 @@ class UploadProvider extends ChangeNotifier {
         filename: filePath.path.split("/").last,
       ));
 
-      if (isUserDP) {
+      if (isChangeDP) {
         request.fields['ref'] = "plugin::users-permissions.user";
         request.fields['refId'] = "${user.id}";
         request.fields['field'] = "image";
+      }
+      if (isChangeRestaurantImage) {
+        request.fields['ref'] = "api::setting.setting";
+        request.fields['refId'] = "2";
+        request.fields['field'] = "image";
+      }
+      if (isChangeRestaurantLogo) {
+        request.fields['ref'] = "api::setting.setting";
+        request.fields['refId'] = "2";
+        request.fields['field'] = "logo";
       }
 
       var response = await request.send();
@@ -47,7 +59,7 @@ class UploadProvider extends ChangeNotifier {
         imageUrl = "${Data.baseUrl}${responseData[0]['url']}";
         notifyListeners();
 
-        if (isUserDP) {
+        if (isChangeDP) {
           //TODO: save changed dp to cache
         }
       } else if (response.statusCode == 413) {
@@ -67,10 +79,13 @@ class UploadProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await uploadImage(
-            user: user,
-            context: context,
-            incomingFilePath: incomingFilePath,
-            isUserDP: isUserDP);
+          user: user,
+          context: context,
+          incomingFilePath: incomingFilePath,
+          isChangeDP: isChangeDP,
+          isChangeRestaurantImage: isChangeRestaurantImage,
+          isChangeRestaurantLogo: isChangeRestaurantLogo,
+        );
       }
       return imageUrl;
     } catch (e) {
@@ -87,7 +102,9 @@ class UploadProvider extends ChangeNotifier {
           user: user,
           context: context,
           incomingFilePath: incomingFilePath,
-          isUserDP: isUserDP,
+          isChangeDP: isChangeDP,
+          isChangeRestaurantImage: isChangeRestaurantImage,
+          isChangeRestaurantLogo: isChangeRestaurantLogo,
         );
       }
     }

@@ -15,9 +15,18 @@ import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
+// ignore: must_be_immutable
 class ImageUpload extends StatefulWidget {
-  const ImageUpload({super.key});
+  ImageUpload({
+    super.key,
+    this.isChangeDP = false,
+    this.isChangeRestaurantImage = false,
+    this.isChangeRestaurantLogo = false,
+  });
   static const routeName = "imageUpload";
+  bool isChangeDP;
+  bool isChangeRestaurantImage;
+  bool isChangeRestaurantLogo;
 
   @override
   State<ImageUpload> createState() => _ImageUploadState();
@@ -106,7 +115,7 @@ class _ImageUploadState extends State<ImageUpload> {
                               originalImage!.path,
                               height,
                               width,
-                              fileImage: true,
+                              isFileImage: true,
                               context: context,
                             )
                           : Padding(
@@ -245,7 +254,9 @@ class _ImageUploadState extends State<ImageUpload> {
                   user: Provider.of<AuthProvider>(context, listen: false).user,
                   incomingFilePath: compressedImage!.path,
                   context: context,
-                  isUserDP: true,
+                  isChangeDP: widget.isChangeDP,
+                  isChangeRestaurantImage: widget.isChangeRestaurantImage,
+                  isChangeRestaurantLogo: widget.isChangeRestaurantLogo,
                 );
                 setState(() {
                   isLoading = false;
@@ -266,12 +277,17 @@ class _ImageUploadState extends State<ImageUpload> {
                     ),
                   );
                   if (context.mounted) {
-                    Provider.of<AuthProvider>(context, listen: false)
-                        .updateUserProfilePictureLocally(imageUrl: imageUrl);
+                    if (widget.isChangeDP) {
+                      Provider.of<AuthProvider>(context, listen: false)
+                          .updateUserProfilePictureLocally(imageUrl: imageUrl);
+                    } else if (widget.isChangeRestaurantImage) {
+                      Provider.of<InfoProvider>(context, listen: false)
+                          .updateRestaurantImageLocally(imageUrl: imageUrl);
+                    } else if (widget.isChangeRestaurantLogo) {
+                      Provider.of<InfoProvider>(context, listen: false)
+                          .updateRestaurantLogoLocally(logoUrl: imageUrl);
+                    } else if (widget.isChangeRestaurantLogo) {}
 
-                    /// save changes to cache
-                    Provider.of<AuthProvider>(context, listen: false)
-                        .addUserDataToSF();
                     Navigator.pop(context);
                   }
                 } else {

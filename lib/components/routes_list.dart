@@ -19,7 +19,7 @@ Map<String, Widget Function(BuildContext)> routes = {
   Dashboard.routeName: (ctx) => const Dashboard(),
   Settings.routeName: (ctx) => const Settings(),
   ProfileScreen.routeName: (ctx) => const ProfileScreen(),
-  ImageUpload.routeName: (ctx) => const ImageUpload(),
+  ImageUpload.routeName: (ctx) => ImageUpload(),
 
   // Analytics Section
 
