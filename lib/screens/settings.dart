@@ -68,7 +68,7 @@ class _SettingsState extends State<Settings> {
           // Modal barrier to prevent interaction with underlying content
           const ModalBarrier(
             color: Colors.black54, // Semi-transparent black color
-            dismissible: false, // Prevents dismissing overlay with taps
+            dismissible: true, // Prevents dismissing overlay with taps
           ),
           Center(
             child: Material(

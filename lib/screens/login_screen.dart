@@ -75,9 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         mainBody(context),
         isLoading
-            ? Center(
-                child: onLoading(width: width, context: context),
-              )
+            ? onLoading(width: width, context: context)
             : const SizedBox(),
       ],
     );

@@ -64,27 +64,37 @@ Row topSection(
 }
 
 Widget onLoading({required double width, required BuildContext context}) {
-  return Container(
-    height: width * 8,
-    width: width * 8,
-    padding: EdgeInsets.all(width * 2),
-    decoration: const BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.all(Radius.circular(10)),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.grey,
-          offset: Offset(0, 0), //(x,y)
-          blurRadius: 6.0,
+  return Stack(
+    children: [
+      const ModalBarrier(
+        color: Colors.black54, // Semi-transparent black color
+        dismissible: false, // Prevents dismissing overlay with taps
+      ),
+      Center(
+        child: Container(
+          height: width * 8,
+          width: width * 8,
+          padding: EdgeInsets.all(width * 2),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey,
+                offset: Offset(0, 0), //(x,y)
+                blurRadius: 6.0,
+              ),
+            ],
+          ),
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+                Provider.of<InfoProvider>(context, listen: true)
+                    .systemInfo
+                    .primaryColor),
+          ),
         ),
-      ],
-    ),
-    child: CircularProgressIndicator(
-      valueColor: AlwaysStoppedAnimation<Color>(
-          Provider.of<InfoProvider>(context, listen: true)
-              .systemInfo
-              .primaryColor),
-    ),
+      ),
+    ],
   );
 }
 
