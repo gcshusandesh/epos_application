@@ -58,10 +58,6 @@ class UploadProvider extends ChangeNotifier {
         var responseData = json.decode(reply.body);
         imageUrl = "${Data.baseUrl}${responseData[0]['url']}";
         notifyListeners();
-
-        if (isChangeDP) {
-          //TODO: save changed dp to cache
-        }
       } else if (response.statusCode == 413) {
         return "too big";
       }

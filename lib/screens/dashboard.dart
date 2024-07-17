@@ -54,7 +54,8 @@ class _DashboardState extends State<Dashboard> {
 
         // Get Employee Data from API
         Provider.of<UserProvider>(context, listen: false).getUserList(
-            user: Provider.of<AuthProvider>(context, listen: false).user);
+            user: Provider.of<AuthProvider>(context, listen: false).user,
+            context: context);
 
         // Get Category Data from API
         Provider.of<MenuProvider>(context, listen: false)

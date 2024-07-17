@@ -208,7 +208,6 @@ class AuthProvider extends ChangeNotifier {
         await getUserDetails(init: init, context: context);
       }
     } catch (e) {
-      // TODO: need to handle this error
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
@@ -272,7 +271,6 @@ class AuthProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
-      // TODO: need to handle this error
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
@@ -334,7 +332,6 @@ class AuthProvider extends ChangeNotifier {
       }
       return 0;
     } catch (e) {
-      // TODO: need to handle this error
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(

@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
+import 'package:epos_application/screens/error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,7 +20,8 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getUserList({required UserDataModel user}) async {
+  Future<void> getUserList(
+      {required UserDataModel user, required BuildContext context}) async {
     var url = Uri.parse("${Data.baseUrl}/api/users");
     try {
       Map<String, String> headers = {
@@ -29,7 +32,6 @@ class UserProvider extends ChangeNotifier {
       final response =
           await http.get(Uri.parse(url.toString()), headers: headers);
       final data = json.decode(response.body);
-      print("data$data");
       if (response.statusCode == 200) {
         data.forEach((user) {
           if (assignUserType(user["userType"]) != UserType.owner) {
@@ -45,13 +47,34 @@ class UserProvider extends ChangeNotifier {
           }
         });
       }
-
       notifyListeners();
+    } on SocketException {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await getUserList(user: user, context: context);
+      }
     } catch (e) {
-      // ignore: avoid_print
-      print(e);
-      // TODO: need to handle this error
-      rethrow;
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ErrorScreen()),
+        );
+      }
+      if (context.mounted) {
+        //retry api
+        await getUserList(user: user, context: context);
+      }
     }
   }
 

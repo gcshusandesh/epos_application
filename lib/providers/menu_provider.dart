@@ -287,7 +287,6 @@ class MenuProvider extends ChangeNotifier {
     } catch (e) {
       // ignore: avoid_print
       print(e);
-      // TODO: need to handle this error
       rethrow;
     }
   }
