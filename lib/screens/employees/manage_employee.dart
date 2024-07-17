@@ -2,7 +2,8 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
-import 'package:epos_application/providers/user_provider.dart';
+import 'package:epos_application/providers/employee_provider.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/screens/employees/create_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -54,7 +55,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: Provider.of<UserProvider>(context, listen: true)
-                          .userList
+                          .employeeList
                           .isEmpty
                       ? Column(
                           children: [
@@ -118,7 +119,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                                 i <
                                     Provider.of<UserProvider>(context,
                                             listen: true)
-                                        .userList
+                                        .employeeList
                                         .length;
                                 i++)
                               buildEmployeeRow(i),
@@ -174,17 +175,17 @@ class _ManageEmployeeState extends State<ManageEmployee> {
             children: [
               tableItem(
                   Provider.of<UserProvider>(context, listen: true)
-                      .userList[index]
+                      .employeeList[index]
                       .name,
                   width),
               buildCustomText(
                 Provider.of<UserProvider>(context, listen: true)
-                        .userList[index]
+                        .employeeList[index]
                         .isBlocked
                     ? "Active"
                     : "Inactive",
                 Provider.of<UserProvider>(context, listen: true)
-                        .userList[index]
+                        .employeeList[index]
                         .isBlocked
                     ? Data.greenColor
                     : Data.redColor,
@@ -195,38 +196,73 @@ class _ManageEmployeeState extends State<ManageEmployee> {
         ),
         tableItem(
             Provider.of<UserProvider>(context, listen: true)
-                .userList[index]
+                .employeeList[index]
                 .email,
             width),
         tableItem(
             Provider.of<UserProvider>(context, listen: true)
-                .userList[index]
+                .employeeList[index]
                 .phone,
             width),
         tableItem(
             Provider.of<UserProvider>(context, listen: true)
-                .userList[index]
+                .employeeList[index]
                 .gender,
             width),
-        tableItem(
-            Provider.of<UserProvider>(context, listen: true)
-                .userList[index]
+        employeeLabel(
+            text: Provider.of<UserProvider>(context, listen: true)
+                .employeeList[index]
                 .userType
                 .name
                 .toString(),
-            width),
+            height: height,
+            width: width,
+            labelColor: Provider.of<InfoProvider>(context, listen: false)
+                .systemInfo
+                .iconsColor),
         buildCupertinoSwitch(
           index: index,
           value: !Provider.of<UserProvider>(context, listen: true)
-              .userList[index]
+              .employeeList[index]
               .isBlocked,
           onChanged: (value) {
             Provider.of<UserProvider>(context, listen: false)
-                .changeUserStatus(index);
+                .changeEmployeeStatus(index);
           },
           context: context,
         ),
       ],
+    );
+  }
+
+  Widget employeeLabel({
+    required String text,
+    required double height,
+    required double width,
+    required Color labelColor,
+  }) {
+    return Container(
+      height: height * 3,
+      margin: EdgeInsets.symmetric(horizontal: width * 1.5),
+      decoration: BoxDecoration(
+        color: labelColor,
+        borderRadius: BorderRadius.circular(6.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25), // Shadow color
+            spreadRadius: 0, // How much the shadow spreads
+            blurRadius: 4, // How much the shadow blurs
+            offset: const Offset(0, 5), // The offset of the shadow
+          ),
+        ],
+      ),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: buildSmallText(text, Colors.white, width * 0.8,
+              fontFamily: "RobotoMedium"),
+        ),
+      ),
     );
   }
 }

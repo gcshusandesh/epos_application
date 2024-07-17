@@ -2,19 +2,19 @@ import 'package:epos_application/components/models.dart';
 import 'package:flutter/material.dart';
 
 class UserProvider extends ChangeNotifier {
-  List<UserDataModel> userList = [];
+  List<UserDataModel> employeeList = [];
 
-  void changeUserStatus(int index) {
-    userList[index].isBlocked = !userList[index].isBlocked;
+  void changeEmployeeStatus(int index) {
+    employeeList[index].isBlocked = !employeeList[index].isBlocked;
     notifyListeners();
   }
 
-  void addUser(UserDataModel employee) {
-    userList.add(employee);
+  void addEmployee(UserDataModel employee) {
+    employeeList.add(employee);
     notifyListeners();
   }
 
-  Future<void> getUsersList({required bool init}) async {
+  Future<void> getEmployeeList({required bool init}) async {
     // var url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
     try {
       // var headers = {
@@ -25,7 +25,7 @@ class UserProvider extends ChangeNotifier {
       // if (response.statusCode == 200) {
       //   print(extractedData);
       // }
-      userList = [
+      employeeList = [
         UserDataModel(
           name: "Shusandesh G C",
           imageUrl: "assets/profile_picture.png",
