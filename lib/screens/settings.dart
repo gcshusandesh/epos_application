@@ -111,25 +111,6 @@ class _SettingsState extends State<Settings> {
                         );
                       },
                     ),
-                    // BlockPicker(
-                    //   pickerColor: systemInfo.primaryColor,
-                    //   onColorChanged: (Color newColor) {
-                    //     // Handle color change
-                    //     Provider.of<InfoProvider>(context, listen: false)
-                    //         .updateSystemSettingsLocally(
-                    //       editedSystemInfo: SystemInfo(
-                    //         versionNumber: systemInfo.versionNumber,
-                    //         language: systemInfo.language,
-                    //         currencySymbol: systemInfo.currencySymbol,
-                    //         primaryColor: isIconsColor
-                    //             ? systemInfo.primaryColor
-                    //             : newColor,
-                    //         iconsColor:
-                    //             isIconsColor ? newColor : systemInfo.iconsColor,
-                    //       ),
-                    //     );
-                    //   },
-                    // ),
                     const SizedBox(height: 20),
                     Align(
                       alignment: Alignment.center,
