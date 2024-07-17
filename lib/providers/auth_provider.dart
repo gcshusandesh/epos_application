@@ -225,9 +225,6 @@ class AuthProvider extends ChangeNotifier {
 
   void updateUserDetailsLocally(UserDataModel editedDetails) {
     user = editedDetails;
-
-    ///save changes to cache
-    addUserDataToSF();
     notifyListeners();
   }
 
@@ -252,6 +249,9 @@ class AuthProvider extends ChangeNotifier {
           headers: headers, body: jsonEncode(body));
       if (response.statusCode == 200) {
         updateUserDetailsLocally(editedDetails);
+
+        ///save changes to cache
+        addUserDataToSF();
         return true;
       }
       return false;
@@ -366,7 +366,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void updateUserProfilePicture({required String imageUrl}) {
+  void updateUserProfilePictureLocally({required String imageUrl}) {
     user.imageUrl = imageUrl;
     notifyListeners();
   }

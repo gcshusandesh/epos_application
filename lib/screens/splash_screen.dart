@@ -4,6 +4,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/screens/dashboard.dart';
 import 'package:epos_application/screens/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -126,7 +127,9 @@ class SplashScreenState extends State<SplashScreen>
 
   void _navigateToHomeScreen() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final infoProvider = Provider.of<InfoProvider>(context, listen: false);
     await authProvider.getUserDataFromSF();
+    await infoProvider.getSettingsDataFromSF();
     Timer(
       const Duration(milliseconds: splashPageVisibilityTime),
       () {

@@ -6,6 +6,7 @@ import 'package:epos_application/components/models.dart';
 import 'package:epos_application/screens/error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class InfoProvider extends ChangeNotifier {
   RestaurantInfo restaurantInfo = RestaurantInfo(
@@ -39,6 +40,36 @@ class InfoProvider extends ChangeNotifier {
 
   void updateSystemSettingsLocally({required SystemInfo editedSystemInfo}) {
     systemInfo = editedSystemInfo;
+    notifyListeners();
+  }
+
+  /// cache management
+  // save settings data to cache
+  void addSettingsDataToSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String storeRestaurantInfo =
+        jsonEncode(RestaurantInfo.toMap(restaurantInfo));
+    String storeSystemInfo = jsonEncode(SystemInfo.toMap(systemInfo));
+    prefs.setString("restaurantInfo", storeRestaurantInfo);
+    prefs.setString("systemInfo", storeSystemInfo);
+    notifyListeners();
+  }
+
+  // get settings data from cache
+  Future<void> getSettingsDataFromSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? retrievedRestaurantInfo = prefs.getString("restaurantInfo");
+    String? retrievedSystemInfo = prefs.getString("systemInfo");
+
+    if (retrievedRestaurantInfo != null) {
+      Map<String, dynamic> decodedRestaurantInfo =
+          jsonDecode(retrievedRestaurantInfo);
+      restaurantInfo = RestaurantInfo.fromJson(decodedRestaurantInfo);
+    }
+    if (retrievedSystemInfo != null) {
+      Map<String, dynamic> decodedSystemInfo = jsonDecode(retrievedSystemInfo);
+      systemInfo = SystemInfo.fromJson(decodedSystemInfo);
+    }
     notifyListeners();
   }
 
@@ -76,6 +107,9 @@ class InfoProvider extends ChangeNotifier {
       final response = await http.put(Uri.parse(url.toString()),
           headers: headers, body: jsonEncode(payloadBody));
       if (response.statusCode == 200) {
+        ///save data to cache
+        addSettingsDataToSF();
+
         return true;
       }
       return false;
@@ -151,6 +185,9 @@ class InfoProvider extends ChangeNotifier {
           headers: headers, body: jsonEncode(payloadBody));
       if (response.statusCode == 200) {
         updateRestaurantInfoLocally(editedRestaurantInfo: editedRestaurantInfo);
+
+        ///save data to cache
+        addSettingsDataToSF();
         return true;
       }
       return false;
@@ -225,6 +262,9 @@ class InfoProvider extends ChangeNotifier {
           primaryColor: hexStringToColor(result["primaryColor"]),
           iconsColor: hexStringToColor(result["iconColor"]),
         );
+
+        ///save data to cache
+        addSettingsDataToSF();
         notifyListeners();
       }
     } on SocketException {

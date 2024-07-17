@@ -18,6 +18,28 @@ class RestaurantInfo {
     required this.countryOfOperation,
     required this.logoUrl,
   });
+
+  static Map<String, dynamic> toMap(RestaurantInfo restaurantInfo) => {
+        'name': restaurantInfo.name,
+        'imageUrl': restaurantInfo.imageUrl,
+        'vatNumber': restaurantInfo.vatNumber,
+        'address': restaurantInfo.address,
+        'postcode': restaurantInfo.postcode,
+        'countryOfOperation': restaurantInfo.countryOfOperation,
+        'logoUrl': restaurantInfo.logoUrl,
+      };
+
+  factory RestaurantInfo.fromJson(Map<String, dynamic> jsonData) {
+    return RestaurantInfo(
+      name: jsonData['name'],
+      imageUrl: jsonData['imageUrl'],
+      vatNumber: jsonData['vatNumber'],
+      address: jsonData['address'],
+      postcode: jsonData['postcode'],
+      countryOfOperation: jsonData['countryOfOperation'],
+      logoUrl: jsonData['logoUrl'],
+    );
+  }
 }
 
 class SystemInfo {
@@ -34,6 +56,26 @@ class SystemInfo {
     required this.primaryColor,
     required this.iconsColor,
   });
+
+  // Convert a SystemInfo object to a map
+  static Map<String, dynamic> toMap(SystemInfo systemInfo) => {
+        'versionNumber': systemInfo.versionNumber,
+        'language': systemInfo.language,
+        'currencySymbol': systemInfo.currencySymbol,
+        'primaryColor': systemInfo.primaryColor.value,
+        'iconsColor': systemInfo.iconsColor.value,
+      };
+
+  // Create a SystemInfo object from JSON data
+  factory SystemInfo.fromJson(Map<String, dynamic> jsonData) {
+    return SystemInfo(
+      versionNumber: jsonData['versionNumber'],
+      language: jsonData['language'],
+      currencySymbol: jsonData['currencySymbol'],
+      primaryColor: Color(jsonData['primaryColor']),
+      iconsColor: Color(jsonData['iconsColor']),
+    );
+  }
 }
 
 enum UserType {

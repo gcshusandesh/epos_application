@@ -256,7 +256,11 @@ class _ImageUploadState extends State<ImageUpload> {
                     );
                     if (context.mounted) {
                       Provider.of<AuthProvider>(context, listen: false)
-                          .updateUserProfilePicture(imageUrl: imageUrl);
+                          .updateUserProfilePictureLocally(imageUrl: imageUrl);
+
+                      /// save changes to cache
+                      Provider.of<AuthProvider>(context, listen: false)
+                          .addUserDataToSF();
                       Navigator.pop(context);
                     }
                   } else {
