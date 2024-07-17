@@ -9,7 +9,6 @@ import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/screens/custom_color_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -23,6 +22,7 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  bool isLoading = false;
   bool init = true;
   late double height;
   late double width;
@@ -170,36 +170,38 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    return LoaderOverlay(
-      useDefaultLoading: false,
-      overlayWidgetBuilder: (_) {
-        //ignored progress for the moment
-        return Center(
-          child: onLoading(width: width, context: context),
-        );
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              topSection(
-                  context: context,
-                  height: height,
-                  text: "Settings",
-                  width: width),
-              SizedBox(height: height * 2),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  leftSection(),
-                  line(),
-                  rightSection(),
-                ],
-              ),
-            ],
-          ),
+    return Stack(
+      children: [
+        mainBody(context),
+        isLoading
+            ? onLoading(width: width, context: context)
+            : const SizedBox(),
+      ],
+    );
+  }
+
+  Scaffold mainBody(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            topSection(
+                context: context,
+                height: height,
+                text: "Settings",
+                width: width),
+            SizedBox(height: height * 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                leftSection(),
+                line(),
+                rightSection(),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -391,10 +393,11 @@ class _SettingsState extends State<Settings> {
                   height,
                   width,
                   () async {
-                    final loaderOverlay = context.loaderOverlay;
                     final overlayContext = Overlay.of(context);
                     if (isEditingSystemSettings) {
-                      loaderOverlay.show();
+                      setState(() {
+                        isLoading = true;
+                      });
                       late bool isUpdateSuccessful;
                       // update setting to user chosen values
                       isUpdateSuccessful = await Provider.of<InfoProvider>(
@@ -427,7 +430,9 @@ class _SettingsState extends State<Settings> {
                                   .currencySymbol,
                         ),
                       );
-                      loaderOverlay.hide();
+                      setState(() {
+                        isLoading = false;
+                      });
                       if (isUpdateSuccessful) {
                         showTopSnackBar(
                           overlayContext,
@@ -688,11 +693,12 @@ class _SettingsState extends State<Settings> {
                           height,
                           width,
                           () async {
-                            final loaderOverlay = context.loaderOverlay;
                             final overlayContext = Overlay.of(context);
                             //submit form
                             // TODO: add form validation here
-                            loaderOverlay.show();
+                            setState(() {
+                              isLoading = true;
+                            });
 
                             RestaurantInfo restaurantInfo =
                                 Provider.of<InfoProvider>(context,
@@ -718,7 +724,9 @@ class _SettingsState extends State<Settings> {
                                 logoUrl: restaurantInfo.logoUrl,
                               ),
                             );
-                            loaderOverlay.hide();
+                            setState(() {
+                              isLoading = false;
+                            });
                             if (isUpdateSuccessful) {
                               // show success massage
                               showTopSnackBar(
