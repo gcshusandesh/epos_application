@@ -31,7 +31,9 @@ class _ImageUploadState extends State<ImageUpload> {
   late double height;
   late double width;
   bool imageSelected = false;
-  late XFile? originalImage;
+
+  ///removing late keyword initialized variable to null
+  XFile? originalImage;
   late File? compressedImage;
 
   @override
@@ -224,6 +226,17 @@ class _ImageUploadState extends State<ImageUpload> {
               height,
               width,
               () async {
+                print("original image = $originalImage");
+                if (originalImage == null) {
+                  print("erroe message");
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.error(
+                      message: "Please select an image to upload",
+                    ),
+                  );
+                  return;
+                }
                 final overlayContext = Overlay.of(context);
                 setState(() {
                   isLoading = true;
