@@ -55,6 +55,7 @@ class _SettingsState extends State<Settings> {
   }
 
   OverlayEntry? _overlayEntry;
+  late Color newColor;
 
   // Method to build the color picker overlay
   void _buildColorPickerOverlay(
@@ -70,7 +71,6 @@ class _SettingsState extends State<Settings> {
             color: Colors.black54, // Semi-transparent black color
             dismissible: true,
             onDismiss: () {
-              /// as color is not saved at this point we need to reset colors
               _closeColorPickerOverlay();
             },
           ),
@@ -98,21 +98,9 @@ class _SettingsState extends State<Settings> {
                   children: [
                     CustomColorPicker(
                       initialColor: systemInfo.primaryColor,
-                      onColorChanged: (Color newColor) {
+                      onColorChanged: (Color color) {
                         // Handle color change
-                        Provider.of<InfoProvider>(context, listen: false)
-                            .updateSystemSettingsLocally(
-                          editedSystemInfo: SystemInfo(
-                            versionNumber: systemInfo.versionNumber,
-                            language: systemInfo.language,
-                            currencySymbol: systemInfo.currencySymbol,
-                            primaryColor: isIconsColor
-                                ? systemInfo.primaryColor
-                                : newColor,
-                            iconsColor:
-                                isIconsColor ? newColor : systemInfo.iconsColor,
-                          ),
-                        );
+                        newColor = color;
                       },
                     ),
                     const SizedBox(height: 20),
@@ -131,6 +119,20 @@ class _SettingsState extends State<Settings> {
                                   .systemInfo
                                   .primaryColor,
                           onTap: () {
+                            Provider.of<InfoProvider>(context, listen: false)
+                                .updateSystemSettingsLocally(
+                              editedSystemInfo: SystemInfo(
+                                versionNumber: systemInfo.versionNumber,
+                                language: systemInfo.language,
+                                currencySymbol: systemInfo.currencySymbol,
+                                primaryColor: isIconsColor
+                                    ? systemInfo.primaryColor
+                                    : newColor,
+                                iconsColor: isIconsColor
+                                    ? newColor
+                                    : systemInfo.iconsColor,
+                              ),
+                            );
                             _closeColorPickerOverlay();
                           }),
                     ),
@@ -184,28 +186,36 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  Scaffold mainBody(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            topSection(
-                context: context,
-                height: height,
-                text: "Settings",
-                width: width),
-            SizedBox(height: height * 2),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                leftSection(),
-                line(),
-                rightSection(),
-              ],
-            ),
-          ],
+  Widget mainBody(BuildContext context) {
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (bool value) {
+        // get settings data back again from api so that unsaved changes can be reverted
+        Provider.of<InfoProvider>(context, listen: false)
+            .getSettings(context: context);
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              topSection(
+                  context: context,
+                  height: height,
+                  text: "Settings",
+                  width: width),
+              SizedBox(height: height * 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  leftSection(),
+                  line(),
+                  rightSection(),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -445,6 +455,9 @@ class _SettingsState extends State<Settings> {
                                 "System settings have been updated successfully",
                           ),
                         );
+                        setState(() {
+                          isEditingSystemSettings = false;
+                        });
                       } else {
                         showTopSnackBar(
                           overlayContext,
@@ -623,10 +636,13 @@ class _SettingsState extends State<Settings> {
               child: Column(
                 children: [
                   buildImage(
-                    "assets/restaurant_image.png",
+                    Provider.of<InfoProvider>(context, listen: true)
+                        .restaurantInfo
+                        .imageUrl!,
                     height * 25,
                     width * 31,
                     context: context,
+                    networkImage: true,
                   ),
                   SizedBox(height: height * 2),
                   formDataBox(
@@ -815,6 +831,7 @@ class _SettingsState extends State<Settings> {
                     )
                   : buildImage(
                       data,
+                      networkImage: true,
                       width * 10,
                       width * 10,
                       context: context,

@@ -131,7 +131,6 @@ class InfoProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
-      // TODO: need to handle this error
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
@@ -211,7 +210,6 @@ class InfoProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
-      // TODO: need to handle this error
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
@@ -246,14 +244,14 @@ class InfoProvider extends ChangeNotifier {
           name: result["name"],
           imageUrl: result["image"]["data"] == null
               ? null
-              : "${Data.baseUrl}${result["image"]["formats"]["small"]["url"]}",
+              : "${Data.baseUrl}${result["image"]["data"]["attributes"]["formats"]["small"]["url"]}",
           vatNumber: result["vat"],
           address: result["address"],
           postcode: result["postcode"],
           countryOfOperation: result["country"],
           logoUrl: result["logo"]["data"] == null
               ? null
-              : "${Data.baseUrl}${result["image"]["formats"]["small"]["url"]}",
+              : "${Data.baseUrl}${result["logo"]["data"]["attributes"]["url"]}",
         );
         systemInfo = SystemInfo(
           versionNumber: result["version"],

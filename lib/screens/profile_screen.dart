@@ -194,9 +194,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 height * 0.8,
                                 width * 0.8,
                                 () {
-                                  Provider.of<AuthProvider>(context,
-                                          listen: false)
-                                      .logout(context: context);
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return alert();
+                                    },
+                                  );
                                 },
                                 context: context,
                               ),
@@ -441,6 +444,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  // set up the AlertDialog
+  Widget alert() {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text("Logout"),
+      content: const Text("Would you like to logout?"),
+      actions: [
+        textButton(
+          text: "Yes",
+          height: height,
+          width: width,
+          textColor: Data.greenColor,
+          buttonColor: Data.greenColor,
+          onTap: () {
+            // logout
+            Provider.of<AuthProvider>(context, listen: false)
+                .logout(context: context);
+          },
+        ),
+        SizedBox(height: height * 2),
+        textButton(
+          text: "No",
+          height: height,
+          width: width,
+          textColor: Data.redColor,
+          buttonColor: Data.redColor,
+          onTap: () {
+            // close dialog box
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 
