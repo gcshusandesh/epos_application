@@ -2,8 +2,8 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
-import 'package:epos_application/providers/employee_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
+import 'package:epos_application/providers/user_provider.dart';
 import 'package:epos_application/screens/employees/create_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +55,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: Provider.of<UserProvider>(context, listen: true)
-                          .employeeList
+                          .userList
                           .isEmpty
                       ? Column(
                           children: [
@@ -119,7 +119,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                                 i <
                                     Provider.of<UserProvider>(context,
                                             listen: true)
-                                        .employeeList
+                                        .userList
                                         .length;
                                 i++)
                               buildEmployeeRow(i),
@@ -175,17 +175,17 @@ class _ManageEmployeeState extends State<ManageEmployee> {
             children: [
               tableItem(
                   Provider.of<UserProvider>(context, listen: true)
-                      .employeeList[index]
+                      .userList[index]
                       .name,
                   width),
               buildCustomText(
-                Provider.of<UserProvider>(context, listen: true)
-                        .employeeList[index]
+                !Provider.of<UserProvider>(context, listen: true)
+                        .userList[index]
                         .isBlocked
                     ? "Active"
                     : "Inactive",
-                Provider.of<UserProvider>(context, listen: true)
-                        .employeeList[index]
+                !Provider.of<UserProvider>(context, listen: true)
+                        .userList[index]
                         .isBlocked
                     ? Data.greenColor
                     : Data.redColor,
@@ -196,22 +196,22 @@ class _ManageEmployeeState extends State<ManageEmployee> {
         ),
         tableItem(
             Provider.of<UserProvider>(context, listen: true)
-                .employeeList[index]
+                .userList[index]
                 .email,
             width),
         tableItem(
             Provider.of<UserProvider>(context, listen: true)
-                .employeeList[index]
+                .userList[index]
                 .phone,
             width),
         tableItem(
             Provider.of<UserProvider>(context, listen: true)
-                .employeeList[index]
+                .userList[index]
                 .gender,
             width),
         employeeLabel(
             text: Provider.of<UserProvider>(context, listen: true)
-                .employeeList[index]
+                .userList[index]
                 .userType
                 .name
                 .toString(),
@@ -223,11 +223,11 @@ class _ManageEmployeeState extends State<ManageEmployee> {
         buildCupertinoSwitch(
           index: index,
           value: !Provider.of<UserProvider>(context, listen: true)
-              .employeeList[index]
+              .userList[index]
               .isBlocked,
           onChanged: (value) {
             Provider.of<UserProvider>(context, listen: false)
-                .changeEmployeeStatus(index);
+                .changeUserStatus(index);
           },
           context: context,
         ),

@@ -2,9 +2,10 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
-import 'package:epos_application/providers/employee_provider.dart';
+import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
+import 'package:epos_application/providers/user_provider.dart';
 import 'package:epos_application/screens/menu/menu_page.dart';
 import 'package:epos_application/screens/profile_screen.dart';
 import 'package:epos_application/screens/settings.dart';
@@ -52,8 +53,8 @@ class _DashboardState extends State<Dashboard> {
             .getSpecialsList(init: true);
 
         // Get Employee Data from API
-        Provider.of<UserProvider>(context, listen: false)
-            .getEmployeeList(init: true);
+        Provider.of<UserProvider>(context, listen: false).getUserList(
+            user: Provider.of<AuthProvider>(context, listen: false).user);
 
         // Get Category Data from API
         Provider.of<MenuProvider>(context, listen: false)
