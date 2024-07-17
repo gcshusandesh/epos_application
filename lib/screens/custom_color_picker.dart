@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class CustomBlockPicker extends StatelessWidget {
-  final Color pickerColor;
+class CustomColorPicker extends StatefulWidget {
+  final Color initialColor;
   final ValueChanged<Color> onColorChanged;
   final List<Color> availableColors;
 
-  const CustomBlockPicker({
+  const CustomColorPicker({
     super.key,
-    required this.pickerColor,
+    required this.initialColor,
     required this.onColorChanged,
     this.availableColors = const [
       Colors.red,
@@ -17,11 +17,23 @@ class CustomBlockPicker extends StatelessWidget {
       Colors.orange,
       Colors.purple,
       Colors.brown,
-      Colors.grey,
       Colors.pink,
       Colors.cyan,
     ],
   });
+
+  @override
+  State<CustomColorPicker> createState() => _CustomColorPickerState();
+}
+
+class _CustomColorPickerState extends State<CustomColorPicker> {
+  late Color _pickerColor;
+
+  @override
+  void initState() {
+    super.initState();
+    _pickerColor = widget.initialColor;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,18 +44,24 @@ class CustomBlockPicker extends StatelessWidget {
         crossAxisSpacing: 10.0,
         mainAxisSpacing: 10.0,
       ),
-      itemCount: availableColors.length,
+      itemCount: widget.availableColors.length,
       itemBuilder: (context, index) {
-        final color = availableColors[index];
+        final color = widget.availableColors[index];
         return GestureDetector(
-          onTap: () => onColorChanged(color),
+          onTap: () {
+            setState(() {
+              _pickerColor = color;
+            });
+            widget.onColorChanged(color);
+          },
           child: Container(
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color: color == pickerColor ? Colors.black : Colors.transparent,
+                color:
+                    color == _pickerColor ? Colors.black : Colors.transparent,
                 width: 3,
               ),
             ),

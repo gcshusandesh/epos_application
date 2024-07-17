@@ -7,8 +7,8 @@ import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
+import 'package:epos_application/screens/custom_color_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -92,8 +92,8 @@ class _SettingsState extends State<Settings> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    BlockPicker(
-                      pickerColor: systemInfo.primaryColor,
+                    CustomColorPicker(
+                      initialColor: systemInfo.primaryColor,
                       onColorChanged: (Color newColor) {
                         // Handle color change
                         Provider.of<InfoProvider>(context, listen: false)
@@ -111,6 +111,25 @@ class _SettingsState extends State<Settings> {
                         );
                       },
                     ),
+                    // BlockPicker(
+                    //   pickerColor: systemInfo.primaryColor,
+                    //   onColorChanged: (Color newColor) {
+                    //     // Handle color change
+                    //     Provider.of<InfoProvider>(context, listen: false)
+                    //         .updateSystemSettingsLocally(
+                    //       editedSystemInfo: SystemInfo(
+                    //         versionNumber: systemInfo.versionNumber,
+                    //         language: systemInfo.language,
+                    //         currencySymbol: systemInfo.currencySymbol,
+                    //         primaryColor: isIconsColor
+                    //             ? systemInfo.primaryColor
+                    //             : newColor,
+                    //         iconsColor:
+                    //             isIconsColor ? newColor : systemInfo.iconsColor,
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
                     const SizedBox(height: 20),
                     Align(
                       alignment: Alignment.center,
