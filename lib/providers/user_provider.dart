@@ -33,6 +33,8 @@ class UserProvider extends ChangeNotifier {
           await http.get(Uri.parse(url.toString()), headers: headers);
       final data = json.decode(response.body);
       if (response.statusCode == 200) {
+        //empty list before fetching new data
+        userList = [];
         data.forEach((user) {
           if (assignUserType(user["userType"]) != UserType.owner) {
             //exclude owner from the list
