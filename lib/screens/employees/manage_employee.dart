@@ -2,11 +2,14 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/user_provider.dart';
 import 'package:epos_application/screens/employees/create_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class ManageEmployee extends StatefulWidget {
   const ManageEmployee({super.key});
@@ -17,6 +20,7 @@ class ManageEmployee extends StatefulWidget {
 }
 
 class _ManageEmployeeState extends State<ManageEmployee> {
+  bool isLoading = true;
   bool init = true;
   late double height;
   late double width;
@@ -225,9 +229,51 @@ class _ManageEmployeeState extends State<ManageEmployee> {
           value: !Provider.of<UserProvider>(context, listen: true)
               .userList[index]
               .isBlocked,
-          onChanged: (value) {
-            Provider.of<UserProvider>(context, listen: false)
-                .changeUserStatus(index);
+          onChanged: (bool value) async {
+            setState(() {
+              isLoading = true;
+            });
+            bool isStatusUpdateSuccessful =
+                await Provider.of<UserProvider>(context, listen: false)
+                    .updateUserStatus(
+                        context: context,
+                        accessToken:
+                            Provider.of<AuthProvider>(context, listen: false)
+                                .user
+                                .accessToken!,
+                        id: Provider.of<UserProvider>(context, listen: false)
+                            .userList[index]
+                            .id!,
+                        isBlocked: !value);
+
+            ///need to provide opposite of value because the switch is already toggled
+            setState(() {
+              isLoading = false;
+            });
+            if (isStatusUpdateSuccessful) {
+              if (mounted) {
+                // Check if the widget is still mounted
+                showTopSnackBar(
+                  Overlay.of(context),
+                  const CustomSnackBar.success(
+                    message: "User status successfully updated",
+                  ),
+                );
+
+                Provider.of<UserProvider>(context, listen: false)
+                    .changeUserStatusLocally(index);
+              }
+            } else {
+              if (mounted) {
+                // Check if the widget is still mounted
+                showTopSnackBar(
+                  Overlay.of(context),
+                  const CustomSnackBar.error(
+                    message: "User status update failed",
+                  ),
+                );
+              }
+            }
           },
           context: context,
         ),

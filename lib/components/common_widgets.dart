@@ -131,9 +131,12 @@ Widget tableTitle(String text, double width) {
 
 Widget tableItem(String text, double width) {
   return Center(
-      child: buildSmallText(
-    text,
-    Data.lightGreyTextColor,
-    width,
+      child: Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 5),
+    child: buildSmallText(
+      text,
+      Data.lightGreyTextColor,
+      width,
+    ),
   ));
 }

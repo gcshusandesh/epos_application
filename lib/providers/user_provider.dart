@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 class UserProvider extends ChangeNotifier {
   List<UserDataModel> userList = [];
 
-  void changeUserStatus(int index) {
+  void changeUserStatusLocally(int index) {
     userList[index].isBlocked = !userList[index].isBlocked;
     notifyListeners();
   }
@@ -37,6 +37,7 @@ class UserProvider extends ChangeNotifier {
           if (assignUserType(user["userType"]) != UserType.owner) {
             //exclude owner from the list
             userList.add(UserDataModel(
+              id: user["id"],
               name: user["name"],
               email: user["email"],
               phone: user["phone"],
@@ -76,6 +77,69 @@ class UserProvider extends ChangeNotifier {
         await getUserList(user: user, context: context);
       }
     }
+  }
+
+  Future<bool> updateUserStatus({
+    required BuildContext context,
+    required String accessToken,
+    required int id,
+    required bool isBlocked,
+  }) async {
+    var url = Uri.parse("${Data.baseUrl}/api/users/$id");
+    try {
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      };
+      Map<String, dynamic> body = {"blocked": isBlocked};
+
+      final response = await http.put(Uri.parse(url.toString()),
+          headers: headers, body: jsonEncode(body));
+      if (response.statusCode == 200) {
+        // TODO: reflect change locally
+        notifyListeners();
+        return true;
+      }
+      return false;
+    } on SocketException {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await updateUserStatus(
+            accessToken: accessToken,
+            id: id,
+            isBlocked: isBlocked,
+            context: context);
+      }
+      return false;
+    } catch (e) {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ErrorScreen()),
+        );
+      }
+      if (context.mounted) {
+        //retry api
+        await updateUserStatus(
+            accessToken: accessToken,
+            id: id,
+            isBlocked: isBlocked,
+            context: context);
+      }
+    }
+    return false;
   }
 
   UserType assignUserType(String userType) {
