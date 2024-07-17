@@ -226,9 +226,7 @@ class _ImageUploadState extends State<ImageUpload> {
               height,
               width,
               () async {
-                print("original image = $originalImage");
                 if (originalImage == null) {
-                  print("erroe message");
                   showTopSnackBar(
                     Overlay.of(context),
                     const CustomSnackBar.error(

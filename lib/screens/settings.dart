@@ -66,9 +66,13 @@ class _SettingsState extends State<Settings> {
       builder: (BuildContext context) => Stack(
         children: [
           // Modal barrier to prevent interaction with underlying content
-          const ModalBarrier(
+          ModalBarrier(
             color: Colors.black54, // Semi-transparent black color
-            dismissible: true, // Prevents dismissing overlay with taps
+            dismissible: true,
+            onDismiss: () {
+              /// as color is not saved at this point we need to reset colors
+              _closeColorPickerOverlay();
+            },
           ),
           Center(
             child: Material(
@@ -618,20 +622,11 @@ class _SettingsState extends State<Settings> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  InkWell(
-                    onDoubleTap: () async {
-                      print("tapped");
-                      await Provider.of<InfoProvider>(context, listen: false)
-                          .getSettings(
-                        context: context,
-                      );
-                    },
-                    child: buildImage(
-                      "assets/restaurant_image.png",
-                      height * 25,
-                      width * 31,
-                      context: context,
-                    ),
+                  buildImage(
+                    "assets/restaurant_image.png",
+                    height * 25,
+                    width * 31,
+                    context: context,
                   ),
                   SizedBox(height: height * 2),
                   formDataBox(
