@@ -1,4 +1,5 @@
 import 'package:epos_application/components/buttons.dart';
+import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
@@ -19,6 +20,7 @@ class CreateEmployee extends StatefulWidget {
 }
 
 class _CreateEmployeeState extends State<CreateEmployee> {
+  bool isLoading = false;
   bool init = true;
   late double height;
   late double width;
@@ -36,7 +38,8 @@ class _CreateEmployeeState extends State<CreateEmployee> {
     }
   }
 
-  String? dropdownValue;
+  String? genderDropdownValue;
+  String? typeDropdownValue;
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -60,6 +63,17 @@ class _CreateEmployeeState extends State<CreateEmployee> {
 
   @override
   Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        mainBody(context),
+        isLoading
+            ? onLoading(width: width, context: context)
+            : const SizedBox(),
+      ],
+    );
+  }
+
+  Scaffold mainBody(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -200,10 +214,10 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                   ),
                                   hint: const Text('Select'),
                                   dropdownColor: Colors.white,
-                                  value: dropdownValue,
+                                  value: genderDropdownValue,
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      dropdownValue = newValue!;
+                                      genderDropdownValue = newValue!;
                                     });
                                   },
                                   items: <String>[
@@ -266,10 +280,10 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                   ),
                                   hint: const Text('Select'),
                                   dropdownColor: Colors.white,
-                                  value: dropdownValue,
+                                  value: typeDropdownValue,
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      dropdownValue = newValue!;
+                                      typeDropdownValue = newValue!;
                                     });
                                   },
                                   items: <String>[
@@ -294,30 +308,62 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 "Create",
                                 height,
                                 width,
-                                () {
-                                  //submit form
+                                () async {
                                   // TODO: add form validation here
-                                  Provider.of<UserProvider>(context,
-                                          listen: false)
-                                      .addUser(UserDataModel(
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+                                  bool isCreationSuccessful =
+                                      await Provider.of<UserProvider>(context,
+                                              listen: false)
+                                          .createUser(
                                     name: nameController.text,
-                                    imageUrl: "assets/profile_picture.png",
                                     email: emailController.text,
-                                    // password: passwordController.text,
+                                    password: passwordController.text,
                                     phone: phoneController.text,
-                                    gender: dropdownValue!,
-                                    isBlocked: true,
-                                    userType: UserType.waiter,
-                                  ));
-
-                                  Navigator.pop(context);
-                                  // show success massage
-                                  showTopSnackBar(
-                                    Overlay.of(context),
-                                    const CustomSnackBar.success(
-                                      message: "Employee Created Successfully",
-                                    ),
+                                    gender: genderDropdownValue!,
+                                    userType: typeDropdownValue!,
+                                    context: context,
                                   );
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                  if (isCreationSuccessful) {
+                                    if (context.mounted) {
+                                      Provider.of<UserProvider>(context,
+                                              listen: false)
+                                          .addUserLocally(UserDataModel(
+                                        name: nameController.text,
+                                        imageUrl: "assets/profile_picture.png",
+                                        email: emailController.text,
+                                        phone: phoneController.text,
+                                        gender: genderDropdownValue!,
+                                        isBlocked: false,
+                                        userType:
+                                            assignUserType(typeDropdownValue!),
+                                      ));
+
+                                      // show success massage
+                                      showTopSnackBar(
+                                        Overlay.of(context),
+                                        const CustomSnackBar.success(
+                                          message:
+                                              "Employee Created Successfully",
+                                        ),
+                                      );
+                                      Navigator.pop(context);
+                                    }
+                                  } else {
+                                    if (context.mounted) {
+                                      // show error massage
+                                      showTopSnackBar(
+                                        Overlay.of(context),
+                                        const CustomSnackBar.error(
+                                          message: "Employee Creation Failed",
+                                        ),
+                                      );
+                                    }
+                                  }
                                 },
                                 context,
                               ),
@@ -334,6 +380,18 @@ class _CreateEmployeeState extends State<CreateEmployee> {
         ),
       ),
     );
+  }
+
+  UserType assignUserType(String userType) {
+    if (userType == "owner") {
+      return UserType.owner;
+    } else if (userType == "manager") {
+      return UserType.manager;
+    } else if (userType == "waiter") {
+      return UserType.waiter;
+    } else {
+      return UserType.chef;
+    }
   }
 
   Container dataBox(

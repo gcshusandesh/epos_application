@@ -281,7 +281,7 @@ class _DashboardState extends State<Dashboard> {
                     ? width * 20
                     : 0),
             dashboardItem(
-              "assets/dashboard/employees.svg",
+              "assets/dashboard/kitchen.svg",
               "Kitchen",
               height,
               width,

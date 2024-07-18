@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
@@ -15,9 +16,99 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addUser(UserDataModel user) {
+  void addUserLocally(UserDataModel user) {
     userList.add(user);
     notifyListeners();
+  }
+
+  Future<bool> createUser({
+    required String name,
+    required String email,
+    required String password,
+    required String phone,
+    required String gender,
+    required String userType,
+    required BuildContext context,
+  }) async {
+    var url = Uri.parse("${Data.baseUrl}/api/auth/local/register");
+    // Function to generate a random username
+    String generateUsername(String name) {
+      String firstName = name.split(' ')[0];
+      int randomNumber = Random().nextInt(90) +
+          10; // Generates a random number between 10 and 99
+      return '$firstName$randomNumber';
+    }
+
+    try {
+      Map<String, String> body = {
+        "username": generateUsername(name),
+        "name": name,
+        "email": email,
+        "password": password,
+        "phone": phone,
+        "gender": gender,
+        "userType": userType,
+      };
+      final response = await http.post(
+        Uri.parse(url.toString()),
+        body: body,
+      );
+      final data = json.decode(response.body);
+      if (response.statusCode == 200) {
+        print("data = $data");
+        notifyListeners();
+        return true;
+      } else {
+        return false;
+      }
+    } on SocketException {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+                trace: "createUser",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await createUser(
+            name: name,
+            email: email,
+            password: password,
+            phone: phone,
+            gender: gender,
+            userType: userType,
+            context: context);
+      }
+      return false;
+    } catch (e) {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                trace: "createUser",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await createUser(
+            name: name,
+            email: email,
+            password: password,
+            phone: phone,
+            gender: gender,
+            userType: userType,
+            context: context);
+      }
+      return false;
+    }
   }
 
   Future<void> getUserList(
@@ -32,7 +123,6 @@ class UserProvider extends ChangeNotifier {
       final response =
           await http.get(Uri.parse(url.toString()), headers: headers);
       final data = json.decode(response.body);
-      print("data = $data");
       if (response.statusCode == 200) {
         //empty list before fetching new data
         userList = [];

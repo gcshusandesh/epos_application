@@ -34,7 +34,7 @@ class AuthProvider extends ChangeNotifier {
     required String password,
     required BuildContext context,
   }) async {
-    var url = Uri.parse("${Data.baseUrl}/api/auth/local?populate=*");
+    var url = Uri.parse("${Data.baseUrl}/api/auth/local");
     try {
       Map<String, String> body = {"identifier": username, "password": password};
       final response = await http.post(
