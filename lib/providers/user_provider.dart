@@ -123,7 +123,7 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> getUserList(
       {required UserDataModel user, required BuildContext context}) async {
-    var url = Uri.parse("${Data.baseUrl}/api/users");
+    var url = Uri.parse("${Data.baseUrl}/api/users?populate=image");
     try {
       Map<String, String> headers = {
         'Content-Type': 'application/json',
@@ -143,6 +143,9 @@ class UserProvider extends ChangeNotifier {
             if (assignUserType(user["userType"]) != UserType.owner) {
               userList.add(UserDataModel(
                 id: user["id"],
+                imageUrl: user["image"] == null
+                    ? null
+                    : "${Data.baseUrl}${user["image"]["formats"]["small"]["url"]}",
                 name: user["name"],
                 email: user["email"],
                 phone: user["phone"],
@@ -157,6 +160,9 @@ class UserProvider extends ChangeNotifier {
                 assignUserType(user["userType"]) != UserType.manager) {
               userList.add(UserDataModel(
                 id: user["id"],
+                imageUrl: user["image"] == null
+                    ? null
+                    : "${Data.baseUrl}${user["image"]["formats"]["small"]["url"]}",
                 name: user["name"],
                 email: user["email"],
                 phone: user["phone"],

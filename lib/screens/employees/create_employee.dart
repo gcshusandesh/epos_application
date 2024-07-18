@@ -140,22 +140,35 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                               Container(
                                 width: width * 15,
                                 height: width * 15,
-                                padding: EdgeInsets.all(width * 3),
+                                padding: EdgeInsets.all(widget.isEdit &&
+                                        ((widget.user!.imageUrl) != null)
+                                    ? 0
+                                    : width * 3),
                                 decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: Data.lightGreyBodyColor,
                                 ),
                                 child: Center(
-                                  child: SvgPicture.asset(
-                                    "assets/svg/profile_icon.svg",
-                                    colorFilter: ColorFilter.mode(
-                                        Provider.of<InfoProvider>(context,
-                                                listen: true)
-                                            .systemInfo
-                                            .iconsColor,
-                                        BlendMode.srcIn),
-                                    fit: BoxFit.fill,
-                                  ),
+                                  child: widget.isEdit &&
+                                          ((widget.user!.imageUrl) != null)
+                                      ? ClipOval(
+                                          child: buildImage(
+                                              widget.user!.imageUrl!,
+                                              width * 15,
+                                              width * 15,
+                                              isNetworkImage: true,
+                                              context: context),
+                                        )
+                                      : SvgPicture.asset(
+                                          "assets/svg/profile_icon.svg",
+                                          colorFilter: ColorFilter.mode(
+                                              Provider.of<InfoProvider>(context,
+                                                      listen: true)
+                                                  .systemInfo
+                                                  .iconsColor,
+                                              BlendMode.srcIn),
+                                          fit: BoxFit.fill,
+                                        ),
                                 ),
                               ),
                               SizedBox(height: height),
@@ -326,7 +339,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                               SizedBox(height: height),
                               buildButton(
                                 Icons.person,
-                                "Create",
+                                widget.isEdit ? "Update" : "Create",
                                 height,
                                 width,
                                 () async {
