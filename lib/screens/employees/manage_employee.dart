@@ -188,16 +188,18 @@ class _ManageEmployeeState extends State<ManageEmployee> {
         tableItem((index + 1).toString(), width),
         InkWell(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => CreateEmployee(
-                        isEdit: true,
-                        user: Provider.of<UserProvider>(context, listen: true)
-                            .userList[index],
-                        index: index,
-                      )),
-            );
+            if (isEditing) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => CreateEmployee(
+                          isEdit: true,
+                          user: Provider.of<UserProvider>(context, listen: true)
+                              .userList[index],
+                          index: index,
+                        )),
+              );
+            }
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 10.0),

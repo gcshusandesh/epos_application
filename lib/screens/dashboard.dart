@@ -258,28 +258,30 @@ class _DashboardState extends State<Dashboard> {
                   ? MainAxisAlignment.center
                   : MainAxisAlignment.spaceEvenly,
           children: [
-            dashboardItem(
-              "assets/dashboard/employees.svg",
-              "My Employee",
-              height,
-              width,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ManageEmployee()),
-                );
-              },
-              context,
-              isVisible: dashboardVisibility[4],
+            Padding(
+              padding: EdgeInsets.only(
+                  right: Provider.of<AuthProvider>(context, listen: true)
+                              .user
+                              .userType ==
+                          UserType.chef
+                      ? width * 20
+                      : 0),
+              child: dashboardItem(
+                "assets/dashboard/employees.svg",
+                "My Employee",
+                height,
+                width,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ManageEmployee()),
+                  );
+                },
+                context,
+                isVisible: dashboardVisibility[4],
+              ),
             ),
-            SizedBox(
-                width: Provider.of<AuthProvider>(context, listen: true)
-                            .user
-                            .userType ==
-                        UserType.chef
-                    ? width * 20
-                    : 0),
             dashboardItem(
               "assets/dashboard/kitchen.svg",
               "Kitchen",
