@@ -3,6 +3,7 @@ import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +13,16 @@ import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class CreateEmployee extends StatefulWidget {
-  const CreateEmployee({super.key});
+  const CreateEmployee({
+    super.key,
+    this.isEdit = false,
+    this.user,
+    this.index,
+  });
   static const routeName = "makeEmployee";
+  final bool isEdit;
+  final UserDataModel? user;
+  final int? index;
 
   @override
   State<CreateEmployee> createState() => _CreateEmployeeState();
@@ -25,6 +34,13 @@ class _CreateEmployeeState extends State<CreateEmployee> {
   late double height;
   late double width;
 
+  String? genderDropdownValue;
+  String? typeDropdownValue;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController placeHolderController = TextEditingController();
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -33,22 +49,21 @@ class _CreateEmployeeState extends State<CreateEmployee> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
+      if (widget.isEdit) {
+        // populate controller with current employee value
+        nameController.text = widget.user!.name;
+        emailController.text = widget.user!.email;
+        phoneController.text = widget.user!.phone;
+        genderDropdownValue = widget.user!.gender;
+        typeDropdownValue = widget.user!.userType.name;
+      }
 
       init = false;
     }
   }
 
-  String? genderDropdownValue;
-  String? typeDropdownValue;
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController placeHolderController = TextEditingController();
-
   @override
   void dispose() {
-    // TODO: implement dispose
     //to save memory
     nameController.dispose();
     emailController.dispose();
@@ -114,7 +129,9 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                     child: Column(
                       children: [
                         buildTitleText(
-                            "Create Employee", Data.darkTextColor, width * 0.8),
+                            widget.isEdit ? "Edit Employee" : "Create Employee",
+                            Data.darkTextColor,
+                            width * 0.8),
                         SizedBox(height: height),
                         Form(
                           key: _formKey,
@@ -156,13 +173,17 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 controller: emailController,
                               ),
                               SizedBox(height: height),
-                              dataBox(
-                                title: "Password",
-                                hintText: "Password",
-                                isRequired: true,
-                                controller: passwordController,
+                              widget.isEdit
+                                  ? const SizedBox()
+                                  : dataBox(
+                                      title: "Password",
+                                      hintText: "Password",
+                                      isRequired: true,
+                                      controller: passwordController,
+                                    ),
+                              SizedBox(
+                                height: widget.isEdit ? 0 : height,
                               ),
-                              SizedBox(height: height),
                               dataBox(
                                 title: "Phone",
                                 hintText: "Phone",
@@ -313,28 +334,79 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                   setState(() {
                                     isLoading = true;
                                   });
-                                  bool isCreationSuccessful =
-                                      await Provider.of<UserProvider>(context,
-                                              listen: false)
-                                          .createUser(
-                                    name: nameController.text,
-                                    email: emailController.text,
-                                    password: passwordController.text,
-                                    phone: phoneController.text,
-                                    gender: genderDropdownValue!,
-                                    userType: typeDropdownValue!,
-                                    context: context,
-                                  );
+                                  late bool isSuccessful;
+                                  if (widget.isEdit) {
+                                    /// edit employee data
+                                    isSuccessful =
+                                        await Provider.of<AuthProvider>(context,
+                                                listen: false)
+                                            .updateUserDetails(
+                                                context: context,
+                                                editedDetails: UserDataModel(
+                                                  id: widget.user!.id,
+                                                  name: nameController.text,
+                                                  email: emailController.text,
+                                                  phone: phoneController.text,
+                                                  gender: genderDropdownValue!,
+                                                  userType: assignUserType(
+                                                      typeDropdownValue!),
+                                                  isBlocked:
+                                                      widget.user!.isBlocked,
+                                                ));
+                                  } else {
+                                    /// create employee
+                                    isSuccessful =
+                                        await Provider.of<UserProvider>(context,
+                                                listen: false)
+                                            .createUser(
+                                      name: nameController.text,
+                                      email: emailController.text,
+                                      password: passwordController.text,
+                                      phone: phoneController.text,
+                                      gender: genderDropdownValue!,
+                                      userType: typeDropdownValue!,
+                                      context: context,
+                                    );
+                                  }
+
                                   setState(() {
                                     isLoading = false;
                                   });
-                                  if (isCreationSuccessful) {
+
+                                  if (isSuccessful && widget.isEdit) {
+                                    /// show success message for employee edit
+                                    if (context.mounted) {
+                                      Provider.of<UserProvider>(context,
+                                              listen: false)
+                                          .editUserLocally(
+                                        index: widget.index!,
+                                        editedUser: UserDataModel(
+                                          name: nameController.text,
+                                          email: emailController.text,
+                                          phone: phoneController.text,
+                                          gender: genderDropdownValue!,
+                                          userType: assignUserType(
+                                              typeDropdownValue!),
+                                          isBlocked: widget.user!.isBlocked,
+                                        ),
+                                      );
+                                      Navigator.pop(context);
+                                      // show success massage
+                                      showTopSnackBar(
+                                        Overlay.of(context),
+                                        const CustomSnackBar.success(
+                                          message:
+                                              "Employee Edited Successfully",
+                                        ),
+                                      );
+                                    }
+                                  } else if (isSuccessful && !widget.isEdit) {
+                                    /// show success message for employee creation
                                     if (context.mounted) {
                                       Provider.of<UserProvider>(context,
                                               listen: false)
                                           .addUserLocally(UserDataModel(
                                         name: nameController.text,
-                                        imageUrl: "assets/profile_picture.png",
                                         email: emailController.text,
                                         phone: phoneController.text,
                                         gender: genderDropdownValue!,
@@ -342,7 +414,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                         userType:
                                             assignUserType(typeDropdownValue!),
                                       ));
-
+                                      Navigator.pop(context);
                                       // show success massage
                                       showTopSnackBar(
                                         Overlay.of(context),
@@ -351,15 +423,16 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                               "Employee Created Successfully",
                                         ),
                                       );
-                                      Navigator.pop(context);
                                     }
                                   } else {
+                                    /// show error massage
                                     if (context.mounted) {
-                                      // show error massage
                                       showTopSnackBar(
                                         Overlay.of(context),
-                                        const CustomSnackBar.error(
-                                          message: "Employee Creation Failed",
+                                        CustomSnackBar.error(
+                                          message: widget.isEdit
+                                              ? "Employee Edit Failed"
+                                              : "Employee Creation Failed",
                                         ),
                                       );
                                     }

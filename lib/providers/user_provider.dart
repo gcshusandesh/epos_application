@@ -16,6 +16,16 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void editUserLocally(
+      {required int index, required UserDataModel editedUser}) {
+    userList[index].name = editedUser.name;
+    userList[index].email = editedUser.email;
+    userList[index].phone = editedUser.phone;
+    userList[index].gender = editedUser.gender;
+    userList[index].userType = editedUser.userType;
+    notifyListeners();
+  }
+
   void addUserLocally(UserDataModel user) {
     userList.add(user);
     notifyListeners();

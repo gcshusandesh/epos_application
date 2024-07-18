@@ -401,6 +401,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                         isLoggedIn:
                                                             user.isLoggedIn,
                                                       ),
+                                                      isLoggedIn: true,
                                                       context: context);
                                           setState(() {
                                             isLoading = false;

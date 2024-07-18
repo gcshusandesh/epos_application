@@ -236,8 +236,9 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> updateUserDetails(
       {required BuildContext context,
-      required UserDataModel editedDetails}) async {
-    var url = Uri.parse("${Data.baseUrl}/api/users/${user.id}");
+      required UserDataModel editedDetails,
+      bool isLoggedIn = false}) async {
+    var url = Uri.parse("${Data.baseUrl}/api/users/${editedDetails.id}");
     try {
       Map<String, String> headers = {
         'Content-Type': 'application/json',
@@ -249,15 +250,19 @@ class AuthProvider extends ChangeNotifier {
         "email": editedDetails.email,
         "phone": editedDetails.phone,
         "gender": editedDetails.gender,
+        "userType": editedDetails.userType.name,
       };
 
       final response = await http.put(Uri.parse(url.toString()),
           headers: headers, body: jsonEncode(body));
       if (response.statusCode == 200) {
-        updateUserDetailsLocally(editedDetails);
+        if (isLoggedIn) {
+          updateUserDetailsLocally(editedDetails);
 
-        ///save changes to cache
-        addUserDataToSF();
+          ///save changes to cache
+          addUserDataToSF();
+        }
+
         return true;
       }
       return false;
@@ -275,7 +280,10 @@ class AuthProvider extends ChangeNotifier {
       }
       if (context.mounted) {
         //retry api
-        await updateUserDetails(editedDetails: editedDetails, context: context);
+        await updateUserDetails(
+            editedDetails: editedDetails,
+            isLoggedIn: isLoggedIn,
+            context: context);
       }
       return false;
     } catch (e) {
@@ -291,7 +299,10 @@ class AuthProvider extends ChangeNotifier {
       }
       if (context.mounted) {
         //retry api
-        await updateUserDetails(editedDetails: editedDetails, context: context);
+        await updateUserDetails(
+            editedDetails: editedDetails,
+            isLoggedIn: isLoggedIn,
+            context: context);
       }
     }
     return false;

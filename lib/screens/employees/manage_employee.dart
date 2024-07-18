@@ -21,7 +21,8 @@ class ManageEmployee extends StatefulWidget {
 }
 
 class _ManageEmployeeState extends State<ManageEmployee> {
-  bool isLoading = true;
+  bool isLoading = false;
+  bool isEditing = false;
   bool init = true;
   late double height;
   late double width;
@@ -164,16 +165,18 @@ class _ManageEmployeeState extends State<ManageEmployee> {
           },
           context: context,
         ),
-        // SizedBox(width: width),
-        // iconButton(
-        //   "assets/svg/edit.svg",
-        //   height,
-        //   width,
-        //   () {
-        //     //do something
-        //   },
-        //   context: context,
-        // ),
+        SizedBox(width: width),
+        iconButton(
+          "assets/svg/edit.svg",
+          height,
+          width,
+          () {
+            setState(() {
+              isEditing = !isEditing;
+            });
+          },
+          context: context,
+        ),
       ],
     );
   }
@@ -183,29 +186,60 @@ class _ManageEmployeeState extends State<ManageEmployee> {
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
         tableItem((index + 1).toString(), width),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Column(
-            children: [
-              tableItem(
-                  Provider.of<UserProvider>(context, listen: true)
-                      .userList[index]
-                      .name,
-                  width),
-              buildCustomText(
-                !Provider.of<UserProvider>(context, listen: true)
+        InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => CreateEmployee(
+                        isEdit: true,
+                        user: Provider.of<UserProvider>(context, listen: true)
+                            .userList[index],
+                        index: index,
+                      )),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Column(
+              children: [
+                tableItem(
+                    Provider.of<UserProvider>(context, listen: true)
                         .userList[index]
-                        .isBlocked
-                    ? "Active"
-                    : "Inactive",
-                !Provider.of<UserProvider>(context, listen: true)
-                        .userList[index]
-                        .isBlocked
-                    ? Data.greenColor
-                    : Data.redColor,
-                width,
-              )
-            ],
+                        .name,
+                    width),
+                Row(
+                  mainAxisAlignment: isEditing
+                      ? MainAxisAlignment.spaceEvenly
+                      : MainAxisAlignment.center,
+                  children: [
+                    buildCustomText(
+                      !Provider.of<UserProvider>(context, listen: true)
+                              .userList[index]
+                              .isBlocked
+                          ? "Active"
+                          : "Inactive",
+                      !Provider.of<UserProvider>(context, listen: true)
+                              .userList[index]
+                              .isBlocked
+                          ? Data.greenColor
+                          : Data.redColor,
+                      width,
+                    ),
+                    isEditing
+                        ? label(
+                            text: "edit",
+                            height: height,
+                            width: width,
+                            labelColor:
+                                Provider.of<InfoProvider>(context, listen: true)
+                                    .systemInfo
+                                    .iconsColor)
+                        : const SizedBox(),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
         tableItem(
@@ -246,15 +280,15 @@ class _ManageEmployeeState extends State<ManageEmployee> {
             bool isStatusUpdateSuccessful =
                 await Provider.of<UserProvider>(context, listen: false)
                     .updateUserStatus(
-                        context: context,
-                        accessToken:
-                            Provider.of<AuthProvider>(context, listen: false)
-                                .user
-                                .accessToken!,
-                        id: Provider.of<UserProvider>(context, listen: false)
-                            .userList[index]
-                            .id!,
-                        isBlocked: !value);
+              context: context,
+              accessToken: Provider.of<AuthProvider>(context, listen: false)
+                  .user
+                  .accessToken!,
+              id: Provider.of<UserProvider>(context, listen: false)
+                  .userList[index]
+                  .id!,
+              isBlocked: !value,
+            );
 
             ///need to provide opposite of value because the switch is already toggled
             setState(() {
