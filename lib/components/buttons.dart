@@ -23,14 +23,12 @@ Row backButton(BuildContext context, double width, double height) {
   );
 }
 
-Widget dashboardItem(
-  String asset,
-  String text,
-  double height,
-  double width,
-  Function() onTap,
-  BuildContext context,
-) {
+Widget dashboardItem(String asset, String text, double height, double width,
+    Function() onTap, BuildContext context,
+    {required bool isVisible}) {
+  if (!isVisible) {
+    return const SizedBox();
+  }
   return InkWell(
     onTap: onTap,
     child: Container(
@@ -241,7 +239,7 @@ Widget label({
     child: Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
-        child: buildSmallText(text, Colors.white, width*0.8,
+        child: buildSmallText(text, Colors.white, width * 0.8,
             fontFamily: "RobotoMedium"),
       ),
     ),

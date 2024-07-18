@@ -1,6 +1,7 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
@@ -52,8 +53,17 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                 height: height,
                 width: width),
             SizedBox(height: height * 2),
-            editSection(),
-            SizedBox(height: height * 2),
+            Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                    UserType.owner
+                ? editSection()
+                : const SizedBox(),
+            SizedBox(
+                height: Provider.of<AuthProvider>(context, listen: false)
+                            .user
+                            .userType ==
+                        UserType.owner
+                    ? height * 2
+                    : 0),
             Expanded(
               child: SingleChildScrollView(
                 child: ClipRRect(

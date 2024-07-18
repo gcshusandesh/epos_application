@@ -69,6 +69,7 @@ class UploadProvider extends ChangeNotifier {
           MaterialPageRoute(
               builder: (context) => ErrorScreen(
                     isConnectedToInternet: false,
+                    trace: "uploadImage",
                   )),
         );
       }
@@ -89,7 +90,10 @@ class UploadProvider extends ChangeNotifier {
         //general error handling
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ErrorScreen()),
+          MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                    trace: "uploadImage",
+                  )),
         );
       }
       if (context.mounted) {

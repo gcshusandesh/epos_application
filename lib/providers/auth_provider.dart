@@ -71,6 +71,7 @@ class AuthProvider extends ChangeNotifier {
             MaterialPageRoute(
               builder: (context) => ErrorScreen(
                 isConnectedToInternet: false,
+                trace: "login",
               ),
             ));
       }
@@ -89,7 +90,9 @@ class AuthProvider extends ChangeNotifier {
         await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ErrorScreen(),
+              builder: (context) => ErrorScreen(
+                trace: "login",
+              ),
             ));
       }
       if (context.mounted) {
@@ -200,6 +203,7 @@ class AuthProvider extends ChangeNotifier {
             MaterialPageRoute(
               builder: (context) => ErrorScreen(
                 isConnectedToInternet: false,
+                trace: "getUserDetails",
               ),
             ));
       }
@@ -212,7 +216,10 @@ class AuthProvider extends ChangeNotifier {
         // Navigate to Error Page
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ErrorScreen()),
+          MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                    trace: "getUserDetails",
+                  )),
         );
       }
       if (context.mounted) {
@@ -262,6 +269,7 @@ class AuthProvider extends ChangeNotifier {
             MaterialPageRoute(
               builder: (context) => ErrorScreen(
                 isConnectedToInternet: false,
+                trace: "updateUserDetails",
               ),
             ));
       }
@@ -275,7 +283,10 @@ class AuthProvider extends ChangeNotifier {
         // Navigate to Error Page
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ErrorScreen()),
+          MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                    trace: "updateUserDetails",
+                  )),
         );
       }
       if (context.mounted) {
@@ -319,6 +330,7 @@ class AuthProvider extends ChangeNotifier {
             MaterialPageRoute(
               builder: (context) => ErrorScreen(
                 isConnectedToInternet: false,
+                trace: "updateUserPassword",
               ),
             ));
       }
@@ -336,7 +348,10 @@ class AuthProvider extends ChangeNotifier {
         // Navigate to Error Page
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ErrorScreen()),
+          MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                    trace: "updateUserPassword",
+                  )),
         );
       }
       if (context.mounted) {

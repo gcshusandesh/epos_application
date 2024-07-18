@@ -1,6 +1,7 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
@@ -39,10 +40,14 @@ class _DashboardState extends State<Dashboard> {
       setState(() {
         isLoading = true;
       });
+      populateDashboard();
       // TODO: remove this api call and replace with settings saved in cache
       await Provider.of<InfoProvider>(context, listen: false).getSettings(
         context: context,
       );
+
+      /// Populate Dashboard list
+
       setState(() {
         isLoading = false;
       });
@@ -67,6 +72,76 @@ class _DashboardState extends State<Dashboard> {
 
         init = false;
       }
+    }
+  }
+
+  List<bool> dashboardVisibility = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ];
+
+  void populateDashboard() async {
+    if (Provider.of<AuthProvider>(context, listen: false).user.userType ==
+        UserType.owner) {
+      /// Owner
+      dashboardVisibility = [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+      ];
+    } else if (Provider.of<AuthProvider>(context, listen: false)
+            .user
+            .userType ==
+        UserType.manager) {
+      /// Manager
+      dashboardVisibility = [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+      ];
+    } else if (Provider.of<AuthProvider>(context, listen: false)
+            .user
+            .userType ==
+        UserType.chef) {
+      /// Chef
+      dashboardVisibility = [
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+      ];
+    } else {
+      ///default type is waiter
+      dashboardVisibility = [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+      ];
     }
   }
 
@@ -136,6 +211,7 @@ class _DashboardState extends State<Dashboard> {
                 );
               },
               context,
+              isVisible: dashboardVisibility[0],
             ),
             dashboardItem(
               "assets/dashboard/order.svg",
@@ -150,6 +226,7 @@ class _DashboardState extends State<Dashboard> {
                 // );
               },
               context,
+              isVisible: dashboardVisibility[1],
             ),
             dashboardItem(
               "assets/dashboard/payment.svg",
@@ -158,6 +235,7 @@ class _DashboardState extends State<Dashboard> {
               width,
               () {},
               context,
+              isVisible: dashboardVisibility[2],
             ),
             dashboardItem(
               "assets/dashboard/sales.svg",
@@ -166,6 +244,7 @@ class _DashboardState extends State<Dashboard> {
               width,
               () {},
               context,
+              isVisible: dashboardVisibility[3],
             ),
           ],
         ),
@@ -173,7 +252,11 @@ class _DashboardState extends State<Dashboard> {
           height: height * 5,
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment:
+              Provider.of<AuthProvider>(context, listen: true).user.userType ==
+                      UserType.chef
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.spaceEvenly,
           children: [
             dashboardItem(
               "assets/dashboard/employees.svg",
@@ -188,6 +271,29 @@ class _DashboardState extends State<Dashboard> {
                 );
               },
               context,
+              isVisible: dashboardVisibility[4],
+            ),
+            SizedBox(
+                width: Provider.of<AuthProvider>(context, listen: true)
+                            .user
+                            .userType ==
+                        UserType.chef
+                    ? width * 20
+                    : 0),
+            dashboardItem(
+              "assets/dashboard/employees.svg",
+              "Kitchen",
+              height,
+              width,
+              () {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //       builder: (context) => const ManageEmployee()),
+                // );
+              },
+              context,
+              isVisible: dashboardVisibility[5],
             ),
             dashboardItem(
               "assets/dashboard/inventory.svg",
@@ -198,6 +304,7 @@ class _DashboardState extends State<Dashboard> {
                 //do something
               },
               context,
+              isVisible: dashboardVisibility[6],
             ),
             dashboardItem(
               "assets/dashboard/analytics.svg",
@@ -206,6 +313,7 @@ class _DashboardState extends State<Dashboard> {
               width,
               () {},
               context,
+              isVisible: dashboardVisibility[7],
             ),
           ],
         ),

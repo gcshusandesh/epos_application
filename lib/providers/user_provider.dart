@@ -32,21 +32,39 @@ class UserProvider extends ChangeNotifier {
       final response =
           await http.get(Uri.parse(url.toString()), headers: headers);
       final data = json.decode(response.body);
+      print("data = $data");
       if (response.statusCode == 200) {
         //empty list before fetching new data
         userList = [];
+        UserType loggedInUserType = user.userType;
         data.forEach((user) {
-          if (assignUserType(user["userType"]) != UserType.owner) {
-            //exclude owner from the list
-            userList.add(UserDataModel(
-              id: user["id"],
-              name: user["name"],
-              email: user["email"],
-              phone: user["phone"],
-              gender: user["gender"],
-              isBlocked: user["blocked"],
-              userType: assignUserType(user["userType"]),
-            ));
+          if (loggedInUserType == UserType.owner) {
+            // Owner should see all employees, including managers, chefs, and waiters, but not other owners
+            if (assignUserType(user["userType"]) != UserType.owner) {
+              userList.add(UserDataModel(
+                id: user["id"],
+                name: user["name"],
+                email: user["email"],
+                phone: user["phone"],
+                gender: user["gender"],
+                isBlocked: user["blocked"],
+                userType: assignUserType(user["userType"]),
+              ));
+            }
+          } else if (loggedInUserType == UserType.manager) {
+            // Manager should see all employees except owners and managers
+            if (assignUserType(user["userType"]) != UserType.owner &&
+                assignUserType(user["userType"]) != UserType.manager) {
+              userList.add(UserDataModel(
+                id: user["id"],
+                name: user["name"],
+                email: user["email"],
+                phone: user["phone"],
+                gender: user["gender"],
+                isBlocked: user["blocked"],
+                userType: assignUserType(user["userType"]),
+              ));
+            }
           }
         });
       }
@@ -59,6 +77,7 @@ class UserProvider extends ChangeNotifier {
             MaterialPageRoute(
               builder: (context) => ErrorScreen(
                 isConnectedToInternet: false,
+                trace: "getUserList",
               ),
             ));
       }
@@ -71,7 +90,10 @@ class UserProvider extends ChangeNotifier {
         // Navigate to Error Page
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ErrorScreen()),
+          MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                    trace: "getUserList",
+                  )),
         );
       }
       if (context.mounted) {
@@ -112,6 +134,7 @@ class UserProvider extends ChangeNotifier {
             MaterialPageRoute(
               builder: (context) => ErrorScreen(
                 isConnectedToInternet: false,
+                trace: "updateUserStatus",
               ),
             ));
       }
@@ -129,7 +152,10 @@ class UserProvider extends ChangeNotifier {
         // Navigate to Error Page
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ErrorScreen()),
+          MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                    trace: "updateUserStatus",
+                  )),
         );
       }
       if (context.mounted) {

@@ -1,16 +1,19 @@
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/info_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ErrorScreen extends StatelessWidget {
-  ErrorScreen({super.key, this.isConnectedToInternet = true});
+  ErrorScreen(
+      {super.key, this.isConnectedToInternet = true, required this.trace});
 
   static const routeName = "errorScreen";
   final double height = SizeConfig.safeBlockVertical;
   final double width = SizeConfig.safeBlockHorizontal;
   final bool isConnectedToInternet;
+  final String trace;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +61,9 @@ class ErrorScreen extends StatelessWidget {
             InkWell(
               onTap: () {
                 Navigator.pop(context);
+                if (kDebugMode) {
+                  print("Error Trace: $trace");
+                }
               },
               child: Container(
                   padding: EdgeInsets.symmetric(vertical: height),

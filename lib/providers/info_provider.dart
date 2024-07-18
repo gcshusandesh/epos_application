@@ -133,6 +133,7 @@ class InfoProvider extends ChangeNotifier {
             MaterialPageRoute(
               builder: (context) => ErrorScreen(
                 isConnectedToInternet: false,
+                trace: "updateSystemSettings",
               ),
             ));
       }
@@ -147,7 +148,10 @@ class InfoProvider extends ChangeNotifier {
         // Navigate to Error Page
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ErrorScreen()),
+          MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                    trace: "updateSystemSettings",
+                  )),
         );
       }
       if (context.mounted) {
@@ -210,6 +214,7 @@ class InfoProvider extends ChangeNotifier {
             MaterialPageRoute(
               builder: (context) => ErrorScreen(
                 isConnectedToInternet: false,
+                trace: "updateRestaurantSettings",
               ),
             ));
       }
@@ -226,7 +231,10 @@ class InfoProvider extends ChangeNotifier {
         // Navigate to Error Page
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ErrorScreen()),
+          MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                    trace: "updateRestaurantSettings",
+                  )),
         );
       }
       if (context.mounted) {
@@ -285,6 +293,7 @@ class InfoProvider extends ChangeNotifier {
             MaterialPageRoute(
               builder: (context) => ErrorScreen(
                 isConnectedToInternet: false,
+                trace: "getSettings",
               ),
             ));
       }
@@ -297,7 +306,10 @@ class InfoProvider extends ChangeNotifier {
         // Navigate to Error Page
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ErrorScreen()),
+          MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                    trace: "getSettings",
+                  )),
         );
       }
       if (context.mounted) {
