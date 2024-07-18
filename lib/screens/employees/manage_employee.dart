@@ -40,6 +40,12 @@ class _ManageEmployeeState extends State<ManageEmployee> {
     }
   }
 
+  Future<void> _refresh() async {
+    await Provider.of<UserProvider>(context, listen: false).getUserList(
+        user: Provider.of<AuthProvider>(context, listen: false).user,
+        context: context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +71,11 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                         UserType.owner
                     ? height * 2
                     : 0),
-            Expanded(
+            RefreshIndicator(
+              onRefresh: _refresh,
+              color: Provider.of<InfoProvider>(context, listen: true)
+                  .systemInfo
+                  .primaryColor,
               child: SingleChildScrollView(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(6),
