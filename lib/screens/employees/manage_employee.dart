@@ -71,85 +71,87 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                         UserType.owner
                     ? height * 2
                     : 0),
-            RefreshIndicator(
-              onRefresh: _refresh,
-              color: Provider.of<InfoProvider>(context, listen: true)
-                  .systemInfo
-                  .primaryColor,
-              child: SingleChildScrollView(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: Provider.of<UserProvider>(context, listen: true)
-                          .userList
-                          .isEmpty
-                      ? Column(
-                          children: [
-                            Table(
-                              border: TableBorder.all(color: Colors.black),
-                              defaultVerticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              children: [
-                                TableRow(
-                                    decoration: const BoxDecoration(
-                                        color: Data.lightGreyBodyColor),
-                                    children: [
-                                      tableTitle("S.N.", width),
-                                      tableTitle("Full Name", width),
-                                      tableTitle("Email", width),
-                                      tableTitle("Phone", width),
-                                      tableTitle("Gender", width),
-                                      tableTitle("User Type", width),
-                                      tableTitle("Status", width),
-                                    ]),
-                              ],
-                            ),
-                            Container(
-                              width: width * 100,
-                              decoration: const BoxDecoration(
-                                color: Data.lightGreyBodyColor,
-                                border: Border(
-                                  left:
-                                      BorderSide(color: Colors.black, width: 1),
-                                  right:
-                                      BorderSide(color: Colors.black, width: 1),
-                                  bottom:
-                                      BorderSide(color: Colors.black, width: 1),
-                                ),
-                              ),
-                              child: Center(
-                                child: buildSmallText("No Data Available",
-                                    Data.lightGreyTextColor, width),
-                              ),
-                            )
-                          ],
-                        )
-                      : Table(
-                          border: TableBorder.all(color: Colors.black),
-                          defaultVerticalAlignment:
-                              TableCellVerticalAlignment.middle,
-                          children: [
-                            TableRow(
-                                decoration: const BoxDecoration(
-                                    color: Data.lightGreyBodyColor),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: _refresh,
+                color: Provider.of<InfoProvider>(context, listen: true)
+                    .systemInfo
+                    .primaryColor,
+                child: SingleChildScrollView(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Provider.of<UserProvider>(context, listen: true)
+                            .userList
+                            .isEmpty
+                        ? Column(
+                            children: [
+                              Table(
+                                border: TableBorder.all(color: Colors.black),
+                                defaultVerticalAlignment:
+                                    TableCellVerticalAlignment.middle,
                                 children: [
-                                  tableTitle("S.N.", width),
-                                  tableTitle("Full Name", width),
-                                  tableTitle("Email", width),
-                                  tableTitle("Phone", width),
-                                  tableTitle("Gender", width),
-                                  tableTitle("User Type", width),
-                                  tableTitle("Status", width),
-                                ]),
-                            for (int i = 0;
-                                i <
-                                    Provider.of<UserProvider>(context,
-                                            listen: true)
-                                        .userList
-                                        .length;
-                                i++)
-                              buildEmployeeRow(i),
-                          ],
-                        ),
+                                  TableRow(
+                                      decoration: const BoxDecoration(
+                                          color: Data.lightGreyBodyColor),
+                                      children: [
+                                        tableTitle("S.N.", width),
+                                        tableTitle("Full Name", width),
+                                        tableTitle("Email", width),
+                                        tableTitle("Phone", width),
+                                        tableTitle("Gender", width),
+                                        tableTitle("User Type", width),
+                                        tableTitle("Status", width),
+                                      ]),
+                                ],
+                              ),
+                              Container(
+                                width: width * 100,
+                                decoration: const BoxDecoration(
+                                  color: Data.lightGreyBodyColor,
+                                  border: Border(
+                                    left: BorderSide(
+                                        color: Colors.black, width: 1),
+                                    right: BorderSide(
+                                        color: Colors.black, width: 1),
+                                    bottom: BorderSide(
+                                        color: Colors.black, width: 1),
+                                  ),
+                                ),
+                                child: Center(
+                                  child: buildSmallText("No Data Available",
+                                      Data.lightGreyTextColor, width),
+                                ),
+                              )
+                            ],
+                          )
+                        : Table(
+                            border: TableBorder.all(color: Colors.black),
+                            defaultVerticalAlignment:
+                                TableCellVerticalAlignment.middle,
+                            children: [
+                              TableRow(
+                                  decoration: const BoxDecoration(
+                                      color: Data.lightGreyBodyColor),
+                                  children: [
+                                    tableTitle("S.N.", width),
+                                    tableTitle("Full Name", width),
+                                    tableTitle("Email", width),
+                                    tableTitle("Phone", width),
+                                    tableTitle("Gender", width),
+                                    tableTitle("User Type", width),
+                                    tableTitle("Status", width),
+                                  ]),
+                              for (int i = 0;
+                                  i <
+                                      Provider.of<UserProvider>(context,
+                                              listen: true)
+                                          .userList
+                                          .length;
+                                  i++)
+                                buildEmployeeRow(i),
+                            ],
+                          ),
+                  ),
                 ),
               ),
             )
