@@ -18,13 +18,26 @@ class MenuProvider extends ChangeNotifier {
   }
 
   void changeSpecialsStatusLocally(int index) {
+    ///change status in main list
     totalSpecialsList[index].status = !totalSpecialsList[index].status;
+
+    ///recalculate active specials list
+    getActiveSpecials();
     notifyListeners();
   }
 
   void removeSpecialsLocally(int index) {
     ///remove data in main list
     totalSpecialsList.removeAt(index);
+
+    ///recalculate active specials list
+    getActiveSpecials();
+    notifyListeners();
+  }
+
+  void addSpecialsLocally({required Specials specials}) {
+    ///add data in main list
+    totalSpecialsList.add(specials);
 
     ///recalculate active specials list
     getActiveSpecials();
@@ -125,15 +138,131 @@ class MenuProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> createMenuItem({
+    bool isSpecials = false,
+    bool isCategory = false,
+    bool isItem = false,
+    Specials? specials,
+    Category? category,
+    MenuItems? menuItem,
+    required String accessToken,
+    required BuildContext context,
+  }) async {
+    print("creating menu item");
+    late Uri url;
+    if (isSpecials) {
+      url = Uri.parse("${Data.baseUrl}/api/specials");
+    } else if (isCategory) {
+      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+    } else if (isItem) {
+      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+    }
+
+    try {
+      var headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer $accessToken',
+      };
+      late Map<String, dynamic> payloadBody;
+      if (isSpecials) {
+        payloadBody = {
+          "data": {
+            "name": specials!.name,
+          }
+        };
+      } else if (isCategory) {
+      } else if (isItem) {}
+
+      var response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(payloadBody),
+      );
+      var extractedData = json.decode(response.body);
+      var data = extractedData['data'];
+      print("status code = ${response.statusCode}");
+      print("data = $data");
+      if (response.statusCode == 200) {
+        if (isSpecials) {
+          addSpecialsLocally(specials: specials!);
+        } else if (isCategory) {
+          addCategoryLocally(category: category!);
+        } else if (isItem) {
+          addMenuItemLocally(menuItem: menuItem!);
+        }
+        notifyListeners();
+        return true;
+      }
+      return false;
+    } on SocketException {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+                trace: "createMenuItem",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await createMenuItem(
+          isSpecials: isSpecials,
+          isCategory: isCategory,
+          isItem: isItem,
+          specials: specials,
+          category: category,
+          menuItem: menuItem,
+          accessToken: accessToken,
+          context: context,
+        );
+      }
+      return false;
+    } catch (e) {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                trace: "createMenuItem",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await createMenuItem(
+          isSpecials: isSpecials,
+          isCategory: isCategory,
+          isItem: isItem,
+          specials: specials,
+          category: category,
+          menuItem: menuItem,
+          accessToken: accessToken,
+          context: context,
+        );
+      }
+      return false;
+    }
+  }
+
   List<Category> categoryList = [];
   int selectedCategoryIndex = 0;
-  void changeCategoryStatus(int index) {
+  void changeCategoryStatusLocally(int index) {
     categoryList[index].status = !categoryList[index].status;
     notifyListeners();
   }
 
-  void removeCategory(int index) {
+  void removeCategoryLocally(int index) {
     categoryList.removeAt(index);
+    notifyListeners();
+  }
+
+  void addCategoryLocally({required Category category}) {
+    categoryList.add(category);
     notifyListeners();
   }
 
@@ -220,14 +349,19 @@ class MenuProvider extends ChangeNotifier {
   }
 
   List<MenuItemsByCategory> menuItemsByCategory = [];
-  void changeMenuItemStatus({required int itemIndex}) {
+  void changeMenuItemStatusLocally({required int itemIndex}) {
     menuItemsByCategory[selectedCategoryIndex].menuItems[itemIndex].status =
         !menuItemsByCategory[selectedCategoryIndex].menuItems[itemIndex].status;
     notifyListeners();
   }
 
-  void removeMenuItem({required int itemIndex}) {
+  void removeMenuItemLocally({required int itemIndex}) {
     menuItemsByCategory[selectedCategoryIndex].menuItems.removeAt(itemIndex);
+    notifyListeners();
+  }
+
+  void addMenuItemLocally({required MenuItems menuItem}) {
+    menuItemsByCategory[selectedCategoryIndex].menuItems.add(menuItem);
     notifyListeners();
   }
 

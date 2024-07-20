@@ -389,7 +389,7 @@ class _EditMenuState extends State<EditMenu> {
             onTap: () {
               // delete item from list
               Provider.of<MenuProvider>(context, listen: false)
-                  .removeMenuItem(itemIndex: itemIndex);
+                  .removeMenuItemLocally(itemIndex: itemIndex);
             },
           ),
         ),
@@ -403,7 +403,7 @@ class _EditMenuState extends State<EditMenu> {
               .status,
           onChanged: (value) {
             Provider.of<MenuProvider>(context, listen: false)
-                .changeMenuItemStatus(itemIndex: itemIndex);
+                .changeMenuItemStatusLocally(itemIndex: itemIndex);
           },
           context: context,
         ),

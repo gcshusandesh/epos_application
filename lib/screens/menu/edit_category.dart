@@ -268,7 +268,7 @@ class _EditCategoryState extends State<EditCategory> {
             onTap: () {
               // delete item from list
               Provider.of<MenuProvider>(context, listen: false)
-                  .removeCategory(index);
+                  .removeCategoryLocally(index);
             },
           ),
         ),
@@ -279,7 +279,7 @@ class _EditCategoryState extends State<EditCategory> {
               .status,
           onChanged: (value) {
             Provider.of<MenuProvider>(context, listen: false)
-                .changeCategoryStatus(index);
+                .changeCategoryStatusLocally(index);
           },
           context: context,
         ),

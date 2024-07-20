@@ -4,9 +4,9 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
+import 'package:epos_application/screens/menu/update_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 class EditSpecials extends StatefulWidget {
@@ -76,36 +76,12 @@ class _EditSpecialsState extends State<EditSpecials> {
                     height,
                     width,
                     () {
-                      showMaterialModalBottomSheet(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(12.0),
-                            topRight: Radius.circular(12.0),
-                          ),
-                        ),
-                        backgroundColor: Data.lightGreyBodyColor,
-                        context: context,
-                        builder: (context) => SizedBox(
-                          height: height * 10,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(height: height * 2),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    color: Colors.black, // Outline color
-                                    width: 0.5, // Outline width
-                                  ),
-                                  borderRadius: BorderRadius.circular(6.0),
-                                ),
-                                height: 10,
-                                width: width * 20,
-                              ),
-                            ],
-                          ),
-                        ),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const UpdateData(
+                                  isSpecial: true,
+                                )),
                       );
                     },
                     context: context,
@@ -116,7 +92,14 @@ class _EditSpecialsState extends State<EditSpecials> {
                     height,
                     width,
                     () {
-                      //do something
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const UpdateData(
+                                  isSpecial: true,
+                                  isEdit: true,
+                                )),
+                      );
                     },
                     context: context,
                   ),
@@ -286,7 +269,7 @@ class _EditSpecialsState extends State<EditSpecials> {
               ? Container(
                   height: height * 10,
                   width: width * 20,
-                  color: Colors.white70,
+                  color: Colors.white60,
                   child: Center(
                     child: buildCustomText(
                       "No Image",
