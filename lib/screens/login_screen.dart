@@ -53,14 +53,14 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  TextEditingController emailController = TextEditingController();
+  TextEditingController idController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   @override
   void dispose() {
     // TODO: implement dispose
     //to save memory
-    emailController.dispose();
+    idController.dispose();
     passwordController.dispose();
     super.dispose();
   }
@@ -124,17 +124,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   buildTitleText(
-                    "Email",
+                    "Username/Email",
                     Data.lightGreyTextColor,
                     width * 0.7,
                   ),
                   buildInputField(
-                      "Email", height, width, context, emailController,
+                      "Username/Email", height, width, context, idController,
                       validator: (value) {
-                    if (value.isEmpty ||
-                        !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                            .hasMatch(value)) {
-                      return 'Enter a valid email!';
+                    if (value.isEmpty) {
+                      return 'Enter a valid username/email!';
                     }
                     return null;
                   }),
@@ -245,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
     bool loginSuccessful =
         await Provider.of<AuthProvider>(context, listen: false).login(
       init: true,
-      username: emailController.text,
+      username: idController.text,
       password: passwordController.text,
       context: context,
     );
@@ -284,7 +282,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       isLoading = false;
     });
-    emailController.clear();
+    idController.clear();
     passwordController.clear();
   }
 }
