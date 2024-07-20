@@ -41,22 +41,15 @@ class _DashboardState extends State<Dashboard> {
         isLoading = true;
       });
       populateDashboard();
-      // TODO: remove this api call and replace with settings saved in cache
       await Provider.of<InfoProvider>(context, listen: false).getSettings(
         context: context,
       );
-
-      /// Populate Dashboard list
 
       setState(() {
         isLoading = false;
       });
 
       if (mounted) {
-        // Get Specials Data from API
-        Provider.of<MenuProvider>(context, listen: false)
-            .getSpecialsList(init: true);
-
         // Get Employee Data from API
         Provider.of<UserProvider>(context, listen: false).getUserList(
             user: Provider.of<AuthProvider>(context, listen: false).user,

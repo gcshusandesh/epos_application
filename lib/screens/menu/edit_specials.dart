@@ -282,7 +282,7 @@ class _EditSpecialsState extends State<EditSpecials> {
           child: Image.asset(
             Provider.of<MenuProvider>(context, listen: true)
                 .specialsList[index]
-                .image,
+                .image!,
             height: height * 10,
             width: width * 20,
             fit: BoxFit.fill,
@@ -299,7 +299,7 @@ class _EditSpecialsState extends State<EditSpecials> {
             onTap: () {
               // delete item from list
               Provider.of<MenuProvider>(context, listen: false)
-                  .removeSpecials(index);
+                  .removeSpecialsLocally(index);
             },
           ),
         ),
@@ -310,7 +310,7 @@ class _EditSpecialsState extends State<EditSpecials> {
               .status,
           onChanged: (value) {
             Provider.of<MenuProvider>(context, listen: false)
-                .changeSpecialsStatus(index);
+                .changeSpecialsStatusLocally(index);
           },
           context: context,
         ),

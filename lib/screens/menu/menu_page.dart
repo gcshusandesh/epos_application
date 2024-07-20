@@ -1,8 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:el_tooltip/el_tooltip.dart';
 import 'package:epos_application/components/buttons.dart';
+import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';
 import 'package:epos_application/screens/menu/edit_menu.dart';
 import 'package:epos_application/screens/menu/edit_specials.dart';
@@ -26,25 +28,42 @@ class _MenuPageState extends State<MenuPage> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations([
+    _setPreferredOrientations();
+  }
+
+  void _setPreferredOrientations() async {
+    await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
   }
 
+  bool isLoading = false;
   bool init = true;
   late double height;
   late double width;
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
     if (init) {
       //initialize size config at the very beginning
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-
+      setState(() {
+        isLoading = true;
+      });
+      // Get Specials Data from API
+      await Provider.of<MenuProvider>(context, listen: false).getMenuList(
+          accessToken: Provider.of<AuthProvider>(context, listen: false)
+              .user
+              .accessToken!,
+          isSpecials: true,
+          context: context);
+      setState(() {
+        isLoading = false;
+      });
       init = false;
     }
   }
@@ -60,59 +79,72 @@ class _MenuPageState extends State<MenuPage> {
           DeviceOrientation.landscapeRight,
         ]);
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              customTopSection(
-                  context: context, height: height, text: "Menu", width: width),
-              specials(),
-              buildCarousel(context),
-              SizedBox(height: height * 2),
-              category(),
-              optionsSection(context),
-              SizedBox(height: height * 2),
-              menu(),
-              SizedBox(height: height * 2),
-              Expanded(
-                flex: 3,
-                child: Provider.of<MenuProvider>(context, listen: true)
-                        .menuItemsByCategory[
-                            Provider.of<MenuProvider>(context, listen: true)
-                                .selectedCategoryIndex]
-                        .menuItems
-                        .isEmpty
-                    ? Center(
-                        child: buildCustomText(
-                          "No Data Available",
-                          Data.darkTextColor,
-                          width * 1.3,
-                          fontFamily: "RobotoMedium",
-                        ),
-                      )
-                    : GridView.builder(
-                        itemCount: Provider.of<MenuProvider>(context,
-                                listen: true)
-                            .menuItemsByCategory[
-                                Provider.of<MenuProvider>(context, listen: true)
-                                    .selectedCategoryIndex]
-                            .menuItems
-                            .length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          mainAxisSpacing: 10.0, // spacing between rows
-                          crossAxisSpacing: 10.0, // spacing between columns
-                        ),
-                        itemBuilder: (BuildContext context, int itemIndex) {
-                          return menuItem(itemIndex);
-                        },
+      child: Stack(
+        children: [
+          mainBody(context),
+          isLoading
+              ? Center(
+                  child: onLoading(width: width, context: context),
+                )
+              : const SizedBox(),
+        ],
+      ),
+    );
+  }
+
+  Scaffold mainBody(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            customTopSection(
+                context: context, height: height, text: "Menu", width: width),
+            specials(),
+            buildCarousel(context),
+            SizedBox(height: height * 2),
+            category(),
+            optionsSection(context),
+            SizedBox(height: height * 2),
+            menu(),
+            SizedBox(height: height * 2),
+            Expanded(
+              flex: 3,
+              child: Provider.of<MenuProvider>(context, listen: true)
+                      .menuItemsByCategory[
+                          Provider.of<MenuProvider>(context, listen: true)
+                              .selectedCategoryIndex]
+                      .menuItems
+                      .isEmpty
+                  ? Center(
+                      child: buildBodyText(
+                        "No Data Available",
+                        Data.darkTextColor,
+                        width * 1.3,
+                        fontFamily: "RobotoMedium",
                       ),
-              ),
-            ],
-          ),
+                    )
+                  : GridView.builder(
+                      itemCount: Provider.of<MenuProvider>(context,
+                              listen: true)
+                          .menuItemsByCategory[
+                              Provider.of<MenuProvider>(context, listen: true)
+                                  .selectedCategoryIndex]
+                          .menuItems
+                          .length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 10.0, // spacing between rows
+                        crossAxisSpacing: 10.0, // spacing between columns
+                      ),
+                      itemBuilder: (BuildContext context, int itemIndex) {
+                        return menuItem(itemIndex);
+                      },
+                    ),
+            ),
+          ],
         ),
       ),
     );
@@ -411,12 +443,20 @@ class _MenuPageState extends State<MenuPage> {
             .specialsList
             .length,
         itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) {
-          return Image.asset(
-            Provider.of<MenuProvider>(context, listen: true)
-                .specialsList[itemIndex]
-                .image,
-            fit: BoxFit.contain,
-          );
+          return Provider.of<MenuProvider>(context, listen: true)
+                      .specialsList[itemIndex]
+                      .image ==
+                  null
+              ? Container(
+                  color: Data.lightGreyBodyColor,
+                  child: buildCustomText("No Image", Data.darkTextColor, width),
+                )
+              : Image.network(
+                  Provider.of<MenuProvider>(context, listen: true)
+                      .specialsList[itemIndex]
+                      .image!,
+                  fit: BoxFit.contain,
+                );
         },
         options: CarouselOptions(
           autoPlay: true,

@@ -1,50 +1,115 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
+import 'package:epos_application/screens/error_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class MenuProvider extends ChangeNotifier {
   List<Specials> specialsList = [];
 
-  void changeSpecialsStatus(int index) {
+  void changeSpecialsStatusLocally(int index) {
     specialsList[index].status = !specialsList[index].status;
     notifyListeners();
   }
 
-  void removeSpecials(int index) {
+  void removeSpecialsLocally(int index) {
     specialsList.removeAt(index);
     notifyListeners();
   }
 
-  Future<void> getSpecialsList({required bool init}) async {
-    // var url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+  Future<void> getMenuList({
+    bool isSpecials = false,
+    bool isCategory = false,
+    bool isItem = false,
+    required String accessToken,
+    required BuildContext context,
+  }) async {
+    late Uri url;
+    if (isSpecials) {
+      url = Uri.parse("${Data.baseUrl}/api/specials?populate=image");
+    } else if (isCategory) {
+      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+    } else if (isItem) {
+      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+    }
+
     try {
-      // var headers = {
-      //   "Accept": "application/json",
-      // };
-      // var response = await http.get(url, headers: headers);
-      // var extractedData = json.decode(response.body);
-      // if (response.statusCode == 200) {
-      //   print(extractedData);
-      // }
-      specialsList = [
-        Specials(
-            name: "Featured Burger",
-            image: "assets/featured/featured_burger1.jpg",
-            status: true),
-        Specials(
-            name: "Featured Breakfast",
-            image: "assets/featured/breakfast_featured.jpg",
-            status: true),
-        Specials(
-            name: "Featured Coffee",
-            image: "assets/featured/coffee_featured.jpg",
-            status: true),
-      ];
-      if (!init) {
-        notifyListeners();
+      var headers = {
+        "Accept": "application/json",
+        'Authorization': 'Bearer $accessToken',
+      };
+      var response = await http.get(url, headers: headers);
+      var extractedData = json.decode(response.body);
+      var data = extractedData['data'];
+      print("data = $data");
+      if (response.statusCode == 200) {
+        if (isSpecials) {
+          //empty list before fetching new data
+          specialsList = [];
+          data.forEach((specialItem) {
+            specialsList.add(Specials(
+              name: specialItem['attributes']['name'],
+              image: specialItem['attributes']['image']['data'] == null
+                  ? null
+                  : "${Data.baseUrl}${specialItem['attributes']['image']['data']['attributes']['formats']['small']['url']}",
+              status: specialItem['attributes']['isActive'],
+            ));
+          });
+        } else if (isCategory) {
+          //empty list before fetching new data
+          categoryList = [];
+        } else if (isItem) {
+          //empty list before fetching new data
+          menuItemsByCategory = [];
+        }
+      }
+      notifyListeners();
+    } on SocketException {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+                trace: "getMenuList",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await getMenuList(
+          isSpecials: isSpecials,
+          isCategory: isCategory,
+          isItem: isItem,
+          accessToken: accessToken,
+          context: context,
+        );
       }
     } catch (e) {
-      // ignore: avoid_print
-      print(e);
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                trace: "getMenuList",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await getMenuList(
+          isSpecials: isSpecials,
+          isCategory: isCategory,
+          isItem: isItem,
+          accessToken: accessToken,
+          context: context,
+        );
+      }
     }
   }
 

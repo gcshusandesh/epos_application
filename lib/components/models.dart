@@ -164,12 +164,12 @@ class UserDataModel {
 
 class Specials {
   String name;
-  String image;
+  String? image;
   bool status;
 
   Specials({
     required this.name,
-    required this.image,
+    this.image,
     required this.status,
   });
 }
