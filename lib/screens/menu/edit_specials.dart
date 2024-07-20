@@ -181,7 +181,7 @@ class _EditSpecialsState extends State<EditSpecials> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(6),
           child: Provider.of<MenuProvider>(context, listen: true)
-                  .specialsList
+                  .totalSpecialsList
                   .isEmpty
               ? Column(
                   children: [
@@ -236,7 +236,7 @@ class _EditSpecialsState extends State<EditSpecials> {
                     for (int index = 0;
                         index <
                             Provider.of<MenuProvider>(context, listen: true)
-                                .specialsList
+                                .totalSpecialsList
                                 .length;
                         index++)
                       buildSpecialsRow(index),
@@ -258,17 +258,17 @@ class _EditSpecialsState extends State<EditSpecials> {
             children: [
               tableItem(
                   Provider.of<MenuProvider>(context, listen: true)
-                      .specialsList[index]
+                      .totalSpecialsList[index]
                       .name,
                   width),
               buildCustomText(
                 Provider.of<MenuProvider>(context, listen: true)
-                        .specialsList[index]
+                        .totalSpecialsList[index]
                         .status
                     ? "Active"
                     : "Inactive",
                 Provider.of<MenuProvider>(context, listen: true)
-                        .specialsList[index]
+                        .totalSpecialsList[index]
                         .status
                     ? Data.greenColor
                     : Data.redColor,
@@ -279,14 +279,30 @@ class _EditSpecialsState extends State<EditSpecials> {
         ),
         Padding(
           padding: const EdgeInsets.all(15.0),
-          child: Image.asset(
-            Provider.of<MenuProvider>(context, listen: true)
-                .specialsList[index]
-                .image!,
-            height: height * 10,
-            width: width * 20,
-            fit: BoxFit.fill,
-          ),
+          child: Provider.of<MenuProvider>(context, listen: true)
+                      .totalSpecialsList[index]
+                      .image ==
+                  null
+              ? Container(
+                  height: height * 10,
+                  width: width * 20,
+                  color: Colors.white70,
+                  child: Center(
+                    child: buildCustomText(
+                      "No Image",
+                      Data.greyTextColor,
+                      width * 1.3,
+                    ),
+                  ),
+                )
+              : Image.network(
+                  Provider.of<MenuProvider>(context, listen: true)
+                      .totalSpecialsList[index]
+                      .image!,
+                  height: height * 10,
+                  width: width * 20,
+                  fit: BoxFit.fill,
+                ),
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: width * 6),
@@ -306,7 +322,7 @@ class _EditSpecialsState extends State<EditSpecials> {
         buildCupertinoSwitch(
           index: index,
           value: Provider.of<MenuProvider>(context, listen: true)
-              .specialsList[index]
+              .totalSpecialsList[index]
               .status,
           onChanged: (value) {
             Provider.of<MenuProvider>(context, listen: false)

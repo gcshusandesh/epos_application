@@ -438,32 +438,41 @@ class _MenuPageState extends State<MenuPage> {
   Expanded buildCarousel(BuildContext context) {
     return Expanded(
       flex: 1,
-      child: CarouselSlider.builder(
-        itemCount: Provider.of<MenuProvider>(context, listen: true)
-            .specialsList
-            .length,
-        itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) {
-          return Provider.of<MenuProvider>(context, listen: true)
-                      .specialsList[itemIndex]
-                      .image ==
-                  null
-              ? Container(
-                  color: Data.lightGreyBodyColor,
-                  child: buildCustomText("No Image", Data.darkTextColor, width),
-                )
-              : Image.network(
-                  Provider.of<MenuProvider>(context, listen: true)
-                      .specialsList[itemIndex]
-                      .image!,
-                  fit: BoxFit.contain,
-                );
-        },
-        options: CarouselOptions(
-          autoPlay: true,
-          enlargeCenterPage: true,
-          aspectRatio: 3,
-        ),
-      ),
+      child: Provider.of<MenuProvider>(context, listen: true)
+              .activeSpecialsList
+              .isEmpty
+          ? Container(
+              color: Data.lightGreyBodyColor,
+              child: buildCustomText("No Image", Data.darkTextColor, width),
+            )
+          : CarouselSlider.builder(
+              itemCount: Provider.of<MenuProvider>(context, listen: true)
+                  .activeSpecialsList
+                  .length,
+              itemBuilder:
+                  (BuildContext context, int itemIndex, int pageViewIndex) {
+                return Provider.of<MenuProvider>(context, listen: true)
+                            .activeSpecialsList[itemIndex]
+                            .image ==
+                        null
+                    ? Container(
+                        color: Data.lightGreyBodyColor,
+                        child: buildCustomText(
+                            "No Image", Data.darkTextColor, width),
+                      )
+                    : Image.network(
+                        Provider.of<MenuProvider>(context, listen: true)
+                            .activeSpecialsList[itemIndex]
+                            .image!,
+                        fit: BoxFit.contain,
+                      );
+              },
+              options: CarouselOptions(
+                autoPlay: true,
+                enlargeCenterPage: true,
+                aspectRatio: 3,
+              ),
+            ),
     );
   }
 

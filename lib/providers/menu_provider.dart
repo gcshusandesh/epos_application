@@ -8,15 +8,26 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class MenuProvider extends ChangeNotifier {
-  List<Specials> specialsList = [];
+  List<Specials> totalSpecialsList = [];
+  List<Specials> activeSpecialsList = [];
+
+  void getActiveSpecials() {
+    activeSpecialsList =
+        totalSpecialsList.where((element) => element.status).toList();
+    notifyListeners();
+  }
 
   void changeSpecialsStatusLocally(int index) {
-    specialsList[index].status = !specialsList[index].status;
+    totalSpecialsList[index].status = !totalSpecialsList[index].status;
     notifyListeners();
   }
 
   void removeSpecialsLocally(int index) {
-    specialsList.removeAt(index);
+    ///remove data in main list
+    totalSpecialsList.removeAt(index);
+
+    ///recalculate active specials list
+    getActiveSpecials();
     notifyListeners();
   }
 
@@ -48,9 +59,9 @@ class MenuProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         if (isSpecials) {
           //empty list before fetching new data
-          specialsList = [];
+          totalSpecialsList = [];
           data.forEach((specialItem) {
-            specialsList.add(Specials(
+            totalSpecialsList.add(Specials(
               name: specialItem['attributes']['name'],
               image: specialItem['attributes']['image']['data'] == null
                   ? null
@@ -58,6 +69,7 @@ class MenuProvider extends ChangeNotifier {
               status: specialItem['attributes']['isActive'],
             ));
           });
+          getActiveSpecials();
         } else if (isCategory) {
           //empty list before fetching new data
           categoryList = [];
