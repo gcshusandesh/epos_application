@@ -441,9 +441,14 @@ class _MenuPageState extends State<MenuPage> {
       child: Provider.of<MenuProvider>(context, listen: true)
               .activeSpecialsList
               .isEmpty
-          ? Container(
-              color: Data.lightGreyBodyColor,
-              child: buildCustomText("No Image", Data.darkTextColor, width),
+          ? Center(
+              child: Container(
+                width: width * 60,
+                color: Data.lightGreyBodyColor,
+                child: Center(
+                    child: buildCustomText(
+                        "No Image", Data.darkTextColor, width * 3)),
+              ),
             )
           : CarouselSlider.builder(
               itemCount: Provider.of<MenuProvider>(context, listen: true)
