@@ -48,6 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       UserDataModel user =
           Provider.of<AuthProvider>(context, listen: false).user;
       // setting initial value as user details
+      usernameController.text = user.username;
       nameController.text = user.name;
       emailController.text = user.email;
       phoneController.text = user.phone;
@@ -63,6 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void dispose() {
     // TODO: implement dispose
     //to save memory
+    usernameController.dispose();
     nameController.dispose();
     emailController.dispose();
     phoneController.dispose();
@@ -81,6 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Provider.of<AuthProvider>(context, listen: true).user;
       nameController.text = user.name;
       emailController.text = user.email;
+      usernameController.text = user.username;
       phoneController.text = user.phone;
       genderDropDownValue = user.gender;
     });
@@ -316,35 +319,76 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 dataBox(
                                   title: "Full Name",
                                   hintText: "Full Name",
-                                  isRequired: false,
+                                  isRequired: true,
                                   controller: nameController,
                                   data: Provider.of<AuthProvider>(context,
                                           listen: true)
                                       .user
                                       .name,
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Enter a valid name!';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                dataBox(
+                                  title: "Username",
+                                  hintText: "Username",
+                                  isRequired: true,
+                                  controller: usernameController,
+                                  data: Provider.of<AuthProvider>(context,
+                                          listen: true)
+                                      .user
+                                      .username,
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Enter a valid username!';
+                                    }
+                                    return null;
+                                  },
                                 ),
                                 SizedBox(height: height),
                                 dataBox(
                                   title: "Email",
                                   hintText: "Email",
-                                  isRequired: false,
+                                  isRequired: true,
                                   controller: emailController,
                                   data: Provider.of<AuthProvider>(context,
                                           listen: true)
                                       .user
                                       .email,
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Enter an email address!';
+                                    }
+
+                                    // Regular expression for validating email format
+                                    RegExp regex = RegExp(
+                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+                                    if (!regex.hasMatch(value)) {
+                                      return 'Enter a valid email!';
+                                    }
+                                    return null;
+                                  },
                                 ),
                                 SizedBox(height: height),
                                 dataBox(
                                   title: "Phone",
                                   hintText: "Phone",
-                                  isRequired: false,
+                                  isRequired: true,
                                   controller: phoneController,
                                   data: Provider.of<AuthProvider>(context,
                                           listen: true)
                                       .user
                                       .phone,
                                   isNumber: true,
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Enter a valid phone number!';
+                                    }
+                                    return null;
+                                  },
                                 ),
                                 SizedBox(height: height),
                                 buildDataBoxDropDown(
@@ -357,6 +401,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     'Others',
                                   ],
                                   controller: placeHolderGenderController,
+                                  validator: () {},
                                 ),
                                 SizedBox(height: height),
                                 isEditing
@@ -369,69 +414,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           final overlayContext =
                                               Overlay.of(context);
                                           //submit form
-                                          // TODO: add form validation here
-                                          setState(() {
-                                            isLoading = true;
-                                          });
-
-                                          UserDataModel user =
-                                              Provider.of<AuthProvider>(context,
-                                                      listen: false)
-                                                  .user;
-                                          bool isUpdateSuccessful =
-                                              await Provider.of<AuthProvider>(
-                                                      context,
-                                                      listen: false)
-                                                  .updateUserDetails(
-                                                      editedDetails:
-                                                          UserDataModel(
-                                                        id: user.id,
-                                                        name:
-                                                            nameController.text,
-                                                        username:
-                                                            usernameController
-                                                                .text,
-                                                        imageUrl: user.imageUrl,
-                                                        email: emailController
-                                                            .text,
-                                                        phone: phoneController
-                                                            .text,
-                                                        gender:
-                                                            genderDropDownValue!,
-                                                        isBlocked:
-                                                            user.isBlocked,
-                                                        userType: user.userType,
-                                                        accessToken:
-                                                            user.accessToken,
-                                                        isLoggedIn:
-                                                            user.isLoggedIn,
-                                                      ),
-                                                      isLoggedIn: true,
-                                                      context: context);
-                                          setState(() {
-                                            isLoading = false;
-                                          });
-                                          if (isUpdateSuccessful) {
-                                            // show success massage
-                                            showTopSnackBar(
-                                              overlayContext,
-                                              const CustomSnackBar.success(
-                                                message:
-                                                    "User Details Updated Successfully",
-                                              ),
-                                            );
+                                          if (_formKey.currentState!
+                                              .validate()) {
                                             setState(() {
-                                              isEditing = false;
+                                              isLoading = true;
                                             });
-                                          } else {
-                                            // show failure massage
-                                            showTopSnackBar(
-                                              overlayContext,
-                                              const CustomSnackBar.error(
-                                                message:
-                                                    "User Details not updated",
-                                              ),
-                                            );
+
+                                            UserDataModel user =
+                                                Provider.of<AuthProvider>(
+                                                        context,
+                                                        listen: false)
+                                                    .user;
+                                            bool isUpdateSuccessful =
+                                                await Provider.of<AuthProvider>(
+                                                        context,
+                                                        listen: false)
+                                                    .updateUserDetails(
+                                                        editedDetails:
+                                                            UserDataModel(
+                                                          id: user.id,
+                                                          name: nameController
+                                                              .text,
+                                                          username:
+                                                              usernameController
+                                                                  .text,
+                                                          imageUrl:
+                                                              user.imageUrl,
+                                                          email: emailController
+                                                              .text,
+                                                          phone: phoneController
+                                                              .text,
+                                                          gender:
+                                                              genderDropDownValue!,
+                                                          isBlocked:
+                                                              user.isBlocked,
+                                                          userType:
+                                                              user.userType,
+                                                          accessToken:
+                                                              user.accessToken,
+                                                          isLoggedIn:
+                                                              user.isLoggedIn,
+                                                        ),
+                                                        isLoggedIn: true,
+                                                        context: context);
+                                            setState(() {
+                                              isLoading = false;
+                                            });
+                                            if (isUpdateSuccessful) {
+                                              // show success massage
+                                              showTopSnackBar(
+                                                overlayContext,
+                                                const CustomSnackBar.success(
+                                                  message:
+                                                      "User Details Updated Successfully",
+                                                ),
+                                              );
+                                              setState(() {
+                                                isEditing = false;
+                                              });
+                                            } else {
+                                              // show failure massage
+                                              showTopSnackBar(
+                                                overlayContext,
+                                                const CustomSnackBar.error(
+                                                  message:
+                                                      "User Details not updated",
+                                                ),
+                                              );
+                                            }
                                           }
                                         },
                                         context,
@@ -494,12 +544,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String hintText,
     required List<String> dataList,
     required TextEditingController controller,
+    required Function? validator,
   }) {
     return dataBox(
       title: title,
       hintText: hintText,
-      isRequired: false,
+      isRequired: true,
       isDropDown: true,
+      validator: validator,
       controller: controller,
       data: Provider.of<AuthProvider>(context, listen: true).user.gender,
       dropDown: DropdownButtonFormField<String>(
@@ -548,16 +600,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Container dataBox(
-      {required String title,
-      required String hintText,
-      required TextEditingController controller,
-      bool isPasswordField = false,
-      String data = "",
-      bool isRequired = false,
-      bool isDropDown = false,
-      bool isNumber = false,
-      Widget dropDown = const SizedBox()}) {
+  Container dataBox({
+    required String title,
+    required String hintText,
+    required TextEditingController controller,
+    required Function? validator,
+    bool isPasswordField = false,
+    String data = "",
+    bool isRequired = false,
+    bool isDropDown = false,
+    bool isNumber = false,
+    Widget dropDown = const SizedBox(),
+  }) {
     return Container(
       width: width * 31,
       padding: EdgeInsets.symmetric(vertical: height, horizontal: width * 2),
@@ -618,7 +672,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         )
                       : buildInputField(
                           hintText, height, width, context, controller,
-                          isNumber: isNumber),
+                          isNumber: isNumber, validator: validator),
         ],
       ),
     );

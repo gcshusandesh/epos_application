@@ -249,6 +249,7 @@ class AuthProvider extends ChangeNotifier {
         'Authorization': 'Bearer ${user.accessToken!}',
       };
       Map<String, String> body = {
+        "username": editedDetails.username,
         "name": editedDetails.name,
         "email": editedDetails.email,
         "phone": editedDetails.phone,
