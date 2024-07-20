@@ -18,7 +18,7 @@ class Data {
 
 Widget buildInputField(String hintText, double height, double width,
     BuildContext context, TextEditingController controller,
-    {Function? validator}) {
+    {Function? validator, bool isNumber = false}) {
   return Container(
     height: height * 6,
     width: width * 40,
@@ -33,6 +33,7 @@ Widget buildInputField(String hintText, double height, double width,
       validator: (value) {
         return validator!(value);
       },
+      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
       decoration: InputDecoration(
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(

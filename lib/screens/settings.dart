@@ -199,23 +199,25 @@ class _SettingsState extends State<Settings> {
         backgroundColor: Colors.white,
         body: Padding(
           padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              topSection(
-                  context: context,
-                  height: height,
-                  text: "Settings",
-                  width: width),
-              SizedBox(height: height * 2),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  leftSection(),
-                  line(),
-                  rightSection(),
-                ],
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                topSection(
+                    context: context,
+                    height: height,
+                    text: "Settings",
+                    width: width),
+                SizedBox(height: height * 2),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    leftSection(),
+                    line(),
+                    rightSection(),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -676,6 +678,7 @@ class _SettingsState extends State<Settings> {
                     data: Provider.of<InfoProvider>(context, listen: true)
                         .restaurantInfo
                         .vatNumber!,
+                    isNumber: true,
                   ),
                   SizedBox(height: height),
                   formDataBox(
@@ -882,6 +885,7 @@ class _SettingsState extends State<Settings> {
     bool isPasswordField = false,
     String? data = "",
     bool isCountry = false,
+    bool isNumber = false,
   }) {
     return Container(
       width: width * 31,
@@ -937,7 +941,8 @@ class _SettingsState extends State<Settings> {
                       ),
                     )
                   : buildInputField(
-                      hintText, height, width, context, controller),
+                      hintText, height, width, context, controller,
+                      isNumber: isNumber),
         ],
       ),
     );

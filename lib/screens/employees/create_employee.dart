@@ -225,19 +225,6 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 },
                               ),
                               SizedBox(height: height),
-                              // widget.isEdit
-                              //     ? const SizedBox()
-                              //     : dataBox(
-                              //         title: "Password",
-                              //         hintText: "Password",
-                              //         isRequired: true,
-                              //         controller: passwordController,
-                              //         validator: (value) {
-                              //           if (value.isEmpty) {
-                              //             return 'Enter a valid password!';
-                              //           }
-                              //           return null;
-                              //         }),
                               SizedBox(
                                 height: widget.isEdit ? 0 : height,
                               ),
@@ -252,6 +239,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                   }
                                   return null;
                                 },
+                                isNumber: true,
                               ),
                               SizedBox(height: height),
                               dataBox(
@@ -564,6 +552,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
       required Function? validator,
       bool isRequired = false,
       bool isDropDown = false,
+      bool isNumber = false,
       Widget dropDown = const SizedBox()}) {
     return Container(
       width: width * 31,
@@ -588,7 +577,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
           isDropDown
               ? dropDown
               : buildInputField(hintText, height, width, context, controller,
-                  validator: validator),
+                  validator: validator, isNumber: isNumber),
         ],
       ),
     );

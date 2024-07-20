@@ -344,6 +344,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           listen: true)
                                       .user
                                       .phone,
+                                  isNumber: true,
                                 ),
                                 SizedBox(height: height),
                                 buildDataBoxDropDown(
@@ -555,6 +556,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       String data = "",
       bool isRequired = false,
       bool isDropDown = false,
+      bool isNumber = false,
       Widget dropDown = const SizedBox()}) {
     return Container(
       width: width * 31,
@@ -615,7 +617,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           },
                         )
                       : buildInputField(
-                          hintText, height, width, context, controller),
+                          hintText, height, width, context, controller,
+                          isNumber: isNumber),
         ],
       ),
     );
