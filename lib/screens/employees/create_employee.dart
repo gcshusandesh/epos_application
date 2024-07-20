@@ -41,7 +41,8 @@ class _CreateEmployeeState extends State<CreateEmployee> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
-  TextEditingController placeHolderController = TextEditingController();
+  TextEditingController genderController = TextEditingController();
+  TextEditingController typeController = TextEditingController();
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -56,6 +57,9 @@ class _CreateEmployeeState extends State<CreateEmployee> {
         usernameController.text = widget.user!.username;
         emailController.text = widget.user!.email;
         phoneController.text = widget.user!.phone;
+        genderController.text = widget.user!.gender;
+        typeController.text = widget.user!.userType.name;
+
         genderDropdownValue = widget.user!.gender;
         typeDropdownValue = widget.user!.userType.name;
       }
@@ -72,7 +76,8 @@ class _CreateEmployeeState extends State<CreateEmployee> {
     emailController.dispose();
     passwordController.dispose();
     phoneController.dispose();
-    placeHolderController.dispose();
+    genderController.dispose();
+    typeController.dispose();
     super.dispose();
   }
 
@@ -180,6 +185,12 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 hintText: "Full Name",
                                 isRequired: true,
                                 controller: nameController,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Enter a valid name!';
+                                  }
+                                  return null;
+                                },
                               ),
                               SizedBox(height: height),
                               dataBox(
@@ -187,6 +198,12 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 hintText: "Username",
                                 isRequired: true,
                                 controller: usernameController,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Enter a valid username!';
+                                  }
+                                  return null;
+                                },
                               ),
                               SizedBox(height: height),
                               dataBox(
@@ -194,6 +211,20 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 hintText: "Email",
                                 isRequired: true,
                                 controller: emailController,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Enter an email address!';
+                                  }
+
+                                  // Regular expression for validating email format
+                                  RegExp regex = RegExp(
+                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+                                  if (!regex.hasMatch(value)) {
+                                    return 'Enter a valid email!';
+                                  }
+
+                                  return null;
+                                },
                               ),
                               SizedBox(height: height),
                               widget.isEdit
@@ -203,7 +234,12 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                       hintText: "Password",
                                       isRequired: true,
                                       controller: passwordController,
-                                    ),
+                                      validator: (value) {
+                                        if (value.isEmpty) {
+                                          return 'Enter a valid password!';
+                                        }
+                                        return null;
+                                      }),
                               SizedBox(
                                 height: widget.isEdit ? 0 : height,
                               ),
@@ -212,6 +248,12 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 hintText: "Phone",
                                 isRequired: true,
                                 controller: phoneController,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Enter a valid phone number!';
+                                  }
+                                  return null;
+                                },
                               ),
                               SizedBox(height: height),
                               dataBox(
@@ -219,7 +261,14 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 hintText: "Gender",
                                 isRequired: true,
                                 isDropDown: true,
-                                controller: placeHolderController,
+                                validator: (value) {
+                                  if (genderDropdownValue == null ||
+                                      genderDropdownValue!.isEmpty) {
+                                    return 'Select a valid gender';
+                                  }
+                                  return null;
+                                },
+                                controller: genderController,
                                 dropDown: DropdownButtonFormField<String>(
                                   padding: EdgeInsets.zero,
                                   icon: const Icon(
@@ -285,7 +334,14 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 hintText: "User Type",
                                 isRequired: true,
                                 isDropDown: true,
-                                controller: placeHolderController,
+                                controller: typeController,
+                                validator: (value) {
+                                  if (typeDropdownValue == null ||
+                                      typeDropdownValue!.isEmpty) {
+                                    return 'Select a valid User Type';
+                                  }
+                                  return null;
+                                },
                                 dropDown: DropdownButtonFormField<String>(
                                   padding: EdgeInsets.zero,
                                   icon: const Icon(
@@ -353,114 +409,120 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 height,
                                 width,
                                 () async {
-                                  // TODO: add form validation here
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-                                  late bool isSuccessful;
-                                  if (widget.isEdit) {
-                                    /// edit employee data
-                                    isSuccessful = await Provider.of<
-                                                AuthProvider>(context,
-                                            listen: false)
-                                        .updateUserDetails(
-                                            context: context,
-                                            editedDetails: UserDataModel(
-                                              id: widget.user!.id,
-                                              name: nameController.text,
-                                              username: usernameController.text,
-                                              email: emailController.text,
-                                              phone: phoneController.text,
-                                              gender: genderDropdownValue!,
-                                              userType: assignUserType(
-                                                  typeDropdownValue!),
-                                              isBlocked: widget.user!.isBlocked,
-                                            ));
-                                  } else {
-                                    /// create employee
-                                    isSuccessful =
-                                        await Provider.of<UserProvider>(context,
+                                  if (_formKey.currentState!.validate()) {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    late bool isSuccessful;
+                                    if (widget.isEdit) {
+                                      /// edit employee data
+                                      isSuccessful =
+                                          await Provider.of<AuthProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .updateUserDetails(
+                                                  context: context,
+                                                  editedDetails: UserDataModel(
+                                                    id: widget.user!.id,
+                                                    name: nameController.text,
+                                                    username:
+                                                        usernameController.text,
+                                                    email: emailController.text,
+                                                    phone: phoneController.text,
+                                                    gender:
+                                                        genderDropdownValue!,
+                                                    userType: assignUserType(
+                                                        typeDropdownValue!),
+                                                    isBlocked:
+                                                        widget.user!.isBlocked,
+                                                  ));
+                                    } else {
+                                      /// create employee
+                                      isSuccessful =
+                                          await Provider.of<UserProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .createUser(
+                                        name: nameController.text,
+                                        username: usernameController.text,
+                                        email: emailController.text,
+                                        password: passwordController.text,
+                                        phone: phoneController.text,
+                                        gender: genderDropdownValue!,
+                                        userType: typeDropdownValue!,
+                                        context: context,
+                                      );
+                                    }
+
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+
+                                    if (isSuccessful && widget.isEdit) {
+                                      /// show success message for employee edit
+                                      if (context.mounted) {
+                                        Provider.of<UserProvider>(context,
                                                 listen: false)
-                                            .createUser(
-                                      name: nameController.text,
-                                      username: usernameController.text,
-                                      email: emailController.text,
-                                      password: passwordController.text,
-                                      phone: phoneController.text,
-                                      gender: genderDropdownValue!,
-                                      userType: typeDropdownValue!,
-                                      context: context,
-                                    );
-                                  }
-
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-
-                                  if (isSuccessful && widget.isEdit) {
-                                    /// show success message for employee edit
-                                    if (context.mounted) {
-                                      Provider.of<UserProvider>(context,
-                                              listen: false)
-                                          .editUserLocally(
-                                        index: widget.index!,
-                                        editedUser: UserDataModel(
+                                            .editUserLocally(
+                                          index: widget.index!,
+                                          editedUser: UserDataModel(
+                                            name: nameController.text,
+                                            username: usernameController.text,
+                                            email: emailController.text,
+                                            phone: phoneController.text,
+                                            gender: genderDropdownValue!,
+                                            userType: assignUserType(
+                                                typeDropdownValue!),
+                                            isBlocked: widget.user!.isBlocked,
+                                          ),
+                                        );
+                                        Navigator.pop(context);
+                                        // show success massage
+                                        showTopSnackBar(
+                                          Overlay.of(context),
+                                          const CustomSnackBar.success(
+                                            message:
+                                                "Employee Edited Successfully",
+                                          ),
+                                        );
+                                      }
+                                    } else if (isSuccessful && !widget.isEdit) {
+                                      /// show success message for employee creation
+                                      if (context.mounted) {
+                                        Provider.of<UserProvider>(context,
+                                                listen: false)
+                                            .addUserLocally(UserDataModel(
                                           name: nameController.text,
                                           username: usernameController.text,
                                           email: emailController.text,
                                           phone: phoneController.text,
                                           gender: genderDropdownValue!,
+                                          isBlocked: false,
                                           userType: assignUserType(
                                               typeDropdownValue!),
-                                          isBlocked: widget.user!.isBlocked,
-                                        ),
-                                      );
-                                      Navigator.pop(context);
-                                      // show success massage
-                                      showTopSnackBar(
-                                        Overlay.of(context),
-                                        const CustomSnackBar.success(
-                                          message:
-                                              "Employee Edited Successfully",
-                                        ),
-                                      );
-                                    }
-                                  } else if (isSuccessful && !widget.isEdit) {
-                                    /// show success message for employee creation
-                                    if (context.mounted) {
-                                      Provider.of<UserProvider>(context,
-                                              listen: false)
-                                          .addUserLocally(UserDataModel(
-                                        name: nameController.text,
-                                        username: usernameController.text,
-                                        email: emailController.text,
-                                        phone: phoneController.text,
-                                        gender: genderDropdownValue!,
-                                        isBlocked: false,
-                                        userType:
-                                            assignUserType(typeDropdownValue!),
-                                      ));
-                                      Navigator.pop(context);
-                                      // show success massage
-                                      showTopSnackBar(
-                                        Overlay.of(context),
-                                        const CustomSnackBar.success(
-                                          message:
-                                              "Employee Created Successfully",
-                                        ),
-                                      );
-                                    }
-                                  } else {
-                                    /// show error massage
-                                    if (context.mounted) {
-                                      showTopSnackBar(
-                                        Overlay.of(context),
-                                        CustomSnackBar.error(
-                                          message: widget.isEdit
-                                              ? "Employee Edit Failed"
-                                              : "Employee Creation Failed",
-                                        ),
-                                      );
+                                        ));
+                                        Navigator.pop(context);
+                                        // show success massage
+                                        showTopSnackBar(
+                                          Overlay.of(context),
+                                          const CustomSnackBar.success(
+                                            message:
+                                                "Employee Created Successfully",
+                                          ),
+                                        );
+                                      }
+                                    } else {
+                                      /// show error massage
+                                      if (context.mounted) {
+                                        showTopSnackBar(
+                                          Overlay.of(context),
+                                          CustomSnackBar.error(
+                                            message: widget.isEdit
+                                                ? "Employee Edit Failed"
+                                                : "Employee Creation Failed",
+                                          ),
+                                        );
+                                      }
                                     }
                                   }
                                 },
@@ -497,6 +559,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
       {required String title,
       required String hintText,
       required TextEditingController controller,
+      required Function? validator,
       bool isRequired = false,
       bool isDropDown = false,
       Widget dropDown = const SizedBox()}) {
@@ -522,7 +585,8 @@ class _CreateEmployeeState extends State<CreateEmployee> {
           ),
           isDropDown
               ? dropDown
-              : buildInputField(hintText, height, width, context, controller),
+              : buildInputField(hintText, height, width, context, controller,
+                  validator: validator),
         ],
       ),
     );
