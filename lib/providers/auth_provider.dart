@@ -327,10 +327,9 @@ class AuthProvider extends ChangeNotifier {
       };
       final response = await http.post(Uri.parse(url.toString()),
           headers: headers, body: jsonEncode(body));
-      if (response.statusCode == 200) {}
       if (response.statusCode == 400 &&
           response.body.contains("Passwords do not match")) {
-        return 401;
+        return 403;
       }
       return response.statusCode;
     } on SocketException {
@@ -372,6 +371,66 @@ class AuthProvider extends ChangeNotifier {
             currentPassword: currentPassword,
             newPassword: newPassword,
             confirmNewPassword: confirmNewPassword);
+      }
+      return 0;
+    }
+  }
+
+  Future<int> resetUserPassword(
+      {required BuildContext context, required String email}) async {
+    var url = Uri.parse("${Data.baseUrl}/api/users/reset-password");
+    try {
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      Map<String, String> body = {
+        "email": email,
+      };
+      final response = await http.post(Uri.parse(url.toString()),
+          headers: headers, body: jsonEncode(body));
+      if (response.statusCode == 400 &&
+          response.body.contains("User not found")) {
+        return 404;
+      }
+      return response.statusCode;
+    } on SocketException {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+                trace: "resetUserPassword",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await resetUserPassword(
+          context: context,
+          email: email,
+        );
+      }
+      return 0;
+    } catch (e) {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                    trace: "resetUserPassword",
+                  )),
+        );
+      }
+      if (context.mounted) {
+        //retry api
+        await resetUserPassword(
+          context: context,
+          email: email,
+        );
       }
       return 0;
     }

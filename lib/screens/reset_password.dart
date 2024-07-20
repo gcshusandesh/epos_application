@@ -2,6 +2,7 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -94,9 +95,12 @@ class _ResetPasswordState extends State<ResetPassword> {
                 ],
               ),
               buildImage(
-                "assets/restaurant_image.png",
-                200,
-                300,
+                Provider.of<InfoProvider>(context, listen: false)
+                    .restaurantInfo
+                    .imageUrl!,
+                isNetworkImage: true,
+                height * 25,
+                width * 30,
                 context: context,
               ),
               SizedBox(height: height * 2),
@@ -170,7 +174,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                       key: _formKey,
                       child: buildDataBox(
                         title: "Email",
-                        controller: newPasswordConfirmationController,
+                        controller: emailController,
                         context: context,
                         validator: (value) {
                           if (value.isEmpty ||
@@ -191,7 +195,11 @@ class _ResetPasswordState extends State<ResetPassword> {
                 () async {
                   if (_formKey.currentState!.validate()) {
                     FocusScope.of(context).requestFocus(FocusNode());
-                    resetLogic();
+                    if (widget.isChangePassword) {
+                      changeLogic();
+                    } else {
+                      resetLogin();
+                    }
                   }
                 },
                 context,
@@ -204,7 +212,53 @@ class _ResetPasswordState extends State<ResetPassword> {
     );
   }
 
-  void resetLogic() async {
+  void resetLogin() async {
+    final overlayContext = Overlay.of(context);
+    setState(() {
+      isLoading = true;
+    });
+    int passwordResetCode =
+        await Provider.of<AuthProvider>(context, listen: false)
+            .resetUserPassword(
+      context: context,
+      email: emailController.text,
+    );
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (passwordResetCode == 200) {
+      // show success massage
+      showTopSnackBar(
+        overlayContext,
+        const CustomSnackBar.success(
+          message: "New password has been sent to your registered email.",
+        ),
+      );
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } else if (passwordResetCode == 404) {
+      // show failure massage
+      showTopSnackBar(
+        overlayContext,
+        const CustomSnackBar.error(
+          message: "Email user not registered.",
+        ),
+      );
+    } else {
+      // show failure massage
+      showTopSnackBar(
+        overlayContext,
+        const CustomSnackBar.error(
+          message: "Password Not Reset.",
+        ),
+      );
+    }
+  }
+
+  void changeLogic() async {
     final overlayContext = Overlay.of(context);
     setState(() {
       isLoading = true;
@@ -241,7 +295,7 @@ class _ResetPasswordState extends State<ResetPassword> {
           message: "New Password cannot be same as Old Password",
         ),
       );
-    } else if (passwordChangeCode == 401) {
+    } else if (passwordChangeCode == 403) {
       // show same password massage
       showTopSnackBar(
         overlayContext,
