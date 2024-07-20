@@ -2,12 +2,13 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
-import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/screens/menu/update_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class EditSpecials extends StatefulWidget {
   const EditSpecials({super.key});
@@ -103,20 +104,20 @@ class _EditSpecialsState extends State<EditSpecials> {
                     },
                     context: context,
                   ),
-                  SizedBox(width: width),
-                  textButton(
-                    text: "Change Priority",
-                    height: height,
-                    width: width,
-                    textColor: Provider.of<InfoProvider>(context, listen: true)
-                        .systemInfo
-                        .iconsColor,
-                    buttonColor:
-                        Provider.of<InfoProvider>(context, listen: true)
-                            .systemInfo
-                            .iconsColor,
-                    onTap: () {},
-                  )
+                  // SizedBox(width: width),
+                  // textButton(
+                  //   text: "Change Priority",
+                  //   height: height,
+                  //   width: width,
+                  //   textColor: Provider.of<InfoProvider>(context, listen: true)
+                  //       .systemInfo
+                  //       .iconsColor,
+                  //   buttonColor:
+                  //       Provider.of<InfoProvider>(context, listen: true)
+                  //           .systemInfo
+                  //           .iconsColor,
+                  //   onTap: () {},
+                  // )
                 ],
               ),
               SizedBox(height: height * 2),
@@ -308,8 +309,21 @@ class _EditSpecialsState extends State<EditSpecials> {
               .totalSpecialsList[index]
               .status,
           onChanged: (value) {
-            Provider.of<MenuProvider>(context, listen: false)
-                .changeSpecialsStatusLocally(index);
+            if (Provider.of<MenuProvider>(context, listen: false)
+                    .totalSpecialsList[index]
+                    .image ==
+                null) {
+              // show success massage
+              showTopSnackBar(
+                Overlay.of(context),
+                const CustomSnackBar.error(
+                  message: "Please add image to publish specials",
+                ),
+              );
+            } else {
+              Provider.of<MenuProvider>(context, listen: false)
+                  .changeSpecialsStatusLocally(index);
+            }
           },
           context: context,
         ),
