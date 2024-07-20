@@ -39,7 +39,6 @@ class _CreateEmployeeState extends State<CreateEmployee> {
   TextEditingController nameController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController genderController = TextEditingController();
   TextEditingController typeController = TextEditingController();
@@ -74,7 +73,6 @@ class _CreateEmployeeState extends State<CreateEmployee> {
     nameController.dispose();
     usernameController.dispose();
     emailController.dispose();
-    passwordController.dispose();
     phoneController.dispose();
     genderController.dispose();
     typeController.dispose();
@@ -227,19 +225,19 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 },
                               ),
                               SizedBox(height: height),
-                              widget.isEdit
-                                  ? const SizedBox()
-                                  : dataBox(
-                                      title: "Password",
-                                      hintText: "Password",
-                                      isRequired: true,
-                                      controller: passwordController,
-                                      validator: (value) {
-                                        if (value.isEmpty) {
-                                          return 'Enter a valid password!';
-                                        }
-                                        return null;
-                                      }),
+                              // widget.isEdit
+                              //     ? const SizedBox()
+                              //     : dataBox(
+                              //         title: "Password",
+                              //         hintText: "Password",
+                              //         isRequired: true,
+                              //         controller: passwordController,
+                              //         validator: (value) {
+                              //           if (value.isEmpty) {
+                              //             return 'Enter a valid password!';
+                              //           }
+                              //           return null;
+                              //         }),
                               SizedBox(
                                 height: widget.isEdit ? 0 : height,
                               ),
@@ -443,10 +441,14 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                                   context,
                                                   listen: false)
                                               .createUser(
+                                        accessToken: Provider.of<AuthProvider>(
+                                                context,
+                                                listen: false)
+                                            .user
+                                            .accessToken!,
                                         name: nameController.text,
                                         username: usernameController.text,
                                         email: emailController.text,
-                                        password: passwordController.text,
                                         phone: phoneController.text,
                                         gender: genderDropdownValue!,
                                         userType: typeDropdownValue!,

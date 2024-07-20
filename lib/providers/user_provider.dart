@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
@@ -31,10 +32,10 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<bool> createUser({
+    required String accessToken,
     required String name,
     required String username,
     required String email,
-    required String password,
     required String phone,
     required String gender,
     required String userType,
@@ -42,6 +43,15 @@ class UserProvider extends ChangeNotifier {
   }) async {
     var url = Uri.parse("${Data.baseUrl}/api/auth/local/register");
 
+    String generatePassword({int length = 8}) {
+      const String chars =
+          "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      Random random = Random.secure();
+      return List.generate(
+          length, (index) => chars[random.nextInt(chars.length)]).join('');
+    }
+
+    String password = generatePassword();
     try {
       Map<String, String> body = {
         "username": username,
@@ -56,10 +66,16 @@ class UserProvider extends ChangeNotifier {
         Uri.parse(url.toString()),
         body: body,
       );
-      final data = json.decode(response.body);
       if (response.statusCode == 200) {
-        print("data = $data");
-        notifyListeners();
+        // Send account creation email
+        if (context.mounted) {
+          sendAccountCreationEmail(
+              accessToken: accessToken,
+              email: email,
+              username: username,
+              password: password,
+              context: context);
+        }
         return true;
       } else {
         return false;
@@ -79,10 +95,10 @@ class UserProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await createUser(
+            accessToken: accessToken,
             name: name,
             username: username,
             email: email,
-            password: password,
             phone: phone,
             gender: gender,
             userType: userType,
@@ -103,13 +119,89 @@ class UserProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await createUser(
+            accessToken: accessToken,
             name: name,
             username: username,
             email: email,
-            password: password,
             phone: phone,
             gender: gender,
             userType: userType,
+            context: context);
+      }
+      return false;
+    }
+  }
+
+  Future<bool> sendAccountCreationEmail({
+    required String accessToken,
+    required String email,
+    required String username,
+    required String password,
+    required BuildContext context,
+  }) async {
+    var url = Uri.parse("${Data.baseUrl}/api/email");
+    try {
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      };
+      Map<String, String> body = {
+        "to": email,
+        "subject": "Account Creation",
+        "html":
+            "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Account Creation</title>\n<style>\nbody {\nfont-family: Arial, sans-serif;\nbackground-color: #f4f4f4;\nmargin: 0;\npadding: 0;\n}\n.container {\nbackground-color: #ffffff;\nmargin: 50px auto;\npadding: 20px;\nborder-radius: 8px;\nbox-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\nwidth: 80%;\nmax-width: 600px;\n}\n.header {\ntext-align: center;\nborder-bottom: 1px solid #dddddd;\npadding-bottom: 20px;\n}\n.header h1 {\nmargin: 0;\ncolor: #333333;\n}\n.content {\nmargin-top: 20px;\n}\n.content p {\nline-height: 1.6;\ncolor: #555555;\n}\n.details {\nmargin-top: 20px;\npadding: 10px;\nbackground-color: #f9f9f9;\nborder: 1px solid #dddddd;\nborder-radius: 4px;\n}\n.details p {\nmargin: 5px 0;\n}\n.footer {\nmargin-top: 20px;\ntext-align: center;\ncolor: #888888;\n}\n</style>\n</head>\n<body>\n<div class=\"container\">\n<div class=\"header\">\n<h1>Account Creation</h1>\n</div>\n<div class=\"content\">\n<p>A new user account has been created for you in the Restaurant EPOS App. Please note your details:</p>\n<div class=\"details\">\n<p><strong>Username:</strong> $username</p>\n<p><strong>Password:</strong> $password</p>\n</div>\n</div>\n<div class=\"footer\">\n<p>&copy; 2024 Restaurant EPOS App</p>\n</div>\n</div>\n</body>\n</html>"
+      };
+      final response = await http.post(
+        Uri.parse(url.toString()),
+        headers: headers,
+        body: jsonEncode(body),
+      );
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } on SocketException {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+                trace: " sendAccountCreationEmail",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await sendAccountCreationEmail(
+            accessToken: accessToken,
+            username: username,
+            email: email,
+            password: password,
+            context: context);
+      }
+      return false;
+    } catch (e) {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                trace: " sendAccountCreationEmail",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await sendAccountCreationEmail(
+            accessToken: accessToken,
+            username: username,
+            email: email,
+            password: password,
             context: context);
       }
       return false;
