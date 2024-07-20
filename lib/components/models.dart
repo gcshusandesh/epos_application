@@ -163,11 +163,13 @@ class UserDataModel {
 }
 
 class Specials {
+  int? id;
   String name;
   String? image;
   bool status;
 
   Specials({
+    this.id,
     required this.name,
     this.image,
     required this.status,
@@ -175,12 +177,14 @@ class Specials {
 }
 
 class Category {
+  int? id;
   String name;
-  String image;
+  String? image;
   bool status;
   bool isSelected = false;
 
   Category({
+    this.id,
     required this.name,
     required this.image,
     required this.status,
@@ -197,16 +201,18 @@ class MenuItemsByCategory {
 }
 
 class MenuItems {
+  int? id;
   String name;
-  String image;
+  String? image;
   String description;
   String ingredients;
   int price;
   bool status;
 
   MenuItems({
+    this.id,
     required this.name,
-    required this.image,
+    this.image,
     required this.description,
     required this.ingredients,
     required this.price,

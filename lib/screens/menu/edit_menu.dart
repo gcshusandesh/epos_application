@@ -97,7 +97,7 @@ class _EditMenuState extends State<EditMenu> {
             children: [
               menuOption(
                 category.name,
-                category.image,
+                category.image!,
                 height,
                 width,
                 () {
@@ -350,7 +350,7 @@ class _EditMenuState extends State<EditMenu> {
                     Provider.of<MenuProvider>(context, listen: true)
                         .selectedCategoryIndex]
                 .menuItems[itemIndex]
-                .image,
+                .image!,
             height: height * 10,
             width: width * 20,
             fit: BoxFit.fill,

@@ -251,7 +251,7 @@ class _EditCategoryState extends State<EditCategory> {
           child: Image.asset(
             Provider.of<MenuProvider>(context, listen: true)
                 .categoryList[index]
-                .image,
+                .image!,
             height: height * 10,
             width: width * 20,
             fit: BoxFit.fill,
@@ -268,7 +268,7 @@ class _EditCategoryState extends State<EditCategory> {
             onTap: () {
               // delete item from list
               Provider.of<MenuProvider>(context, listen: false)
-                  .removeCategoryLocally(index);
+                  .removeCategoryLocally(index: index);
             },
           ),
         ),

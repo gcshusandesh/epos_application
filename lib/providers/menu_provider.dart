@@ -26,7 +26,7 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeSpecialsLocally(int index) {
+  void removeSpecialsLocally({required int index}) {
     ///remove data in main list
     totalSpecialsList.removeAt(index);
 
@@ -75,6 +75,7 @@ class MenuProvider extends ChangeNotifier {
           totalSpecialsList = [];
           data.forEach((specialItem) {
             totalSpecialsList.add(Specials(
+              id: specialItem['id'],
               name: specialItem['attributes']['name'],
               image: specialItem['attributes']['image']['data'] == null
                   ? null
@@ -249,6 +250,103 @@ class MenuProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> deleteMenuItem({
+    bool isSpecials = false,
+    bool isCategory = false,
+    bool isItem = false,
+    required int id,
+    required int index,
+    required String accessToken,
+    required BuildContext context,
+  }) async {
+    print("deleting menu item");
+    late Uri url;
+    if (isSpecials) {
+      url = Uri.parse("${Data.baseUrl}/api/specials/$id");
+    } else if (isCategory) {
+      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+    } else if (isItem) {
+      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+    }
+
+    try {
+      var headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer $accessToken',
+      };
+      var response = await http.delete(
+        url,
+        headers: headers,
+      );
+      var extractedData = json.decode(response.body);
+      var data = extractedData['data'];
+      print("status code = ${response.statusCode}");
+      print("data = $data");
+      if (response.statusCode == 200) {
+        if (isSpecials) {
+          removeSpecialsLocally(index: index);
+        } else if (isCategory) {
+          removeCategoryLocally(index: index);
+        } else if (isItem) {
+          removeMenuItemLocally(itemIndex: index);
+        }
+        notifyListeners();
+        return true;
+      }
+      return false;
+    } on SocketException {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+                trace: "deleteMenuItem",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await deleteMenuItem(
+          isSpecials: isSpecials,
+          isCategory: isCategory,
+          isItem: isItem,
+          id: id,
+          index: index,
+          accessToken: accessToken,
+          context: context,
+        );
+      }
+      return false;
+    } catch (e) {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                trace: "deleteMenuItem",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await deleteMenuItem(
+          isSpecials: isSpecials,
+          isCategory: isCategory,
+          isItem: isItem,
+          id: id,
+          index: index,
+          accessToken: accessToken,
+          context: context,
+        );
+      }
+      return false;
+    }
+  }
+
   List<Category> categoryList = [];
   int selectedCategoryIndex = 0;
   void changeCategoryStatusLocally(int index) {
@@ -256,7 +354,7 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeCategoryLocally(int index) {
+  void removeCategoryLocally({required int index}) {
     categoryList.removeAt(index);
     notifyListeners();
   }

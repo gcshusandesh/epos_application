@@ -217,7 +217,7 @@ class _MenuPageState extends State<MenuPage> {
                       Provider.of<MenuProvider>(context, listen: true)
                           .selectedCategoryIndex]
                   .menuItems[itemIndex]
-                  .image,
+                  .image!,
               fit: BoxFit.fill,
             ),
           ),
@@ -498,7 +498,7 @@ class _MenuPageState extends State<MenuPage> {
             children: [
               menuOption(
                 category.name,
-                category.image,
+                category.image!,
                 height,
                 width,
                 () {
