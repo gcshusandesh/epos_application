@@ -88,6 +88,7 @@ enum UserType {
 class UserDataModel {
   final int? id;
   String name;
+  String username;
   String? imageUrl;
   String email;
   String phone;
@@ -100,6 +101,7 @@ class UserDataModel {
   UserDataModel({
     this.id,
     required this.name,
+    required this.username,
     this.imageUrl,
     required this.email,
     required this.phone,
@@ -113,6 +115,7 @@ class UserDataModel {
   static Map<String, dynamic> toMap(UserDataModel user) => {
         'id': user.id,
         'name': user.name,
+        'username': user.username,
         'imageUrl': user.imageUrl,
         'email': user.email,
         'phone': user.phone,
@@ -134,6 +137,7 @@ class UserDataModel {
     return UserDataModel(
       id: jsonData['id'],
       name: jsonData['name'],
+      username: jsonData['username'],
       imageUrl: jsonData['imageUrl'],
       email: jsonData['email'],
       phone: jsonData['phone'],

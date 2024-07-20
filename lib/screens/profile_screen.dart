@@ -30,6 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? genderDropDownValue;
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
 
   TextEditingController phoneController = TextEditingController();
   TextEditingController placeHolderGenderController = TextEditingController();
@@ -386,6 +387,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                         id: user.id,
                                                         name:
                                                             nameController.text,
+                                                        username:
+                                                            usernameController
+                                                                .text,
                                                         imageUrl: user.imageUrl,
                                                         email: emailController
                                                             .text,

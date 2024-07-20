@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
@@ -33,6 +32,7 @@ class UserProvider extends ChangeNotifier {
 
   Future<bool> createUser({
     required String name,
+    required String username,
     required String email,
     required String password,
     required String phone,
@@ -41,17 +41,10 @@ class UserProvider extends ChangeNotifier {
     required BuildContext context,
   }) async {
     var url = Uri.parse("${Data.baseUrl}/api/auth/local/register");
-    // Function to generate a random username
-    String generateUsername(String name) {
-      String firstName = name.split(' ')[0];
-      int randomNumber = Random().nextInt(90) +
-          10; // Generates a random number between 10 and 99
-      return '$firstName$randomNumber';
-    }
 
     try {
       Map<String, String> body = {
-        "username": generateUsername(name),
+        "username": username,
         "name": name,
         "email": email,
         "password": password,
@@ -87,6 +80,7 @@ class UserProvider extends ChangeNotifier {
         //retry api
         await createUser(
             name: name,
+            username: username,
             email: email,
             password: password,
             phone: phone,
@@ -110,6 +104,7 @@ class UserProvider extends ChangeNotifier {
         //retry api
         await createUser(
             name: name,
+            username: username,
             email: email,
             password: password,
             phone: phone,
@@ -147,6 +142,7 @@ class UserProvider extends ChangeNotifier {
                     ? null
                     : "${Data.baseUrl}${user["image"]["formats"]["small"]["url"]}",
                 name: user["name"],
+                username: user["username"],
                 email: user["email"],
                 phone: user["phone"],
                 gender: user["gender"],
@@ -164,6 +160,7 @@ class UserProvider extends ChangeNotifier {
                     ? null
                     : "${Data.baseUrl}${user["image"]["formats"]["small"]["url"]}",
                 name: user["name"],
+                username: user["username"],
                 email: user["email"],
                 phone: user["phone"],
                 gender: user["gender"],

@@ -14,6 +14,7 @@ import 'package:top_snackbar_flutter/top_snack_bar.dart';
 class AuthProvider extends ChangeNotifier {
   UserDataModel user = UserDataModel(
     name: "Placeholder",
+    username: "Placeholder",
     email: "Placeholder",
     phone: "Placeholder",
     gender: "Male",
@@ -48,6 +49,7 @@ class AuthProvider extends ChangeNotifier {
         user = UserDataModel(
           id: userData["id"],
           name: userData["name"],
+          username: userData["username"],
           email: userData["email"],
           phone: userData["phone"],
           gender: userData["gender"],
@@ -176,6 +178,7 @@ class AuthProvider extends ChangeNotifier {
         user = UserDataModel(
           id: data["id"],
           name: data["name"],
+          username: data["username"],
           imageUrl: data["image"] == null
               ? null
               : "${Data.baseUrl}${data["image"]["formats"]["small"]["url"]}",

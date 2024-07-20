@@ -37,6 +37,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
   String? genderDropdownValue;
   String? typeDropdownValue;
   TextEditingController nameController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
@@ -52,6 +53,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
       if (widget.isEdit) {
         // populate controller with current employee value
         nameController.text = widget.user!.name;
+        usernameController.text = widget.user!.username;
         emailController.text = widget.user!.email;
         phoneController.text = widget.user!.phone;
         genderDropdownValue = widget.user!.gender;
@@ -66,6 +68,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
   void dispose() {
     //to save memory
     nameController.dispose();
+    usernameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     phoneController.dispose();
@@ -177,6 +180,13 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 hintText: "Full Name",
                                 isRequired: true,
                                 controller: nameController,
+                              ),
+                              SizedBox(height: height),
+                              dataBox(
+                                title: "Username",
+                                hintText: "Username",
+                                isRequired: true,
+                                controller: usernameController,
                               ),
                               SizedBox(height: height),
                               dataBox(
@@ -350,22 +360,22 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                   late bool isSuccessful;
                                   if (widget.isEdit) {
                                     /// edit employee data
-                                    isSuccessful =
-                                        await Provider.of<AuthProvider>(context,
-                                                listen: false)
-                                            .updateUserDetails(
-                                                context: context,
-                                                editedDetails: UserDataModel(
-                                                  id: widget.user!.id,
-                                                  name: nameController.text,
-                                                  email: emailController.text,
-                                                  phone: phoneController.text,
-                                                  gender: genderDropdownValue!,
-                                                  userType: assignUserType(
-                                                      typeDropdownValue!),
-                                                  isBlocked:
-                                                      widget.user!.isBlocked,
-                                                ));
+                                    isSuccessful = await Provider.of<
+                                                AuthProvider>(context,
+                                            listen: false)
+                                        .updateUserDetails(
+                                            context: context,
+                                            editedDetails: UserDataModel(
+                                              id: widget.user!.id,
+                                              name: nameController.text,
+                                              username: usernameController.text,
+                                              email: emailController.text,
+                                              phone: phoneController.text,
+                                              gender: genderDropdownValue!,
+                                              userType: assignUserType(
+                                                  typeDropdownValue!),
+                                              isBlocked: widget.user!.isBlocked,
+                                            ));
                                   } else {
                                     /// create employee
                                     isSuccessful =
@@ -373,6 +383,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                                 listen: false)
                                             .createUser(
                                       name: nameController.text,
+                                      username: usernameController.text,
                                       email: emailController.text,
                                       password: passwordController.text,
                                       phone: phoneController.text,
@@ -395,6 +406,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                         index: widget.index!,
                                         editedUser: UserDataModel(
                                           name: nameController.text,
+                                          username: usernameController.text,
                                           email: emailController.text,
                                           phone: phoneController.text,
                                           gender: genderDropdownValue!,
@@ -420,6 +432,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                               listen: false)
                                           .addUserLocally(UserDataModel(
                                         name: nameController.text,
+                                        username: usernameController.text,
                                         email: emailController.text,
                                         phone: phoneController.text,
                                         gender: genderDropdownValue!,
