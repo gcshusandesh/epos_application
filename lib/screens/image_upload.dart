@@ -190,8 +190,12 @@ class _ImageUploadState extends State<ImageUpload> {
                                     .systemInfo
                                     .primaryColor,
                                 onTap: () async {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
                                   originalImage = await picker.pickImage(
                                       source: ImageSource.camera);
+
                                   if (originalImage != null) {
                                     // Resize image to 700x700
                                     compressedImage = await compressFile(
@@ -204,6 +208,9 @@ class _ImageUploadState extends State<ImageUpload> {
                                       });
                                     }
                                   }
+                                  setState(() {
+                                    isLoading = false;
+                                  });
                                 }),
                             SizedBox(
                               width: width * 2,
@@ -222,6 +229,9 @@ class _ImageUploadState extends State<ImageUpload> {
                                     .systemInfo
                                     .primaryColor,
                                 onTap: () async {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
                                   originalImage = await picker.pickImage(
                                       source: ImageSource.gallery);
                                   if (originalImage != null) {
@@ -236,6 +246,9 @@ class _ImageUploadState extends State<ImageUpload> {
                                       });
                                     }
                                   }
+                                  setState(() {
+                                    isLoading = false;
+                                  });
                                 }),
                           ],
                         ),
