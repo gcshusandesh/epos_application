@@ -278,9 +278,7 @@ class _EditSpecialsState extends State<EditSpecials> {
                         .name,
                     width),
                 Row(
-                  mainAxisAlignment: isEditing
-                      ? MainAxisAlignment.spaceEvenly
-                      : MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     buildCustomText(
                       Provider.of<MenuProvider>(context, listen: true)
@@ -295,16 +293,19 @@ class _EditSpecialsState extends State<EditSpecials> {
                           : Data.redColor,
                       width * 1.2,
                     ),
-                    isEditing
-                        ? label(
-                            text: "edit",
-                            height: height,
-                            width: width,
-                            labelColor:
-                                Provider.of<InfoProvider>(context, listen: true)
-                                    .systemInfo
-                                    .iconsColor)
-                        : const SizedBox(),
+                    Padding(
+                      padding: EdgeInsets.only(left: width),
+                      child: isEditing
+                          ? label(
+                              text: "edit",
+                              height: height,
+                              width: width,
+                              labelColor: Provider.of<InfoProvider>(context,
+                                      listen: true)
+                                  .systemInfo
+                                  .iconsColor)
+                          : const SizedBox(),
+                    ),
                   ],
                 )
               ],

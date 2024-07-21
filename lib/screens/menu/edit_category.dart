@@ -4,6 +4,7 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/screens/menu/update_data.dart';
 import 'package:flutter/material.dart';
@@ -249,29 +250,65 @@ class _EditCategoryState extends State<EditCategory> {
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
         tableItem((index + 1).toString(), width),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Column(
-            children: [
-              tableItem(
-                  Provider.of<MenuProvider>(context, listen: true)
-                      .categoryList[index]
-                      .name,
-                  width),
-              buildCustomText(
-                Provider.of<MenuProvider>(context, listen: true)
+        InkWell(
+          onTap: () {
+            if (isEditing) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UpdateData(
+                          isCategory: true,
+                          category:
+                              Provider.of<MenuProvider>(context, listen: false)
+                                  .categoryList[index],
+                          isEdit: true,
+                          index: index,
+                        )),
+              );
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Column(
+              children: [
+                tableItem(
+                    Provider.of<MenuProvider>(context, listen: true)
                         .categoryList[index]
-                        .status
-                    ? "Active"
-                    : "Inactive",
-                Provider.of<MenuProvider>(context, listen: true)
-                        .categoryList[index]
-                        .status
-                    ? Data.greenColor
-                    : Data.redColor,
-                width,
-              )
-            ],
+                        .name,
+                    width),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    buildCustomText(
+                      Provider.of<MenuProvider>(context, listen: true)
+                              .categoryList[index]
+                              .status
+                          ? "Active"
+                          : "Inactive",
+                      Provider.of<MenuProvider>(context, listen: true)
+                              .categoryList[index]
+                              .status
+                          ? Data.greenColor
+                          : Data.redColor,
+                      width,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: width),
+                      child: isEditing
+                          ? label(
+                              text: "edit",
+                              height: height,
+                              width: width,
+                              labelColor: Provider.of<InfoProvider>(context,
+                                      listen: true)
+                                  .systemInfo
+                                  .iconsColor)
+                          : const SizedBox(),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
         Padding(

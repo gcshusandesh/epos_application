@@ -60,6 +60,7 @@ class _UpdateDataState extends State<UpdateData> {
         if (widget.isSpecial) {
           nameController.text = widget.specials!.name;
         } else if (widget.isCategory) {
+          nameController.text = widget.category!.name;
         } else if (widget.isItem) {}
       }
 
