@@ -207,7 +207,7 @@ class _MenuPageState extends State<MenuPage> {
   Container menuItem(int itemIndex) {
     return Container(
       padding: EdgeInsets.symmetric(
-        vertical: height * 1.5,
+        vertical: width * 1,
       ),
       height: width * 10,
       width: width * 10,
@@ -235,14 +235,17 @@ class _MenuPageState extends State<MenuPage> {
           SizedBox(
             height: width * 12, // Define the size of the SVG image
             width: width * 12,
-            child: Image.asset(
-              Provider.of<MenuProvider>(context, listen: true)
-                  .menuItemsByCategory[
-                      Provider.of<MenuProvider>(context, listen: true)
-                          .selectedCategoryIndex]
-                  .menuItems[itemIndex]
-                  .image!,
-              fit: BoxFit.fill,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10.0),
+              child: Image.asset(
+                Provider.of<MenuProvider>(context, listen: true)
+                    .menuItemsByCategory[
+                        Provider.of<MenuProvider>(context, listen: true)
+                            .selectedCategoryIndex]
+                    .menuItems[itemIndex]
+                    .image!,
+                fit: BoxFit.fill,
+              ),
             ),
           ),
           const Flexible(child: SizedBox(height: 10)),
@@ -476,15 +479,14 @@ class _MenuPageState extends State<MenuPage> {
                             .activeSpecialsList
                             .length ==
                         1
-                    ? SizedBox(
-                        height: height * 25,
-                        width: width * 50,
-                        child: Image.network(
-                          Provider.of<MenuProvider>(context, listen: true)
-                              .activeSpecialsList[0]
-                              .image!,
-                          fit: BoxFit.fill,
-                        ),
+                    ? buildImage(
+                        Provider.of<MenuProvider>(context, listen: true)
+                            .activeSpecialsList[0]
+                            .image!,
+                        height * 25,
+                        width * 50,
+                        context: context,
+                        isNetworkImage: true,
                       )
                     : Container(
                         width: width * 60,
@@ -512,14 +514,14 @@ class _MenuPageState extends State<MenuPage> {
                           child: buildCustomText(
                               "No Image", Data.darkTextColor, width),
                         )
-                      : SizedBox(
-                          width: width * 50,
-                          child: Image.network(
-                            Provider.of<MenuProvider>(context, listen: true)
-                                .activeSpecialsList[itemIndex]
-                                .image!,
-                            fit: BoxFit.fill,
-                          ),
+                      : buildImage(
+                          Provider.of<MenuProvider>(context, listen: true)
+                              .activeSpecialsList[itemIndex]
+                              .image!,
+                          height * 25,
+                          width * 50,
+                          context: context,
+                          isNetworkImage: true,
                         );
                 },
                 options: CarouselOptions(

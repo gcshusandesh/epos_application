@@ -508,6 +508,7 @@ class MenuProvider extends ChangeNotifier {
   List<Category> categoryList = [];
   int selectedCategoryIndex = 0;
 
+  /// to manage case where no item is active
   int getActiveCategoriesCount() {
     List<Category> activeCategoryList =
         categoryList.where((element) => element.status).toList();
@@ -517,6 +518,13 @@ class MenuProvider extends ChangeNotifier {
   void updateCategoryLocally(
       {required Category editedCategory, required int index}) {
     categoryList[index] = editedCategory;
+    notifyListeners();
+  }
+
+  void updateCategoryImageLocally(
+      {required String imageUrl, required int index}) {
+    categoryList[index].image = imageUrl;
+
     notifyListeners();
   }
 

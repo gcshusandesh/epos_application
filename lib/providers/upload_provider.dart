@@ -62,6 +62,9 @@ class UploadProvider extends ChangeNotifier {
         request.fields['refId'] = "${specials!.id}";
         request.fields['field'] = "image";
       } else if (isCategoryImage) {
+        request.fields['ref'] = "api::category.category";
+        request.fields['refId'] = "${category!.id}";
+        request.fields['field'] = "image";
       } else if (isItemImage) {}
 
       var response = await request.send();

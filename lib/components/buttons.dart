@@ -326,7 +326,11 @@ Widget menuOption(
       ),
       child: Column(
         children: [
-          Image.asset(image, height: width * 8, width: width * 8),
+          SizedBox(
+            height: width,
+          ),
+          buildImage(image, width * 8, width * 8,
+              context: context, isNetworkImage: true),
           buildBodyText(name, Data.greyTextColor, width * 0.7,
               fontFamily: "RobotoMedium"),
         ],
