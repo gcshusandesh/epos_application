@@ -270,7 +270,38 @@ class _UpdateDataState extends State<UpdateData> {
   }
 
   Future<bool> categoryLogic() async {
-    return false;
+    late bool isSuccessful;
+    if (widget.isEdit) {
+      isSuccessful = await Provider.of<MenuProvider>(context, listen: false)
+          .updateMenuItem(
+        isCategory: true,
+        editedCategory: Category(
+          id: widget.category!.id,
+          name: nameController.text,
+          status: widget.category!.status,
+        ),
+        index: widget.index!,
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+        context: context,
+      );
+    } else {
+      isSuccessful = await Provider.of<MenuProvider>(context, listen: false)
+          .createMenuItem(
+        isCategory: true,
+        category: Category(
+          name: nameController.text,
+
+          ///always set status to false when creating a new item
+          status: false,
+        ),
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+        context: context,
+      );
+    }
+
+    return isSuccessful;
   }
 
   Widget categoryForm() {

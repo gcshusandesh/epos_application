@@ -175,7 +175,7 @@ class MenuProvider extends ChangeNotifier {
     if (isSpecials) {
       url = Uri.parse("${Data.baseUrl}/api/specials");
     } else if (isCategory) {
-      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+      url = Uri.parse("${Data.baseUrl}/api/categories");
     } else if (isItem) {
       // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
     }
@@ -194,6 +194,11 @@ class MenuProvider extends ChangeNotifier {
           }
         };
       } else if (isCategory) {
+        payloadBody = {
+          "data": {
+            "name": category!.name,
+          }
+        };
       } else if (isItem) {}
 
       var response = await http.post(
@@ -214,7 +219,12 @@ class MenuProvider extends ChangeNotifier {
           );
           addSpecialsLocally(specials: newSpecials);
         } else if (isCategory) {
-          addCategoryLocally(category: category!);
+          Category newCategory = Category(
+            id: data['id'],
+            name: data['attributes']['name'],
+            status: data['attributes']['isActive'],
+          );
+          addCategoryLocally(category: newCategory);
         } else if (isItem) {
           addMenuItemLocally(menuItem: menuItem!);
         }
@@ -491,6 +501,13 @@ class MenuProvider extends ChangeNotifier {
 
   List<Category> categoryList = [];
   int selectedCategoryIndex = 0;
+
+  int getActiveCategoriesCount() {
+    List<Category> activeCategoryList =
+        categoryList.where((element) => element.status).toList();
+    return activeCategoryList.length;
+  }
+
   void changeCategoryStatusLocally(int index) {
     categoryList[index].status = !categoryList[index].status;
     notifyListeners();
@@ -529,63 +546,6 @@ class MenuProvider extends ChangeNotifier {
     }
     selectedCategoryIndex = index;
     notifyListeners();
-  }
-
-  Future<void> getCategoryList({required bool init}) async {
-    // var url = Uri.parse("$baseUrl/api/testdatas/1");
-    try {
-      // var headers = {
-      //   "Accept": "application/json",
-      // };
-      // var response = await http.get(url, headers: headers);
-      // var extractedData = json.decode(response.body);
-      // if (response.statusCode == 200) {
-      //   print(extractedData);
-      // }
-      categoryList = [
-        Category(
-          name: "Breakfast",
-          image: "assets/category/breakfast.png",
-          status: true,
-        ),
-        Category(
-          name: "Appetizers",
-          image: "assets/category/burger.jpeg",
-          status: true,
-        ),
-        Category(
-          name: "Sides",
-          image: "assets/category/fries.jpeg",
-          status: true,
-        ),
-        Category(
-          name: "Salads",
-          image: "assets/category/salad.png",
-          status: true,
-        ),
-        Category(
-          name: "Soups",
-          image: "assets/category/soup.jpeg",
-          status: true,
-        ),
-        Category(
-          name: "Coffee",
-          image: "assets/category/coffee1.jpeg",
-          status: true,
-        ),
-        Category(
-          name: "Beverages",
-          image: "assets/category/beverages1.jpeg",
-          status: true,
-        ),
-      ];
-      if (!init) {
-        notifyListeners();
-      }
-    } catch (e) {
-      // ignore: avoid_print
-      print(e);
-    }
   }
 
   List<MenuItemsByCategory> menuItemsByCategory = [];

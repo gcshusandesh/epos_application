@@ -263,7 +263,7 @@ class _MenuPageState extends State<MenuPage> {
                       ),
                     ),
                     SizedBox(
-                      width: width * 10,
+                      width: width * 8,
                       child: Center(
                         child: buildCustomText(
                           "${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].name}"
@@ -533,7 +533,10 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget optionsSection(BuildContext context) {
-    if (Provider.of<MenuProvider>(context, listen: true).categoryList.isEmpty) {
+    if (Provider.of<MenuProvider>(context, listen: true).categoryList.isEmpty ||
+        Provider.of<MenuProvider>(context, listen: true)
+                .getActiveCategoriesCount() ==
+            0) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -564,23 +567,26 @@ class _MenuPageState extends State<MenuPage> {
           itemBuilder: (context, index) {
             final category = Provider.of<MenuProvider>(context, listen: true)
                 .categoryList[index];
-            return Row(
-              children: [
-                menuOption(
-                  category.name,
-                  category.image!,
-                  height,
-                  width,
-                  () {
-                    Provider.of<MenuProvider>(context, listen: false)
-                        .changeSelectedCategory(index);
-                  },
-                  index: index,
-                  context: context,
-                ),
-                SizedBox(width: width),
-              ],
-            );
+            if (category.status) {
+              return Row(
+                children: [
+                  menuOption(
+                    category.name,
+                    category.image!,
+                    height,
+                    width,
+                    () {
+                      Provider.of<MenuProvider>(context, listen: false)
+                          .changeSelectedCategory(index);
+                    },
+                    index: index,
+                    context: context,
+                  ),
+                  SizedBox(width: width),
+                ],
+              );
+            }
+            return null;
           },
         ),
       );

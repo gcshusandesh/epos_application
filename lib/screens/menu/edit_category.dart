@@ -3,6 +3,7 @@ import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/menu_provider.dart';
+import 'package:epos_application/screens/menu/update_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,7 @@ class _EditCategoryState extends State<EditCategory> {
     ]);
   }
 
+  bool isLoading = false;
   bool isEditing = false;
   bool init = true;
   late double height;
@@ -55,63 +57,82 @@ class _EditCategoryState extends State<EditCategory> {
           DeviceOrientation.portraitDown,
         ]);
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              topSection(
+      child: Stack(
+        children: [
+          mainBody(context),
+          isLoading
+              ? Center(
+                  child: onLoading(width: width, context: context),
+                )
+              : const SizedBox(),
+        ],
+      ),
+    );
+  }
+
+  Scaffold mainBody(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            topSection(
+                context: context,
+                text: "Category",
+                height: height,
+                width: width),
+            SizedBox(height: height * 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                iconButton(
+                  "assets/svg/add.svg",
+                  height,
+                  width,
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const UpdateData(
+                                isCategory: true,
+                              )),
+                    );
+                  },
                   context: context,
-                  text: "Category",
-                  height: height,
-                  width: width),
-              SizedBox(height: height * 2),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  iconButton(
-                    "assets/svg/add.svg",
-                    height,
-                    width,
-                    () {
-                      //do something
-                    },
-                    context: context,
-                  ),
-                  SizedBox(width: width),
-                  iconButton(
-                    "assets/svg/edit.svg",
-                    height,
-                    width,
-                    () {
-                      setState(() {
-                        isEditing = !isEditing;
-                      });
-                    },
-                    context: context,
-                    isSelected: isEditing,
-                  ),
-                  // SizedBox(width: width),
-                  // textButton(
-                  //   text: "Change Priority",
-                  //   height: height,
-                  //   width: width,
-                  //   textColor: Provider.of<InfoProvider>(context, listen: true)
-                  //       .systemInfo
-                  //       .iconsColor,
-                  //   buttonColor:
-                  //       Provider.of<InfoProvider>(context, listen: true)
-                  //           .systemInfo
-                  //           .iconsColor,
-                  //   onTap: () {},
-                  // )
-                ],
-              ),
-              SizedBox(height: height * 2),
-              tableSection(context),
-            ],
-          ),
+                ),
+                SizedBox(width: width),
+                iconButton(
+                  "assets/svg/edit.svg",
+                  height,
+                  width,
+                  () {
+                    setState(() {
+                      isEditing = !isEditing;
+                    });
+                  },
+                  context: context,
+                  isSelected: isEditing,
+                ),
+                // SizedBox(width: width),
+                // textButton(
+                //   text: "Change Priority",
+                //   height: height,
+                //   width: width,
+                //   textColor: Provider.of<InfoProvider>(context, listen: true)
+                //       .systemInfo
+                //       .iconsColor,
+                //   buttonColor:
+                //       Provider.of<InfoProvider>(context, listen: true)
+                //           .systemInfo
+                //           .iconsColor,
+                //   onTap: () {},
+                // )
+              ],
+            ),
+            SizedBox(height: height * 2),
+            tableSection(context),
+          ],
         ),
       ),
     );
@@ -251,14 +272,30 @@ class _EditCategoryState extends State<EditCategory> {
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: width * 5, vertical: 15.0),
-          child: Image.asset(
-            Provider.of<MenuProvider>(context, listen: true)
-                .categoryList[index]
-                .image!,
-            height: height * 10,
-            width: width * 20,
-            fit: BoxFit.fill,
-          ),
+          child: Provider.of<MenuProvider>(context, listen: true)
+                      .categoryList[index]
+                      .image ==
+                  null
+              ? Container(
+                  height: height * 10,
+                  width: width * 20,
+                  color: Colors.white60,
+                  child: Center(
+                    child: buildCustomText(
+                      "No Image",
+                      Data.greyTextColor,
+                      width * 1.3,
+                    ),
+                  ),
+                )
+              : Image.network(
+                  Provider.of<MenuProvider>(context, listen: true)
+                      .categoryList[index]
+                      .image!,
+                  height: height * 10,
+                  width: width * 20,
+                  fit: BoxFit.fill,
+                ),
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: width * 6),
