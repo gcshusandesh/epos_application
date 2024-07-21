@@ -252,7 +252,7 @@ class _SettingsState extends State<Settings> {
       ),
       child: Column(
         children: [
-          editSection("System Details", noEdit: true, () {}),
+          editSection("System Details", noEdit: true, () {}, isSelected: false),
           Container(
             width: width * 31,
             padding: EdgeInsets.symmetric(
@@ -288,11 +288,15 @@ class _SettingsState extends State<Settings> {
             ),
           ),
           SizedBox(height: height * 2),
-          editSection("System Settings", () {
-            setState(() {
-              isEditingSystemSettings = !isEditingSystemSettings;
-            });
-          }),
+          editSection(
+            "System Settings",
+            () {
+              setState(() {
+                isEditingSystemSettings = !isEditingSystemSettings;
+              });
+            },
+            isSelected: isEditingSystemSettings,
+          ),
           SizedBox(height: height * 2),
           Container(
             width: width * 31,
@@ -628,11 +632,15 @@ class _SettingsState extends State<Settings> {
       ),
       child: Column(
         children: [
-          editSection("Restaurant's Details", () {
-            setState(() {
-              isEditingRestaurantDetails = !isEditingRestaurantDetails;
-            });
-          }),
+          editSection(
+            "Restaurant's Details",
+            () {
+              setState(() {
+                isEditingRestaurantDetails = !isEditingRestaurantDetails;
+              });
+            },
+            isSelected: isEditingRestaurantDetails,
+          ),
           SizedBox(height: height * 2),
           Expanded(
             child: SingleChildScrollView(
@@ -803,7 +811,8 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  Row editSection(String title, Function() onPressed, {bool noEdit = false}) {
+  Row editSection(String title, Function() onPressed,
+      {bool noEdit = false, required bool isSelected}) {
     return Row(
       mainAxisAlignment:
           noEdit ? MainAxisAlignment.center : MainAxisAlignment.spaceBetween,
@@ -833,6 +842,7 @@ class _SettingsState extends State<Settings> {
                 width,
                 onPressed,
                 context: context,
+                isSelected: isSelected,
               ),
             ],
     );

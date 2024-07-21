@@ -116,15 +116,8 @@ class _EditSpecialsState extends State<EditSpecials> {
                     setState(() {
                       isEditing = !isEditing;
                     });
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) => const UpdateData(
-                    //             isSpecial: true,
-                    //             isEdit: true,
-                    //           )),
-                    // );
                   },
+                  isSelected: isEditing,
                   context: context,
                 ),
                 // SizedBox(width: width),

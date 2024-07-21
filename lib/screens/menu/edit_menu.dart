@@ -2,7 +2,6 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
-import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,6 +26,7 @@ class _EditMenuState extends State<EditMenu> {
     ]);
   }
 
+  bool isEditing = false;
   bool init = true;
   late double height;
   late double width;
@@ -196,23 +196,26 @@ class _EditMenuState extends State<EditMenu> {
           height,
           width,
           () {
-            //do something
+            setState(() {
+              isEditing = !isEditing;
+            });
           },
           context: context,
+          isSelected: isEditing,
         ),
-        SizedBox(width: width),
-        textButton(
-          text: "Change Priority",
-          height: height,
-          width: width,
-          textColor: Provider.of<InfoProvider>(context, listen: true)
-              .systemInfo
-              .iconsColor,
-          buttonColor: Provider.of<InfoProvider>(context, listen: true)
-              .systemInfo
-              .iconsColor,
-          onTap: () {},
-        )
+        // SizedBox(width: width),
+        // textButton(
+        //   text: "Change Priority",
+        //   height: height,
+        //   width: width,
+        //   textColor: Provider.of<InfoProvider>(context, listen: true)
+        //       .systemInfo
+        //       .iconsColor,
+        //   buttonColor: Provider.of<InfoProvider>(context, listen: true)
+        //       .systemInfo
+        //       .iconsColor,
+        //   onTap: () {},
+        // )
       ],
     );
   }

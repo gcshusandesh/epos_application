@@ -128,6 +128,7 @@ Widget iconButton(
   bool isSvg = true,
   IconData icon = Icons.arrow_back,
   required BuildContext context,
+  bool isSelected = false,
 }) {
   return InkWell(
     onTap: onTap,
@@ -140,7 +141,7 @@ Widget iconButton(
           color: Provider.of<InfoProvider>(context, listen: true)
               .systemInfo
               .iconsColor, // Outline color
-          width: 0.5, // Outline width
+          width: isSelected ? 3 : 0.5, // Outline width
         ),
         borderRadius: BorderRadius.circular(6.0),
         boxShadow: [

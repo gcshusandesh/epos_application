@@ -191,6 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   });
                                 },
                                 context: context,
+                                isSelected: isEditing,
                               ),
                               SizedBox(width: width),
                               iconButton(

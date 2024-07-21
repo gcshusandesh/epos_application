@@ -201,6 +201,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
             });
           },
           context: context,
+          isSelected: isEditing,
         ),
       ],
     );
