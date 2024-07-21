@@ -300,7 +300,7 @@ class MenuProvider extends ChangeNotifier {
     if (isSpecials) {
       url = Uri.parse("${Data.baseUrl}/api/specials/$id");
     } else if (isCategory) {
-      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+      url = Uri.parse("${Data.baseUrl}/api/categories/$id");
     } else if (isItem) {
       // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
     }

@@ -2,11 +2,14 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/screens/menu/update_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class EditCategory extends StatefulWidget {
   const EditCategory({super.key});
@@ -305,10 +308,48 @@ class _EditCategoryState extends State<EditCategory> {
             width: width,
             textColor: Data.redColor,
             buttonColor: Data.redColor,
-            onTap: () {
+            onTap: () async {
+              setState(() {
+                isLoading = true;
+              });
               // delete item from list
-              Provider.of<MenuProvider>(context, listen: false)
-                  .removeCategoryLocally(index: index);
+              bool isDeleted =
+                  await Provider.of<MenuProvider>(context, listen: false)
+                      .deleteMenuItem(
+                index: index,
+                id: Provider.of<MenuProvider>(context, listen: false)
+                    .categoryList[index]
+                    .id!,
+                accessToken: Provider.of<AuthProvider>(context, listen: false)
+                    .user
+                    .accessToken!,
+                isCategory: true,
+                context: context,
+              );
+              setState(() {
+                isLoading = false;
+              });
+              if (isDeleted) {
+                if (mounted) {
+                  // Check if the widget is still mounted
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.success(
+                      message: "Item successfully deleted.",
+                    ),
+                  );
+                }
+              } else {
+                if (mounted) {
+                  // Check if the widget is still mounted
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.error(
+                      message: "Item could not be deleted",
+                    ),
+                  );
+                }
+              }
             },
           ),
         ),
