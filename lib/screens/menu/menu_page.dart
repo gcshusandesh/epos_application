@@ -543,14 +543,34 @@ class _MenuPageState extends State<MenuPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
-            height: width * 12,
-            width: width * 12,
-            color: Data.lightGreyBodyColor,
+            padding: EdgeInsets.symmetric(
+              vertical: width * 1,
+            ),
+            height: width * 10,
+            width: width * 10,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Provider.of<InfoProvider>(context, listen: true)
+                    .systemInfo
+                    .iconsColor, // Outline color
+                width: 0.5, // Outline width
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25), // Shadow color
+                  spreadRadius: 0, // How much the shadow spreads
+                  blurRadius: 4, // How much the shadow blurs
+                  offset: const Offset(0, 5), // The offset of the shadow
+                ),
+              ],
+            ),
             child: Center(
               child: buildCustomText(
                 "No Data",
                 Data.darkTextColor,
-                width,
+                width * 1.5,
               ),
             ),
           ),
