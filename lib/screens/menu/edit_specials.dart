@@ -313,7 +313,9 @@ class _EditSpecialsState extends State<EditSpecials> {
             textColor: Data.redColor,
             buttonColor: Data.redColor,
             onTap: () async {
-              print("delete button tapped");
+              setState(() {
+                isLoading = true;
+              });
               // delete item from list
               bool isDeleted =
                   await Provider.of<MenuProvider>(context, listen: false)
@@ -328,6 +330,9 @@ class _EditSpecialsState extends State<EditSpecials> {
                 isSpecials: true,
                 context: context,
               );
+              setState(() {
+                isLoading = false;
+              });
               if (isDeleted) {
                 if (mounted) {
                   // Check if the widget is still mounted

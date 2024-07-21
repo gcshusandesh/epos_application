@@ -48,6 +48,19 @@ class _ManageEmployeeState extends State<ManageEmployee> {
 
   @override
   Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        mainBody(context),
+        isLoading
+            ? Center(
+                child: onLoading(width: width, context: context),
+              )
+            : const SizedBox(),
+      ],
+    );
+  }
+
+  Scaffold mainBody(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
