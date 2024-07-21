@@ -281,8 +281,8 @@ class MenuProvider extends ChangeNotifier {
       );
       var extractedData = json.decode(response.body);
       var data = extractedData['data'];
-      print("status code = ${response.statusCode}");
-      print("data = $data");
+      print("delete status code = ${response.statusCode}");
+      print("delete data = $data");
       if (response.statusCode == 200) {
         if (isSpecials) {
           removeSpecialsLocally(index: index);

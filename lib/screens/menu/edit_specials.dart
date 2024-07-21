@@ -198,7 +198,7 @@ class _EditSpecialsState extends State<EditSpecials> {
                         ),
                       ),
                       child: Center(
-                        child: buildSmallText("No Data Available",
+                        child: buildBodyText("No Data Available",
                             Data.lightGreyTextColor, width),
                       ),
                     )
@@ -310,6 +310,7 @@ class _EditSpecialsState extends State<EditSpecials> {
                 accessToken: Provider.of<AuthProvider>(context, listen: false)
                     .user
                     .accessToken!,
+                isSpecials: true,
                 context: context,
               );
               if (isDeleted) {
