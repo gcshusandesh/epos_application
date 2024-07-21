@@ -4,9 +4,11 @@ import 'dart:io';
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
+import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/providers/upload_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
@@ -22,11 +24,25 @@ class ImageUpload extends StatefulWidget {
     this.isChangeDP = false,
     this.isChangeRestaurantImage = false,
     this.isChangeRestaurantLogo = false,
+    this.isSpecialsImage = false,
+    this.isCategoryImage = false,
+    this.isItemImage = false,
+    this.specials,
+    this.category,
+    this.menuItems,
+    this.index,
   });
   static const routeName = "imageUpload";
   bool isChangeDP;
   bool isChangeRestaurantImage;
   bool isChangeRestaurantLogo;
+  bool isSpecialsImage;
+  bool isCategoryImage;
+  bool isItemImage;
+  Specials? specials;
+  Category? category;
+  MenuItems? menuItems;
+  int? index;
 
   @override
   State<ImageUpload> createState() => _ImageUploadState();
@@ -257,6 +273,13 @@ class _ImageUploadState extends State<ImageUpload> {
                   isChangeDP: widget.isChangeDP,
                   isChangeRestaurantImage: widget.isChangeRestaurantImage,
                   isChangeRestaurantLogo: widget.isChangeRestaurantLogo,
+                  isSpecialsImage: widget.isSpecialsImage,
+                  isCategoryImage: widget.isCategoryImage,
+                  isItemImage: widget.isItemImage,
+                  specials: widget.specials,
+                  category: widget.category,
+                  menuItems: widget.menuItems,
+                  index: widget.index,
                 );
                 setState(() {
                   isLoading = false;
@@ -286,7 +309,12 @@ class _ImageUploadState extends State<ImageUpload> {
                     } else if (widget.isChangeRestaurantLogo) {
                       Provider.of<InfoProvider>(context, listen: false)
                           .updateRestaurantLogoLocally(logoUrl: imageUrl);
-                    } else if (widget.isChangeRestaurantLogo) {}
+                    } else if (widget.isSpecialsImage) {
+                      Provider.of<MenuProvider>(context, listen: false)
+                          .updateSpecialsImageLocally(
+                              index: widget.index!, imageUrl: imageUrl);
+                    } else if (widget.isCategoryImage) {
+                    } else if (widget.isItemImage) {}
 
                     Navigator.pop(context);
                   }

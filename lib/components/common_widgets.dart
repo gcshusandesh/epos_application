@@ -136,7 +136,7 @@ Widget tableItem(String text, double width) {
     child: buildSmallText(
       text,
       Data.lightGreyTextColor,
-      width,
+      width * 1.2,
     ),
   ));
 }

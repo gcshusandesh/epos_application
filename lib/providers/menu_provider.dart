@@ -17,14 +17,15 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void changeSpecialsStatusLocally(int index) {
-  //   ///change status in main list
-  //   totalSpecialsList[index].status = !totalSpecialsList[index].status;
-  //
-  //   ///recalculate active specials list
-  //   getActiveSpecials();
-  //   notifyListeners();
-  // }
+  void updateSpecialsImageLocally(
+      {required String imageUrl, required int index}) {
+    ///change data in main list
+    totalSpecialsList[index].image = imageUrl;
+
+    ///recalculate active specials list
+    getActiveSpecials();
+    notifyListeners();
+  }
 
   void updateSpecialsLocally(
       {required Specials editedSpecials, required int index}) {

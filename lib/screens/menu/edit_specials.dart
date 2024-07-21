@@ -4,7 +4,9 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
+import 'package:epos_application/screens/image_upload.dart';
 import 'package:epos_application/screens/menu/update_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,6 +36,7 @@ class _EditSpecialsState extends State<EditSpecials> {
   late double height;
   late double width;
   bool isLoading = false;
+  bool isEditing = false;
 
   @override
   void didChangeDependencies() {
@@ -110,14 +113,17 @@ class _EditSpecialsState extends State<EditSpecials> {
                   height,
                   width,
                   () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const UpdateData(
-                                isSpecial: true,
-                                isEdit: true,
-                              )),
-                    );
+                    setState(() {
+                      isEditing = !isEditing;
+                    });
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //       builder: (context) => const UpdateData(
+                    //             isSpecial: true,
+                    //             isEdit: true,
+                    //           )),
+                    // );
                   },
                   context: context,
                 ),
@@ -261,48 +267,82 @@ class _EditSpecialsState extends State<EditSpecials> {
                       .totalSpecialsList[index]
                       .name,
                   width),
-              buildCustomText(
-                Provider.of<MenuProvider>(context, listen: true)
-                        .totalSpecialsList[index]
-                        .status
-                    ? "Active"
-                    : "Inactive",
-                Provider.of<MenuProvider>(context, listen: true)
-                        .totalSpecialsList[index]
-                        .status
-                    ? Data.greenColor
-                    : Data.redColor,
-                width,
+              Row(
+                mainAxisAlignment: isEditing
+                    ? MainAxisAlignment.spaceEvenly
+                    : MainAxisAlignment.center,
+                children: [
+                  buildCustomText(
+                    Provider.of<MenuProvider>(context, listen: true)
+                            .totalSpecialsList[index]
+                            .status
+                        ? "Active"
+                        : "Inactive",
+                    Provider.of<MenuProvider>(context, listen: true)
+                            .totalSpecialsList[index]
+                            .status
+                        ? Data.greenColor
+                        : Data.redColor,
+                    width * 1.2,
+                  ),
+                  isEditing
+                      ? label(
+                          text: "edit",
+                          height: height,
+                          width: width,
+                          labelColor:
+                              Provider.of<InfoProvider>(context, listen: true)
+                                  .systemInfo
+                                  .iconsColor)
+                      : const SizedBox(),
+                ],
               )
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Provider.of<MenuProvider>(context, listen: true)
-                      .totalSpecialsList[index]
-                      .image ==
-                  null
-              ? Container(
-                  height: height * 10,
-                  width: width * 20,
-                  color: Colors.white60,
-                  child: Center(
-                    child: buildCustomText(
-                      "No Image",
-                      Data.greyTextColor,
-                      width * 1.3,
+        InkWell(
+          onTap: () {
+            if (isEditing) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ImageUpload(
+                          isSpecialsImage: true,
+                          specials:
+                              Provider.of<MenuProvider>(context, listen: false)
+                                  .totalSpecialsList[index],
+                          index: index,
+                        )),
+              );
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Provider.of<MenuProvider>(context, listen: true)
+                        .totalSpecialsList[index]
+                        .image ==
+                    null
+                ? Container(
+                    height: height * 10,
+                    width: width * 20,
+                    color: Colors.white60,
+                    child: Center(
+                      child: buildCustomText(
+                        "No Image",
+                        Data.greyTextColor,
+                        width * 1.3,
+                      ),
                     ),
+                  )
+                : Image.network(
+                    Provider.of<MenuProvider>(context, listen: true)
+                        .totalSpecialsList[index]
+                        .image!,
+                    height: height * 10,
+                    width: width * 20,
+                    fit: BoxFit.fill,
                   ),
-                )
-              : Image.network(
-                  Provider.of<MenuProvider>(context, listen: true)
-                      .totalSpecialsList[index]
-                      .image!,
-                  height: height * 10,
-                  width: width * 20,
-                  fit: BoxFit.fill,
-                ),
+          ),
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: width * 6),

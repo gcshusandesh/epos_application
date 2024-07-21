@@ -15,6 +15,13 @@ class UploadProvider extends ChangeNotifier {
     required bool isChangeDP,
     required bool isChangeRestaurantImage,
     required bool isChangeRestaurantLogo,
+    required bool isSpecialsImage,
+    required bool isCategoryImage,
+    required bool isItemImage,
+    int? index,
+    Specials? specials,
+    Category? category,
+    MenuItems? menuItems,
   }) async {
     var url = "${Data.baseUrl}/api/upload";
     String? imageUrl;
@@ -40,17 +47,22 @@ class UploadProvider extends ChangeNotifier {
         request.fields['ref'] = "plugin::users-permissions.user";
         request.fields['refId'] = "${user.id}";
         request.fields['field'] = "image";
-      }
-      if (isChangeRestaurantImage) {
+      } else if (isChangeRestaurantImage) {
+        /// ref id is static for settings section
         request.fields['ref'] = "api::setting.setting";
         request.fields['refId'] = "2";
         request.fields['field'] = "image";
-      }
-      if (isChangeRestaurantLogo) {
+      } else if (isChangeRestaurantLogo) {
+        /// ref id is static for settings section
         request.fields['ref'] = "api::setting.setting";
         request.fields['refId'] = "2";
         request.fields['field'] = "logo";
-      }
+      } else if (isSpecialsImage) {
+        request.fields['ref'] = "api::special.special";
+        request.fields['refId'] = "${specials!.id}";
+        request.fields['field'] = "image";
+      } else if (isCategoryImage) {
+      } else if (isItemImage) {}
 
       var response = await request.send();
       if (response.statusCode == 200) {
@@ -82,6 +94,12 @@ class UploadProvider extends ChangeNotifier {
           isChangeDP: isChangeDP,
           isChangeRestaurantImage: isChangeRestaurantImage,
           isChangeRestaurantLogo: isChangeRestaurantLogo,
+          isSpecialsImage: isSpecialsImage,
+          isCategoryImage: isCategoryImage,
+          isItemImage: isItemImage,
+          specials: specials,
+          category: category,
+          menuItems: menuItems,
         );
       }
       return imageUrl;
@@ -105,6 +123,12 @@ class UploadProvider extends ChangeNotifier {
           isChangeDP: isChangeDP,
           isChangeRestaurantImage: isChangeRestaurantImage,
           isChangeRestaurantLogo: isChangeRestaurantLogo,
+          isSpecialsImage: isSpecialsImage,
+          isCategoryImage: isCategoryImage,
+          isItemImage: isItemImage,
+          specials: specials,
+          category: category,
+          menuItems: menuItems,
         );
       }
     }
