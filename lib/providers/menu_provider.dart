@@ -66,7 +66,7 @@ class MenuProvider extends ChangeNotifier {
     if (isSpecials) {
       url = Uri.parse("${Data.baseUrl}/api/specials?populate=image");
     } else if (isCategory) {
-      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+      url = Uri.parse("${Data.baseUrl}/api/categories?populate=image");
     } else if (isItem) {
       // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
     }
@@ -98,6 +98,16 @@ class MenuProvider extends ChangeNotifier {
         } else if (isCategory) {
           //empty list before fetching new data
           categoryList = [];
+          data.forEach((categoryItem) {
+            categoryList.add(Category(
+              id: categoryItem['id'],
+              name: categoryItem['attributes']['name'],
+              image: categoryItem['attributes']['image']['data'] == null
+                  ? null
+                  : "${Data.baseUrl}${categoryItem['attributes']['image']['data']['attributes']['formats']['small']['url']}",
+              status: categoryItem['attributes']['isActive'],
+            ));
+          });
         } else if (isItem) {
           //empty list before fetching new data
           menuItemsByCategory = [];

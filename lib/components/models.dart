@@ -186,7 +186,7 @@ class Category {
   Category({
     this.id,
     required this.name,
-    required this.image,
+    this.image,
     required this.status,
   });
 }

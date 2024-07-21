@@ -55,10 +55,6 @@ class _DashboardState extends State<Dashboard> {
             user: Provider.of<AuthProvider>(context, listen: false).user,
             context: context);
 
-        // Get Category Data from API
-        Provider.of<MenuProvider>(context, listen: false)
-            .getCategoryList(init: true);
-
         // Get Menu Items by Category Data from API
         Provider.of<MenuProvider>(context, listen: false)
             .getMenuItemsByCategory(init: true);

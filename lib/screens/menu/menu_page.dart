@@ -29,6 +29,7 @@ class _MenuPageState extends State<MenuPage> {
   void initState() {
     super.initState();
     _setPreferredOrientations();
+    _fetchData();
   }
 
   void _setPreferredOrientations() async {
@@ -36,6 +37,41 @@ class _MenuPageState extends State<MenuPage> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+  }
+
+  Future<void> _fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+    // Get Specials Data from API
+    await Provider.of<MenuProvider>(context, listen: false).getMenuList(
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+        isSpecials: true,
+        context: context);
+    if (mounted) {
+      // Get Category Data from API
+      await Provider.of<MenuProvider>(context, listen: false).getMenuList(
+          accessToken: Provider.of<AuthProvider>(context, listen: false)
+              .user
+              .accessToken!,
+          isCategory: true,
+          context: context);
+    }
+
+    if (mounted) {
+      // Get Menu Item Data from API
+      // await Provider.of<MenuProvider>(context, listen: false).getMenuList(
+      //     accessToken: Provider.of<AuthProvider>(context, listen: false)
+      //         .user
+      //         .accessToken!,
+      //     isItem: true,
+      //     context: context);
+    }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   bool isLoading = false;
@@ -51,19 +87,6 @@ class _MenuPageState extends State<MenuPage> {
       SizeConfig().init(context);
       width = SizeConfig.safeBlockVertical;
       height = SizeConfig.safeBlockHorizontal;
-      setState(() {
-        isLoading = true;
-      });
-      // Get Specials Data from API
-      await Provider.of<MenuProvider>(context, listen: false).getMenuList(
-          accessToken: Provider.of<AuthProvider>(context, listen: false)
-              .user
-              .accessToken!,
-          isSpecials: true,
-          context: context);
-      setState(() {
-        isLoading = false;
-      });
       init = false;
     }
   }
