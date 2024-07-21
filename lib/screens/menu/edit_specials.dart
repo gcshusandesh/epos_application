@@ -1,6 +1,7 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
@@ -32,6 +33,7 @@ class _EditSpecialsState extends State<EditSpecials> {
   bool init = true;
   late double height;
   late double width;
+  bool isLoading = false;
 
   @override
   void didChangeDependencies() {
@@ -58,73 +60,86 @@ class _EditSpecialsState extends State<EditSpecials> {
           DeviceOrientation.portraitDown,
         ]);
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              topSection(
+      child: Stack(
+        children: [
+          mainBody(context),
+          isLoading
+              ? Center(
+                  child: onLoading(width: width, context: context),
+                )
+              : const SizedBox(),
+        ],
+      ),
+    );
+  }
+
+  Scaffold mainBody(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            topSection(
+                context: context,
+                text: "Specials",
+                height: height,
+                width: width),
+            SizedBox(height: height * 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                iconButton(
+                  "assets/svg/add.svg",
+                  height,
+                  width,
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const UpdateData(
+                                isSpecial: true,
+                              )),
+                    );
+                  },
                   context: context,
-                  text: "Specials",
-                  height: height,
-                  width: width),
-              SizedBox(height: height * 2),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  iconButton(
-                    "assets/svg/add.svg",
-                    height,
-                    width,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const UpdateData(
-                                  isSpecial: true,
-                                )),
-                      );
-                    },
-                    context: context,
-                  ),
-                  SizedBox(width: width),
-                  iconButton(
-                    "assets/svg/edit.svg",
-                    height,
-                    width,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const UpdateData(
-                                  isSpecial: true,
-                                  isEdit: true,
-                                )),
-                      );
-                    },
-                    context: context,
-                  ),
-                  // SizedBox(width: width),
-                  // textButton(
-                  //   text: "Change Priority",
-                  //   height: height,
-                  //   width: width,
-                  //   textColor: Provider.of<InfoProvider>(context, listen: true)
-                  //       .systemInfo
-                  //       .iconsColor,
-                  //   buttonColor:
-                  //       Provider.of<InfoProvider>(context, listen: true)
-                  //           .systemInfo
-                  //           .iconsColor,
-                  //   onTap: () {},
-                  // )
-                ],
-              ),
-              SizedBox(height: height * 2),
-              tableSection(context),
-            ],
-          ),
+                ),
+                SizedBox(width: width),
+                iconButton(
+                  "assets/svg/edit.svg",
+                  height,
+                  width,
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const UpdateData(
+                                isSpecial: true,
+                                isEdit: true,
+                              )),
+                    );
+                  },
+                  context: context,
+                ),
+                // SizedBox(width: width),
+                // textButton(
+                //   text: "Change Priority",
+                //   height: height,
+                //   width: width,
+                //   textColor: Provider.of<InfoProvider>(context, listen: true)
+                //       .systemInfo
+                //       .iconsColor,
+                //   buttonColor:
+                //       Provider.of<InfoProvider>(context, listen: true)
+                //           .systemInfo
+                //           .iconsColor,
+                //   onTap: () {},
+                // )
+              ],
+            ),
+            SizedBox(height: height * 2),
+            tableSection(context),
+          ],
         ),
       ),
     );
@@ -355,19 +370,31 @@ class _EditSpecialsState extends State<EditSpecials> {
                 ),
               );
             } else {
+              setState(() {
+                isLoading = true;
+              });
               bool isUpdatedStatus =
                   await Provider.of<MenuProvider>(context, listen: false)
                       .updateMenuItem(
                 isSpecials: true,
-                id: Provider.of<MenuProvider>(context, listen: false)
-                    .totalSpecialsList[index]
-                    .id!,
                 index: index,
+                editedSpecials: Specials(
+                  name: Provider.of<MenuProvider>(context, listen: false)
+                      .totalSpecialsList[index]
+                      .name,
+                  id: Provider.of<MenuProvider>(context, listen: false)
+                      .totalSpecialsList[index]
+                      .id!,
+                  status: value,
+                ),
                 accessToken: Provider.of<AuthProvider>(context, listen: false)
                     .user
                     .accessToken!,
                 context: context,
               );
+              setState(() {
+                isLoading = false;
+              });
               if (isUpdatedStatus) {
                 if (mounted) {
                   // Check if the widget is still mounted

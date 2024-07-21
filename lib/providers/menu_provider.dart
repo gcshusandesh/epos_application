@@ -196,7 +196,12 @@ class MenuProvider extends ChangeNotifier {
       print("data = $data");
       if (response.statusCode == 200) {
         if (isSpecials) {
-          addSpecialsLocally(specials: specials!);
+          Specials newSpecials = Specials(
+            id: data['id'],
+            name: data['attributes']['name'],
+            status: data['attributes']['isActive'],
+          );
+          addSpecialsLocally(specials: newSpecials);
         } else if (isCategory) {
           addCategoryLocally(category: category!);
         } else if (isItem) {
@@ -361,7 +366,6 @@ class MenuProvider extends ChangeNotifier {
     bool isSpecials = false,
     bool isCategory = false,
     bool isItem = false,
-    required int id,
     required int index,
     required String accessToken,
     required BuildContext context,
@@ -372,7 +376,7 @@ class MenuProvider extends ChangeNotifier {
     print("updating menu item");
     late Uri url;
     if (isSpecials) {
-      url = Uri.parse("${Data.baseUrl}/api/specials/$id");
+      url = Uri.parse("${Data.baseUrl}/api/specials/${editedSpecials!.id}");
     } else if (isCategory) {
       // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
     } else if (isItem) {
@@ -396,7 +400,7 @@ class MenuProvider extends ChangeNotifier {
       } else if (isCategory) {
       } else if (isItem) {}
 
-      var response = await http.post(
+      var response = await http.put(
         url,
         headers: headers,
         body: jsonEncode(payloadBody),
@@ -426,20 +430,22 @@ class MenuProvider extends ChangeNotifier {
             MaterialPageRoute(
               builder: (context) => ErrorScreen(
                 isConnectedToInternet: false,
-                trace: "deleteMenuItem",
+                trace: "updateMenuItem",
               ),
             ));
       }
       if (context.mounted) {
         //retry api
-        await deleteMenuItem(
+        await updateMenuItem(
           isSpecials: isSpecials,
           isCategory: isCategory,
           isItem: isItem,
-          id: id,
           index: index,
           accessToken: accessToken,
           context: context,
+          editedSpecials: editedSpecials,
+          editedCategory: editedCategory,
+          editedMenuItems: editedMenuItems,
         );
       }
       return false;
@@ -450,20 +456,22 @@ class MenuProvider extends ChangeNotifier {
             context,
             MaterialPageRoute(
               builder: (context) => ErrorScreen(
-                trace: "deleteMenuItem",
+                trace: "updateMenuItem",
               ),
             ));
       }
       if (context.mounted) {
         //retry api
-        await deleteMenuItem(
+        await updateMenuItem(
           isSpecials: isSpecials,
           isCategory: isCategory,
           isItem: isItem,
-          id: id,
           index: index,
           accessToken: accessToken,
           context: context,
+          editedSpecials: editedSpecials,
+          editedCategory: editedCategory,
+          editedMenuItems: editedMenuItems,
         );
       }
       return false;
