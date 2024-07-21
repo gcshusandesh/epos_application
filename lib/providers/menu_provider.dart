@@ -399,7 +399,7 @@ class MenuProvider extends ChangeNotifier {
     if (isSpecials) {
       url = Uri.parse("${Data.baseUrl}/api/specials/${editedSpecials!.id}");
     } else if (isCategory) {
-      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+      url = Uri.parse("${Data.baseUrl}/api/categories/${editedCategory!.id}");
     } else if (isItem) {
       // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
     }
@@ -419,6 +419,12 @@ class MenuProvider extends ChangeNotifier {
           }
         };
       } else if (isCategory) {
+        payloadBody = {
+          "data": {
+            "name": editedCategory!.name,
+            "isActive": editedCategory.status,
+          }
+        };
       } else if (isItem) {}
 
       var response = await http.put(
@@ -435,7 +441,7 @@ class MenuProvider extends ChangeNotifier {
         if (isSpecials) {
           updateSpecialsLocally(editedSpecials: editedSpecials!, index: index);
         } else if (isCategory) {
-          removeCategoryLocally(index: index);
+          updateCategoryLocally(editedCategory: editedCategory!, index: index);
         } else if (isItem) {
           removeMenuItemLocally(itemIndex: index);
         }
@@ -508,8 +514,9 @@ class MenuProvider extends ChangeNotifier {
     return activeCategoryList.length;
   }
 
-  void changeCategoryStatusLocally(int index) {
-    categoryList[index].status = !categoryList[index].status;
+  void updateCategoryLocally(
+      {required Category editedCategory, required int index}) {
+    categoryList[index] = editedCategory;
     notifyListeners();
   }
 

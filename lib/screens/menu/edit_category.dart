@@ -1,6 +1,7 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
@@ -358,9 +359,69 @@ class _EditCategoryState extends State<EditCategory> {
           value: Provider.of<MenuProvider>(context, listen: true)
               .categoryList[index]
               .status,
-          onChanged: (value) {
-            Provider.of<MenuProvider>(context, listen: false)
-                .changeCategoryStatusLocally(index);
+          onChanged: (value) async {
+            if (Provider.of<MenuProvider>(context, listen: false)
+                    .categoryList[index]
+                    .image ==
+                null) {
+              // show success massage
+              showTopSnackBar(
+                Overlay.of(context),
+                const CustomSnackBar.error(
+                  message: "Please add image to publish category",
+                ),
+              );
+            } else {
+              setState(() {
+                isLoading = true;
+              });
+              bool isUpdatedStatus =
+                  await Provider.of<MenuProvider>(context, listen: false)
+                      .updateMenuItem(
+                isCategory: true,
+                index: index,
+                editedCategory: Category(
+                  name: Provider.of<MenuProvider>(context, listen: false)
+                      .categoryList[index]
+                      .name,
+                  id: Provider.of<MenuProvider>(context, listen: false)
+                      .categoryList[index]
+                      .id!,
+                  image: Provider.of<MenuProvider>(context, listen: false)
+                      .categoryList[index]
+                      .image!,
+                  status: value,
+                ),
+                accessToken: Provider.of<AuthProvider>(context, listen: false)
+                    .user
+                    .accessToken!,
+                context: context,
+              );
+              setState(() {
+                isLoading = false;
+              });
+              if (isUpdatedStatus) {
+                if (mounted) {
+                  // Check if the widget is still mounted
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.success(
+                      message: "Item status updated successfully",
+                    ),
+                  );
+                }
+              } else {
+                if (mounted) {
+                  // Check if the widget is still mounted
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.error(
+                      message: "Item status not updated",
+                    ),
+                  );
+                }
+              }
+            }
           },
           context: context,
         ),
