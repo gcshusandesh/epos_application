@@ -430,6 +430,9 @@ class _EditSpecialsState extends State<EditSpecials> {
                   id: Provider.of<MenuProvider>(context, listen: false)
                       .totalSpecialsList[index]
                       .id!,
+                  image: Provider.of<MenuProvider>(context, listen: false)
+                      .totalSpecialsList[index]
+                      .image!,
                   status: value,
                 ),
                 accessToken: Provider.of<AuthProvider>(context, listen: false)
