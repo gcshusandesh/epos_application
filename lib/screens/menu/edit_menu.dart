@@ -2,6 +2,7 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -93,6 +94,40 @@ class _EditMenuState extends State<EditMenu> {
         itemBuilder: (context, index) {
           final category = Provider.of<MenuProvider>(context, listen: true)
               .categoryList[index];
+          if (category.image == null) {
+            return Container(
+              padding: EdgeInsets.symmetric(
+                vertical: width * 1,
+              ),
+              height: width * 10,
+              width: width * 10,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Provider.of<InfoProvider>(context, listen: true)
+                      .systemInfo
+                      .iconsColor, // Outline color
+                  width: 0.5, // Outline width
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25), // Shadow color
+                    spreadRadius: 0, // How much the shadow spreads
+                    blurRadius: 4, // How much the shadow blurs
+                    offset: const Offset(0, 5), // The offset of the shadow
+                  ),
+                ],
+              ),
+              child: Center(
+                child: buildCustomText(
+                  "No Data",
+                  Data.darkTextColor,
+                  width * 1.5,
+                ),
+              ),
+            );
+          }
           return Row(
             children: [
               menuOption(

@@ -3,6 +3,7 @@ import 'package:el_tooltip/el_tooltip.dart';
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';
@@ -232,20 +233,20 @@ class _MenuPageState extends State<MenuPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
-            height: width * 12, // Define the size of the SVG image
-            width: width * 12,
+          Flexible(
+            flex: 9,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10.0),
-              child: Image.asset(
-                Provider.of<MenuProvider>(context, listen: true)
-                    .menuItemsByCategory[
-                        Provider.of<MenuProvider>(context, listen: true)
-                            .selectedCategoryIndex]
-                    .menuItems[itemIndex]
-                    .image!,
-                fit: BoxFit.fill,
-              ),
+              child: buildImage(
+                  Provider.of<MenuProvider>(context, listen: true)
+                      .menuItemsByCategory[
+                          Provider.of<MenuProvider>(context, listen: true)
+                              .selectedCategoryIndex]
+                      .menuItems[itemIndex]
+                      .image!,
+                  width * 12,
+                  width * 12,
+                  context: context),
             ),
           ),
           const Flexible(child: SizedBox(height: 10)),
@@ -266,7 +267,7 @@ class _MenuPageState extends State<MenuPage> {
                       ),
                     ),
                     SizedBox(
-                      width: width * 8,
+                      width: width * 10,
                       child: Center(
                         child: buildCustomText(
                           "${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].name}"
@@ -323,7 +324,7 @@ class _MenuPageState extends State<MenuPage> {
   ) {
     return Container(
       height: height * 3,
-      width: width * 3,
+      width: width * 2,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(
@@ -359,7 +360,15 @@ class _MenuPageState extends State<MenuPage> {
 
   Row specials() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment:
+          (Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                      UserType.owner) ||
+                  (Provider.of<AuthProvider>(context, listen: false)
+                          .user
+                          .userType ==
+                      UserType.manager)
+              ? MainAxisAlignment.spaceBetween
+              : MainAxisAlignment.start,
       children: [
         buildBodyText(
           "Specials",
@@ -367,25 +376,41 @@ class _MenuPageState extends State<MenuPage> {
           width * 0.9,
           fontFamily: "RobotoMedium",
         ),
-        iconButton(
-          "assets/svg/edit.svg",
-          height,
-          width,
-          () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const EditSpecials()),
-            );
-          },
-          context: context,
-        ),
+        (Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                    UserType.owner) ||
+                (Provider.of<AuthProvider>(context, listen: false)
+                        .user
+                        .userType ==
+                    UserType.manager)
+            ? iconButton(
+                "assets/svg/edit.svg",
+                height,
+                width,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const EditSpecials()),
+                  );
+                },
+                context: context,
+              )
+            : const SizedBox(),
       ],
     );
   }
 
   Row category() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment:
+          (Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                      UserType.owner) ||
+                  (Provider.of<AuthProvider>(context, listen: false)
+                          .user
+                          .userType ==
+                      UserType.manager)
+              ? MainAxisAlignment.spaceBetween
+              : MainAxisAlignment.start,
       children: [
         buildBodyText(
           "Category",
@@ -393,18 +418,26 @@ class _MenuPageState extends State<MenuPage> {
           width * 0.9,
           fontFamily: "RobotoMedium",
         ),
-        iconButton(
-          "assets/svg/edit.svg",
-          height,
-          width,
-          () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const EditCategory()),
-            );
-          },
-          context: context,
-        ),
+        (Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                    UserType.owner) ||
+                (Provider.of<AuthProvider>(context, listen: false)
+                        .user
+                        .userType ==
+                    UserType.manager)
+            ? iconButton(
+                "assets/svg/edit.svg",
+                height,
+                width,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const EditCategory()),
+                  );
+                },
+                context: context,
+              )
+            : const SizedBox(),
       ],
     );
   }
@@ -440,22 +473,34 @@ class _MenuPageState extends State<MenuPage> {
                   .iconsColor,
               onTap: () {},
             ),
-            SizedBox(width: width),
-            iconButton(
-              "assets/svg/edit.svg",
-              height,
-              width,
-              () {
-                //can be used to initialise category as well
-                Provider.of<MenuProvider>(context, listen: false)
-                    .resetCategory();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const EditMenu()),
-                );
-              },
-              context: context,
-            ),
+            (Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                        UserType.owner) ||
+                    (Provider.of<AuthProvider>(context, listen: false)
+                            .user
+                            .userType ==
+                        UserType.manager)
+                ? Row(
+                    children: [
+                      SizedBox(width: width),
+                      iconButton(
+                        "assets/svg/edit.svg",
+                        height,
+                        width,
+                        () {
+                          //can be used to initialise category as well
+                          Provider.of<MenuProvider>(context, listen: false)
+                              .resetCategory();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const EditMenu()),
+                          );
+                        },
+                        context: context,
+                      ),
+                    ],
+                  )
+                : const SizedBox(),
           ],
         )
       ],
