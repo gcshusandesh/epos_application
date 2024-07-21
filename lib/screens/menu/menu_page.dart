@@ -85,8 +85,8 @@ class _MenuPageState extends State<MenuPage> {
     if (init) {
       //initialize size config at the very beginning
       SizeConfig().init(context);
-      width = SizeConfig.safeBlockVertical;
-      height = SizeConfig.safeBlockHorizontal;
+      height = SizeConfig.safeBlockVertical;
+      width = SizeConfig.safeBlockHorizontal;
       init = false;
     }
   }
@@ -128,6 +128,7 @@ class _MenuPageState extends State<MenuPage> {
             buildCarousel(context),
             SizedBox(height: height * 2),
             category(),
+            SizedBox(height: height),
             optionsSection(context),
             SizedBox(height: height * 2),
             menu(),
@@ -531,38 +532,58 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  Expanded optionsSection(BuildContext context) {
-    return Expanded(
-      flex: 1,
-      child: ListView.builder(
-        padding: EdgeInsets.zero,
-        scrollDirection:
-            Axis.horizontal, // Assuming you want a horizontal list view
-        itemCount: Provider.of<MenuProvider>(context, listen: true)
-            .categoryList
-            .length,
-        itemBuilder: (context, index) {
-          final category = Provider.of<MenuProvider>(context, listen: true)
-              .categoryList[index];
-          return Row(
-            children: [
-              menuOption(
-                category.name,
-                category.image!,
-                height,
+  Widget optionsSection(BuildContext context) {
+    if (Provider.of<MenuProvider>(context, listen: true).categoryList.isEmpty) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(
+            height: width * 12,
+            width: width * 12,
+            color: Data.lightGreyBodyColor,
+            child: Center(
+              child: buildCustomText(
+                "No Data",
+                Data.darkTextColor,
                 width,
-                () {
-                  Provider.of<MenuProvider>(context, listen: false)
-                      .changeSelectedCategory(index);
-                },
-                index: index,
-                context: context,
               ),
-              SizedBox(width: width),
-            ],
-          );
-        },
-      ),
-    );
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Expanded(
+        flex: 1,
+        child: ListView.builder(
+          padding: EdgeInsets.zero,
+          scrollDirection:
+              Axis.horizontal, // Assuming you want a horizontal list view
+          itemCount: Provider.of<MenuProvider>(context, listen: true)
+              .categoryList
+              .length,
+          itemBuilder: (context, index) {
+            final category = Provider.of<MenuProvider>(context, listen: true)
+                .categoryList[index];
+            return Row(
+              children: [
+                menuOption(
+                  category.name,
+                  category.image!,
+                  height,
+                  width,
+                  () {
+                    Provider.of<MenuProvider>(context, listen: false)
+                        .changeSelectedCategory(index);
+                  },
+                  index: index,
+                  context: context,
+                ),
+                SizedBox(width: width),
+              ],
+            );
+          },
+        ),
+      );
+    }
   }
 }
