@@ -439,43 +439,70 @@ class _MenuPageState extends State<MenuPage> {
     return Expanded(
       flex: 1,
       child: Provider.of<MenuProvider>(context, listen: true)
-              .activeSpecialsList
-              .isEmpty
+                  .activeSpecialsList
+                  .isEmpty ||
+              Provider.of<MenuProvider>(context, listen: true)
+                      .activeSpecialsList
+                      .length ==
+                  1
           ? Center(
-              child: Container(
-                width: width * 60,
-                color: Data.lightGreyBodyColor,
-                child: Center(
-                    child: buildCustomText(
-                        "No Image", Data.darkTextColor, width * 3)),
+              child: Padding(
+                padding: EdgeInsets.only(top: height),
+                child: Provider.of<MenuProvider>(context, listen: true)
+                            .activeSpecialsList
+                            .length ==
+                        1
+                    ? SizedBox(
+                        height: height * 25,
+                        width: width * 50,
+                        child: Image.network(
+                          Provider.of<MenuProvider>(context, listen: true)
+                              .activeSpecialsList[0]
+                              .image!,
+                          fit: BoxFit.fill,
+                        ),
+                      )
+                    : Container(
+                        width: width * 60,
+                        color: Data.lightGreyBodyColor.withOpacity(0.4),
+                        child: Center(
+                            child: buildCustomText(
+                                "No Image", Data.darkTextColor, width * 2)),
+                      ),
               ),
             )
-          : CarouselSlider.builder(
-              itemCount: Provider.of<MenuProvider>(context, listen: true)
-                  .activeSpecialsList
-                  .length,
-              itemBuilder:
-                  (BuildContext context, int itemIndex, int pageViewIndex) {
-                return Provider.of<MenuProvider>(context, listen: true)
-                            .activeSpecialsList[itemIndex]
-                            .image ==
-                        null
-                    ? Container(
-                        color: Data.lightGreyBodyColor,
-                        child: buildCustomText(
-                            "No Image", Data.darkTextColor, width),
-                      )
-                    : Image.network(
-                        Provider.of<MenuProvider>(context, listen: true)
-                            .activeSpecialsList[itemIndex]
-                            .image!,
-                        fit: BoxFit.contain,
-                      );
-              },
-              options: CarouselOptions(
-                autoPlay: true,
-                enlargeCenterPage: true,
-                aspectRatio: 3,
+          : SizedBox(
+              height: height * 30,
+              child: CarouselSlider.builder(
+                itemCount: Provider.of<MenuProvider>(context, listen: true)
+                    .activeSpecialsList
+                    .length,
+                itemBuilder:
+                    (BuildContext context, int itemIndex, int pageViewIndex) {
+                  return Provider.of<MenuProvider>(context, listen: true)
+                              .activeSpecialsList[itemIndex]
+                              .image ==
+                          null
+                      ? Container(
+                          color: Data.lightGreyBodyColor,
+                          child: buildCustomText(
+                              "No Image", Data.darkTextColor, width),
+                        )
+                      : SizedBox(
+                          width: width * 50,
+                          child: Image.network(
+                            Provider.of<MenuProvider>(context, listen: true)
+                                .activeSpecialsList[itemIndex]
+                                .image!,
+                            fit: BoxFit.fill,
+                          ),
+                        );
+                },
+                options: CarouselOptions(
+                  autoPlay: true,
+                  enlargeCenterPage: true,
+                  aspectRatio: 3.5,
+                ),
               ),
             ),
     );
