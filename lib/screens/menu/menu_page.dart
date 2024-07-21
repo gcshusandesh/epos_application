@@ -49,8 +49,8 @@ class _MenuPageState extends State<MenuPage> {
     if (init) {
       //initialize size config at the very beginning
       SizeConfig().init(context);
-      height = SizeConfig.safeBlockVertical;
-      width = SizeConfig.safeBlockHorizontal;
+      width = SizeConfig.safeBlockVertical;
+      height = SizeConfig.safeBlockHorizontal;
       setState(() {
         isLoading = true;
       });

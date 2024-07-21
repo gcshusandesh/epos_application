@@ -98,15 +98,23 @@ class _LoginScreenState extends State<LoginScreen> {
               width,
             ),
             SizedBox(height: height),
-            buildImage(
-              Provider.of<InfoProvider>(context, listen: false)
-                  .restaurantInfo
-                  .imageUrl!,
-              isNetworkImage: true,
-              height * 25,
-              width * 30,
-              context: context,
-            ),
+            Provider.of<InfoProvider>(context, listen: false)
+                        .restaurantInfo
+                        .imageUrl ==
+                    null
+                ? SizedBox(
+                    height: height * 25,
+                    width: width * 30,
+                  )
+                : buildImage(
+                    Provider.of<InfoProvider>(context, listen: false)
+                        .restaurantInfo
+                        .imageUrl!,
+                    isNetworkImage: true,
+                    height * 25,
+                    width * 30,
+                    context: context,
+                  ),
             buildTitleText(
               "Log In",
               Data.greyTextColor,
