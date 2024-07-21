@@ -17,11 +17,19 @@ class UpdateData extends StatefulWidget {
     this.isCategory = false,
     this.isItem = false,
     this.isEdit = false,
+    this.specials,
+    this.category,
+    this.menuItems,
+    this.index,
   });
   final bool isSpecial;
   final bool isCategory;
   final bool isItem;
   final bool isEdit;
+  final Specials? specials;
+  final Category? category;
+  final MenuItems? menuItems;
+  final int? index;
   static const String routeName = 'updateData';
 
   @override
@@ -36,6 +44,8 @@ class _UpdateDataState extends State<UpdateData> {
   final GlobalKey<FormState> _formKey =
       GlobalKey<FormState>(); // A key for managing the form
 
+  TextEditingController nameController = TextEditingController();
+
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
@@ -45,11 +55,17 @@ class _UpdateDataState extends State<UpdateData> {
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
 
+      /// polulate text field with data if it is an edit
+      if (widget.isEdit) {
+        if (widget.isSpecial) {
+          nameController.text = widget.specials!.name;
+        } else if (widget.isCategory) {
+        } else if (widget.isItem) {}
+      }
+
       init = false;
     }
   }
-
-  TextEditingController nameController = TextEditingController();
 
   @override
   void dispose() {
@@ -146,26 +162,28 @@ class _UpdateDataState extends State<UpdateData> {
                             setState(() {
                               isLoading = true;
                             });
-                            late bool isCreated;
+                            late bool isSuccessful;
                             if (widget.isSpecial) {
-                              isCreated = await specialLogic();
+                              isSuccessful = await specialLogic();
                             } else if (widget.isCategory) {
-                              isCreated = await categoryLogic();
+                              isSuccessful = await categoryLogic();
                             } else {
-                              isCreated = await itemLogic();
+                              isSuccessful = await itemLogic();
                             }
                             setState(() {
                               isLoading = false;
                             });
 
-                            if (isCreated) {
+                            if (isSuccessful) {
                               if (mounted) {
                                 Navigator.pop(context);
                                 // show success massage
                                 showTopSnackBar(
                                   Overlay.of(context),
-                                  const CustomSnackBar.success(
-                                    message: "Item Successfully Created",
+                                  CustomSnackBar.success(
+                                    message: widget.isEdit
+                                        ? "Item Successfully Updated"
+                                        : "Item Successfully Created",
                                   ),
                                 );
                               }
@@ -174,8 +192,10 @@ class _UpdateDataState extends State<UpdateData> {
                                 // show error massage
                                 showTopSnackBar(
                                   Overlay.of(context),
-                                  const CustomSnackBar.error(
-                                    message: "Item creation failed",
+                                  CustomSnackBar.error(
+                                    message: widget.isEdit
+                                        ? "Item update failed"
+                                        : "Item creation failed",
                                   ),
                                 );
                               }
@@ -196,21 +216,38 @@ class _UpdateDataState extends State<UpdateData> {
   }
 
   Future<bool> specialLogic() async {
-    bool isCreated =
-        await Provider.of<MenuProvider>(context, listen: false).createMenuItem(
-      isSpecials: true,
-      specials: Specials(
-        name: nameController.text,
+    late bool isSuccessful;
+    if (widget.isEdit) {
+      isSuccessful = await Provider.of<MenuProvider>(context, listen: false)
+          .updateMenuItem(
+        isSpecials: true,
+        editedSpecials: Specials(
+          id: widget.specials!.id,
+          name: nameController.text,
+          status: widget.specials!.status,
+        ),
+        index: widget.index!,
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+        context: context,
+      );
+    } else {
+      isSuccessful = await Provider.of<MenuProvider>(context, listen: false)
+          .createMenuItem(
+        isSpecials: true,
+        specials: Specials(
+          name: nameController.text,
 
-        ///always set status to false when creating a new item
-        status: false,
-      ),
-      accessToken:
-          Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
-      context: context,
-    );
+          ///always set status to false when creating a new item
+          status: false,
+        ),
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+        context: context,
+      );
+    }
 
-    return isCreated;
+    return isSuccessful;
   }
 
   Widget specialsForm() {

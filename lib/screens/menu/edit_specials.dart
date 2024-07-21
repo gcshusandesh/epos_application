@@ -258,46 +258,64 @@ class _EditSpecialsState extends State<EditSpecials> {
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
         tableItem((index + 1).toString(), width),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Column(
-            children: [
-              tableItem(
-                  Provider.of<MenuProvider>(context, listen: true)
-                      .totalSpecialsList[index]
-                      .name,
-                  width),
-              Row(
-                mainAxisAlignment: isEditing
-                    ? MainAxisAlignment.spaceEvenly
-                    : MainAxisAlignment.center,
-                children: [
-                  buildCustomText(
+        InkWell(
+          onTap: () {
+            if (isEditing) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UpdateData(
+                          isSpecial: true,
+                          specials:
+                              Provider.of<MenuProvider>(context, listen: false)
+                                  .totalSpecialsList[index],
+                          isEdit: true,
+                          index: index,
+                        )),
+              );
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Column(
+              children: [
+                tableItem(
                     Provider.of<MenuProvider>(context, listen: true)
-                            .totalSpecialsList[index]
-                            .status
-                        ? "Active"
-                        : "Inactive",
-                    Provider.of<MenuProvider>(context, listen: true)
-                            .totalSpecialsList[index]
-                            .status
-                        ? Data.greenColor
-                        : Data.redColor,
-                    width * 1.2,
-                  ),
-                  isEditing
-                      ? label(
-                          text: "edit",
-                          height: height,
-                          width: width,
-                          labelColor:
-                              Provider.of<InfoProvider>(context, listen: true)
-                                  .systemInfo
-                                  .iconsColor)
-                      : const SizedBox(),
-                ],
-              )
-            ],
+                        .totalSpecialsList[index]
+                        .name,
+                    width),
+                Row(
+                  mainAxisAlignment: isEditing
+                      ? MainAxisAlignment.spaceEvenly
+                      : MainAxisAlignment.center,
+                  children: [
+                    buildCustomText(
+                      Provider.of<MenuProvider>(context, listen: true)
+                              .totalSpecialsList[index]
+                              .status
+                          ? "Active"
+                          : "Inactive",
+                      Provider.of<MenuProvider>(context, listen: true)
+                              .totalSpecialsList[index]
+                              .status
+                          ? Data.greenColor
+                          : Data.redColor,
+                      width * 1.2,
+                    ),
+                    isEditing
+                        ? label(
+                            text: "edit",
+                            height: height,
+                            width: width,
+                            labelColor:
+                                Provider.of<InfoProvider>(context, listen: true)
+                                    .systemInfo
+                                    .iconsColor)
+                        : const SizedBox(),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
         InkWell(
