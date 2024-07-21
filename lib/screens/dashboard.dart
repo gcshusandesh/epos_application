@@ -30,6 +30,37 @@ class _DashboardState extends State<Dashboard> {
   bool isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+    populateDashboard();
+    await Provider.of<InfoProvider>(context, listen: false).getSettings(
+      context: context,
+    );
+    if (mounted) {
+      // Get Employee Data from API
+      await Provider.of<UserProvider>(context, listen: false).getUserList(
+          user: Provider.of<AuthProvider>(context, listen: false).user,
+          context: context);
+    }
+
+    if (mounted) {
+      // Get Menu Items by Category Data from API
+      Provider.of<MenuProvider>(context, listen: false)
+          .getMenuItemsByCategory(init: true);
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     if (init) {
@@ -37,30 +68,8 @@ class _DashboardState extends State<Dashboard> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-      setState(() {
-        isLoading = true;
-      });
-      populateDashboard();
-      await Provider.of<InfoProvider>(context, listen: false).getSettings(
-        context: context,
-      );
 
-      setState(() {
-        isLoading = false;
-      });
-
-      if (mounted) {
-        // Get Employee Data from API
-        Provider.of<UserProvider>(context, listen: false).getUserList(
-            user: Provider.of<AuthProvider>(context, listen: false).user,
-            context: context);
-
-        // Get Menu Items by Category Data from API
-        Provider.of<MenuProvider>(context, listen: false)
-            .getMenuItemsByCategory(init: true);
-
-        init = false;
-      }
+      init = false;
     }
   }
 

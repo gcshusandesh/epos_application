@@ -30,6 +30,24 @@ class _LoginScreenState extends State<LoginScreen> {
   late double width;
 
   @override
+  initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await Provider.of<InfoProvider>(context, listen: false).getSettings(
+      context: context,
+    );
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     if (init) {
@@ -37,18 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-      setState(() {
-        isLoading = true;
-      });
-
-      await Provider.of<InfoProvider>(context, listen: false).getSettings(
-        context: context,
-      );
-
-      setState(() {
-        isLoading = false;
-      });
-
       init = false;
     }
   }
