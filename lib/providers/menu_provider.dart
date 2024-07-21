@@ -17,9 +17,19 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeSpecialsStatusLocally(int index) {
-    ///change status in main list
-    totalSpecialsList[index].status = !totalSpecialsList[index].status;
+  // void changeSpecialsStatusLocally(int index) {
+  //   ///change status in main list
+  //   totalSpecialsList[index].status = !totalSpecialsList[index].status;
+  //
+  //   ///recalculate active specials list
+  //   getActiveSpecials();
+  //   notifyListeners();
+  // }
+
+  void updateSpecialsLocally(
+      {required Specials editedSpecials, required int index}) {
+    ///change data in main list
+    totalSpecialsList[index] = editedSpecials;
 
     ///recalculate active specials list
     getActiveSpecials();
@@ -286,6 +296,119 @@ class MenuProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         if (isSpecials) {
           removeSpecialsLocally(index: index);
+        } else if (isCategory) {
+          removeCategoryLocally(index: index);
+        } else if (isItem) {
+          removeMenuItemLocally(itemIndex: index);
+        }
+        notifyListeners();
+        return true;
+      }
+      return false;
+    } on SocketException {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+                trace: "deleteMenuItem",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await deleteMenuItem(
+          isSpecials: isSpecials,
+          isCategory: isCategory,
+          isItem: isItem,
+          id: id,
+          index: index,
+          accessToken: accessToken,
+          context: context,
+        );
+      }
+      return false;
+    } catch (e) {
+      if (context.mounted) {
+        // Navigate to Error Page
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                trace: "deleteMenuItem",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        //retry api
+        await deleteMenuItem(
+          isSpecials: isSpecials,
+          isCategory: isCategory,
+          isItem: isItem,
+          id: id,
+          index: index,
+          accessToken: accessToken,
+          context: context,
+        );
+      }
+      return false;
+    }
+  }
+
+  Future<bool> updateMenuItem({
+    bool isSpecials = false,
+    bool isCategory = false,
+    bool isItem = false,
+    required int id,
+    required int index,
+    required String accessToken,
+    required BuildContext context,
+    Specials? editedSpecials,
+    Category? editedCategory,
+    MenuItems? editedMenuItems,
+  }) async {
+    print("updating menu item");
+    late Uri url;
+    if (isSpecials) {
+      url = Uri.parse("${Data.baseUrl}/api/specials/$id");
+    } else if (isCategory) {
+      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+    } else if (isItem) {
+      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+    }
+
+    try {
+      var headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer $accessToken',
+      };
+      late Map<String, dynamic> payloadBody;
+      if (isSpecials) {
+        payloadBody = {
+          "data": {
+            "name": editedSpecials!.name,
+            "isActive": editedSpecials.status,
+          }
+        };
+      } else if (isCategory) {
+      } else if (isItem) {}
+
+      var response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(payloadBody),
+      );
+
+      var extractedData = json.decode(response.body);
+      var data = extractedData['data'];
+      print("updating status code = ${response.statusCode}");
+      print("updating data = $data");
+      if (response.statusCode == 200) {
+        if (isSpecials) {
+          updateSpecialsLocally(editedSpecials: editedSpecials!, index: index);
         } else if (isCategory) {
           removeCategoryLocally(index: index);
         } else if (isItem) {

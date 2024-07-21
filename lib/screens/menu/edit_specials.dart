@@ -342,7 +342,7 @@ class _EditSpecialsState extends State<EditSpecials> {
           value: Provider.of<MenuProvider>(context, listen: true)
               .totalSpecialsList[index]
               .status,
-          onChanged: (value) {
+          onChanged: (value) async {
             if (Provider.of<MenuProvider>(context, listen: false)
                     .totalSpecialsList[index]
                     .image ==
@@ -355,8 +355,40 @@ class _EditSpecialsState extends State<EditSpecials> {
                 ),
               );
             } else {
-              Provider.of<MenuProvider>(context, listen: false)
-                  .changeSpecialsStatusLocally(index);
+              bool isUpdatedStatus =
+                  await Provider.of<MenuProvider>(context, listen: false)
+                      .updateMenuItem(
+                isSpecials: true,
+                id: Provider.of<MenuProvider>(context, listen: false)
+                    .totalSpecialsList[index]
+                    .id!,
+                index: index,
+                accessToken: Provider.of<AuthProvider>(context, listen: false)
+                    .user
+                    .accessToken!,
+                context: context,
+              );
+              if (isUpdatedStatus) {
+                if (mounted) {
+                  // Check if the widget is still mounted
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.success(
+                      message: "Item status updated successfully",
+                    ),
+                  );
+                }
+              } else {
+                if (mounted) {
+                  // Check if the widget is still mounted
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.error(
+                      message: "Item status not updated",
+                    ),
+                  );
+                }
+              }
             }
           },
           context: context,
