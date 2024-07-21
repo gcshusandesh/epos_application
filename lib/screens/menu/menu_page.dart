@@ -59,6 +59,11 @@ class _MenuPageState extends State<MenuPage> {
           isCategory: true,
           context: context);
     }
+    if (mounted) {
+      ///choose first category by default
+      Provider.of<MenuProvider>(context, listen: false)
+          .changeSelectedCategory(0);
+    }
 
     if (mounted) {
       // Get Menu Item Data from API
@@ -88,6 +93,7 @@ class _MenuPageState extends State<MenuPage> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
+
       init = false;
     }
   }
@@ -632,7 +638,7 @@ class _MenuPageState extends State<MenuPage> {
               .categoryList
               .length,
           itemBuilder: (context, index) {
-            final category = Provider.of<MenuProvider>(context, listen: true)
+            var category = Provider.of<MenuProvider>(context, listen: true)
                 .categoryList[index];
             if (category.status) {
               return Row(

@@ -62,6 +62,10 @@ class _EditCategoryState extends State<EditCategory> {
           DeviceOrientation.portraitUp,
           DeviceOrientation.portraitDown,
         ]);
+
+        ///choose first category by default
+        Provider.of<MenuProvider>(context, listen: false)
+            .changeSelectedCategory(0);
       },
       child: Stack(
         children: [
