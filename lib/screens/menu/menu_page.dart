@@ -12,6 +12,7 @@ import 'package:epos_application/screens/menu/edit_specials.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/info_provider.dart';
@@ -503,7 +504,39 @@ class _MenuPageState extends State<MenuPage> {
               buttonColor: Provider.of<InfoProvider>(context, listen: true)
                   .systemInfo
                   .iconsColor,
-              onTap: () {},
+              onTap: () {
+                showMaterialModalBottomSheet(
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12.0),
+                      topRight: Radius.circular(12.0),
+                    ),
+                  ),
+                  backgroundColor: Data.lightGreyBodyColor,
+                  context: context,
+                  builder: (context) => SizedBox(
+                    height: height * 10,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(height: height * 2),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black, // Outline color
+                              width: 0.5, // Outline width
+                            ),
+                            borderRadius: BorderRadius.circular(6.0),
+                          ),
+                          height: 10,
+                          width: width * 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
             (Provider.of<AuthProvider>(context, listen: false).user.userType ==
                         UserType.owner) ||

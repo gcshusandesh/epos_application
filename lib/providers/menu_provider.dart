@@ -204,6 +204,7 @@ class MenuProvider extends ChangeNotifier {
     Specials? specials,
     Category? category,
     MenuItems? menuItem,
+    String? selectedCategory,
     required String accessToken,
     required BuildContext context,
   }) async {
@@ -214,9 +215,14 @@ class MenuProvider extends ChangeNotifier {
     } else if (isCategory) {
       url = Uri.parse("${Data.baseUrl}/api/categories");
     } else if (isItem) {
-      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+      url = Uri.parse("${Data.baseUrl}/api/menu-items");
     }
 
+    print("name: ${menuItem!.name}");
+    print("description: ${menuItem.description}");
+    print("ingredients: ${menuItem.ingredients}");
+    print("price: ${menuItem.price}");
+    print("categoryType: $selectedCategory");
     try {
       var headers = {
         "Accept": "application/json",
@@ -236,7 +242,17 @@ class MenuProvider extends ChangeNotifier {
             "name": category!.name,
           }
         };
-      } else if (isItem) {}
+      } else if (isItem) {
+        payloadBody = {
+          "data": {
+            "name": menuItem.name,
+            "description": menuItem.description,
+            "ingredients": menuItem.ingredients,
+            "price": menuItem.price,
+            "categoryType": selectedCategory,
+          }
+        };
+      }
 
       var response = await http.post(
         url,
@@ -263,7 +279,15 @@ class MenuProvider extends ChangeNotifier {
           );
           addCategoryLocally(category: newCategory);
         } else if (isItem) {
-          addMenuItemLocally(menuItem: menuItem!);
+          MenuItems newMenuItem = MenuItems(
+            id: data['id'],
+            name: data['attributes']['name'],
+            description: data['attributes']['description'],
+            ingredients: data['attributes']['ingredients'],
+            price: data['attributes']['price'].toDouble(),
+            status: data['attributes']['isActive'],
+          );
+          addMenuItemLocally(menuItem: newMenuItem);
         }
         notifyListeners();
         return true;
@@ -296,6 +320,7 @@ class MenuProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
+      print("error $e");
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(

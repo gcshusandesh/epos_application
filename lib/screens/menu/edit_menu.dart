@@ -4,9 +4,9 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
+import 'package:epos_application/screens/menu/update_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 class EditMenu extends StatefulWidget {
@@ -191,36 +191,18 @@ class _EditMenuState extends State<EditMenu> {
           height,
           width,
           () {
-            showMaterialModalBottomSheet(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(12.0),
-                  topRight: Radius.circular(12.0),
-                ),
-              ),
-              backgroundColor: Data.lightGreyBodyColor,
-              context: context,
-              builder: (context) => SizedBox(
-                height: height * 10,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(height: height * 2),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: Colors.black, // Outline color
-                          width: 0.5, // Outline width
-                        ),
-                        borderRadius: BorderRadius.circular(6.0),
-                      ),
-                      height: 10,
-                      width: width * 20,
-                    ),
-                  ],
-                ),
-              ),
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => UpdateData(
+                        isItem: true,
+                        selectedCategory: Provider.of<MenuProvider>(context,
+                                listen: false)
+                            .categoryList[
+                                Provider.of<MenuProvider>(context, listen: true)
+                                    .selectedCategoryIndex]
+                            .name,
+                      )),
             );
           },
           context: context,
@@ -382,17 +364,36 @@ class _EditMenuState extends State<EditMenu> {
         ),
         Padding(
           padding: const EdgeInsets.all(15.0),
-          child: buildImage(
-              Provider.of<MenuProvider>(context, listen: true)
-                  .menuItemsByCategory[
-                      Provider.of<MenuProvider>(context, listen: true)
-                          .selectedCategoryIndex]
-                  .menuItems[itemIndex]
-                  .image!,
-              height * 10,
-              width * 20,
-              context: context,
-              isNetworkImage: true),
+          child: Provider.of<MenuProvider>(context, listen: true)
+                      .menuItemsByCategory[
+                          Provider.of<MenuProvider>(context, listen: true)
+                              .selectedCategoryIndex]
+                      .menuItems[itemIndex]
+                      .image ==
+                  null
+              ? Container(
+                  height: height * 10,
+                  width: width * 20,
+                  color: Colors.white60,
+                  child: Center(
+                    child: buildCustomText(
+                      "No Image",
+                      Data.greyTextColor,
+                      width * 1.3,
+                    ),
+                  ),
+                )
+              : buildImage(
+                  Provider.of<MenuProvider>(context, listen: true)
+                      .menuItemsByCategory[
+                          Provider.of<MenuProvider>(context, listen: true)
+                              .selectedCategoryIndex]
+                      .menuItems[itemIndex]
+                      .image!,
+                  height * 10,
+                  width * 20,
+                  context: context,
+                  isNetworkImage: true),
         ),
         tableItem(
           Provider.of<MenuProvider>(context, listen: true)

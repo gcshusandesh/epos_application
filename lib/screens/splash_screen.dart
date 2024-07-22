@@ -50,7 +50,6 @@ class SplashScreenState extends State<SplashScreen>
     height = SizeConfig.safeBlockVertical;
     width = SizeConfig.safeBlockHorizontal;
     super.didChangeDependencies();
-    FocusScope.of(context).requestFocus(FocusNode());
   }
 
   @override

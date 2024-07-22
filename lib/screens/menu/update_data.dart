@@ -21,6 +21,7 @@ class UpdateData extends StatefulWidget {
     this.category,
     this.menuItems,
     this.index,
+    this.selectedCategory,
   });
   final bool isSpecial;
   final bool isCategory;
@@ -30,6 +31,7 @@ class UpdateData extends StatefulWidget {
   final Category? category;
   final MenuItems? menuItems;
   final int? index;
+  final String? selectedCategory;
   static const String routeName = 'updateData';
 
   @override
@@ -45,6 +47,9 @@ class _UpdateDataState extends State<UpdateData> {
       GlobalKey<FormState>(); // A key for managing the form
 
   TextEditingController nameController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController ingredientsController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
 
   @override
   void didChangeDependencies() async {
@@ -61,7 +66,12 @@ class _UpdateDataState extends State<UpdateData> {
           nameController.text = widget.specials!.name;
         } else if (widget.isCategory) {
           nameController.text = widget.category!.name;
-        } else if (widget.isItem) {}
+        } else if (widget.isItem) {
+          nameController.text = widget.menuItems!.name;
+          descriptionController.text = widget.menuItems!.description;
+          ingredientsController.text = widget.menuItems!.ingredients;
+          priceController.text = widget.menuItems!.price.toString();
+        }
       }
 
       init = false;
@@ -93,124 +103,128 @@ class _UpdateDataState extends State<UpdateData> {
       backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                iconButton(
-                  "assets/svg/arrow_back.svg",
-                  height,
-                  width,
-                  () {
-                    Navigator.pop(context);
-                  },
-                  context: context,
-                ),
-                widget.isSpecial
-                    ? buildTitleText(
-                        widget.isEdit ? "Edit Specials" : "Add Specials",
-                        Data.darkTextColor,
-                        width)
-                    : widget.isCategory
-                        ? buildTitleText(
-                            widget.isEdit ? "Edit Category" : "Add Category",
-                            Data.darkTextColor,
-                            width)
-                        : buildTitleText(
-                            widget.isEdit ? "Edit Menu Item" : "Add Menu Item",
-                            Data.darkTextColor,
-                            width),
-                SizedBox(width: width * 5),
-              ],
-            ),
-            SizedBox(height: height * 2),
-            Center(
-              child: Container(
-                width: width * 35,
-                padding: EdgeInsets.symmetric(
-                    vertical: height * 2, horizontal: width * 2),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Data.lightGreyBodyColor50,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.25), // Shadow color
-                      spreadRadius: 0, // How much the shadow spreads
-                      blurRadius: 4, // How much the shadow blurs
-                      offset: const Offset(0, 5), // The offset of the shadow
-                    ),
-                  ],
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      widget.isSpecial
-                          ? specialsForm()
-                          : widget.isCategory
-                              ? categoryForm()
-                              : itemForm(),
-                      SizedBox(height: height * 2),
-                      buildButton(
-                        Icons.fastfood,
-                        widget.isEdit ? "Update" : "Create",
-                        height,
-                        width,
-                        () async {
-                          if (_formKey.currentState!.validate()) {
-                            setState(() {
-                              isLoading = true;
-                            });
-                            late bool isSuccessful;
-                            if (widget.isSpecial) {
-                              isSuccessful = await specialLogic();
-                            } else if (widget.isCategory) {
-                              isSuccessful = await categoryLogic();
-                            } else {
-                              isSuccessful = await itemLogic();
-                            }
-                            setState(() {
-                              isLoading = false;
-                            });
-
-                            if (isSuccessful) {
-                              if (mounted) {
-                                Navigator.pop(context);
-                                // show success massage
-                                showTopSnackBar(
-                                  Overlay.of(context),
-                                  CustomSnackBar.success(
-                                    message: widget.isEdit
-                                        ? "Item Successfully Updated"
-                                        : "Item Successfully Created",
-                                  ),
-                                );
-                              }
-                            } else {
-                              if (mounted) {
-                                // show error massage
-                                showTopSnackBar(
-                                  Overlay.of(context),
-                                  CustomSnackBar.error(
-                                    message: widget.isEdit
-                                        ? "Item update failed"
-                                        : "Item creation failed",
-                                  ),
-                                );
-                              }
-                            }
-                          }
-                        },
-                        context,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  iconButton(
+                    "assets/svg/arrow_back.svg",
+                    height,
+                    width,
+                    () {
+                      Navigator.pop(context);
+                    },
+                    context: context,
+                  ),
+                  widget.isSpecial
+                      ? buildTitleText(
+                          widget.isEdit ? "Edit Specials" : "Add Specials",
+                          Data.darkTextColor,
+                          width)
+                      : widget.isCategory
+                          ? buildTitleText(
+                              widget.isEdit ? "Edit Category" : "Add Category",
+                              Data.darkTextColor,
+                              width)
+                          : buildTitleText(
+                              widget.isEdit
+                                  ? "Edit Menu Item"
+                                  : "Add Menu Item",
+                              Data.darkTextColor,
+                              width),
+                  SizedBox(width: width * 5),
+                ],
+              ),
+              SizedBox(height: height * 2),
+              Center(
+                child: Container(
+                  width: width * 35,
+                  padding: EdgeInsets.symmetric(
+                      vertical: height * 2, horizontal: width * 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Data.lightGreyBodyColor50,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.25), // Shadow color
+                        spreadRadius: 0, // How much the shadow spreads
+                        blurRadius: 4, // How much the shadow blurs
+                        offset: const Offset(0, 5), // The offset of the shadow
                       ),
                     ],
                   ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        widget.isSpecial
+                            ? specialsForm()
+                            : widget.isCategory
+                                ? categoryForm()
+                                : itemForm(),
+                        SizedBox(height: height * 2),
+                        buildButton(
+                          Icons.fastfood,
+                          widget.isEdit ? "Update" : "Create",
+                          height,
+                          width,
+                          () async {
+                            if (_formKey.currentState!.validate()) {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              late bool isSuccessful;
+                              if (widget.isSpecial) {
+                                isSuccessful = await specialLogic();
+                              } else if (widget.isCategory) {
+                                isSuccessful = await categoryLogic();
+                              } else {
+                                isSuccessful = await itemLogic();
+                              }
+                              setState(() {
+                                isLoading = false;
+                              });
+
+                              if (isSuccessful) {
+                                if (mounted) {
+                                  Navigator.pop(context);
+                                  // show success massage
+                                  showTopSnackBar(
+                                    Overlay.of(context),
+                                    CustomSnackBar.success(
+                                      message: widget.isEdit
+                                          ? "Item Successfully Updated"
+                                          : "Item Successfully Created",
+                                    ),
+                                  );
+                                }
+                              } else {
+                                if (mounted) {
+                                  // show error massage
+                                  showTopSnackBar(
+                                    Overlay.of(context),
+                                    CustomSnackBar.error(
+                                      message: widget.isEdit
+                                          ? "Item update failed"
+                                          : "Item creation failed",
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                          },
+                          context,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -325,7 +339,42 @@ class _UpdateDataState extends State<UpdateData> {
   }
 
   Future<bool> itemLogic() async {
-    return false;
+    late bool isSuccessful;
+    if (widget.isEdit) {
+      // isSuccessful = await Provider.of<MenuProvider>(context, listen: false)
+      //     .updateMenuItem(
+      //   isCategory: true,
+      //   editedCategory: Category(
+      //     id: widget.category!.id,
+      //     name: nameController.text,
+      //     status: widget.category!.status,
+      //   ),
+      //   index: widget.index!,
+      //   accessToken:
+      //   Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+      //   context: context,
+      // );
+    } else {
+      isSuccessful = await Provider.of<MenuProvider>(context, listen: false)
+          .createMenuItem(
+        isItem: true,
+        menuItem: MenuItems(
+          name: nameController.text,
+          description: descriptionController.text,
+          ingredients: ingredientsController.text,
+          price: double.parse(priceController.text),
+
+          ///always set status to false when creating a new item
+          status: false,
+        ),
+        selectedCategory: widget.selectedCategory!,
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+        context: context,
+      );
+    }
+
+    return isSuccessful;
   }
 
   Widget itemForm() {
@@ -339,6 +388,43 @@ class _UpdateDataState extends State<UpdateData> {
           validator: (value) {
             if (value.isEmpty) {
               return 'Enter a valid name!';
+            }
+            return null;
+          },
+        ),
+        dataBox(
+          title: "Description",
+          hintText: "Description",
+          isRequired: true,
+          controller: descriptionController,
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Enter a valid description!';
+            }
+            return null;
+          },
+        ),
+        dataBox(
+          title: "Ingredients",
+          hintText: "Ingredients",
+          isRequired: true,
+          controller: ingredientsController,
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Enter valid ingredients!';
+            }
+            return null;
+          },
+        ),
+        dataBox(
+          title: "Price",
+          hintText: "Price",
+          isRequired: true,
+          isNumber: true,
+          controller: priceController,
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Enter a valid price!';
             }
             return null;
           },
