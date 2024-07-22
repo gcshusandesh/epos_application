@@ -2,11 +2,14 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/screens/menu/update_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class EditMenu extends StatefulWidget {
   const EditMenu({super.key});
@@ -26,6 +29,7 @@ class _EditMenuState extends State<EditMenu> {
     ]);
   }
 
+  bool isLoading = false;
   bool isEditing = false;
   bool init = true;
   late double height;
@@ -57,24 +61,37 @@ class _EditMenuState extends State<EditMenu> {
           DeviceOrientation.portraitDown,
         ]);
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              topSection(
-                  context: context,
-                  text: "Menu Item",
-                  height: height,
-                  width: width),
-              optionsSection(context),
-              SizedBox(height: height * 2),
-              editSection(context),
-              SizedBox(height: height * 2),
-              tableSection(context),
-            ],
-          ),
+      child: Stack(
+        children: [
+          mainBody(context),
+          isLoading
+              ? Center(
+                  child: onLoading(width: width, context: context),
+                )
+              : const SizedBox(),
+        ],
+      ),
+    );
+  }
+
+  Scaffold mainBody(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            topSection(
+                context: context,
+                text: "Menu Item",
+                height: height,
+                width: width),
+            optionsSection(context),
+            SizedBox(height: height * 2),
+            editSection(context),
+            SizedBox(height: height * 2),
+            tableSection(context),
+          ],
         ),
       ),
     );
@@ -390,10 +407,51 @@ class _EditMenuState extends State<EditMenu> {
             width: width,
             textColor: Data.redColor,
             buttonColor: Data.redColor,
-            onTap: () {
+            onTap: () async {
+              setState(() {
+                isLoading = true;
+              });
               // delete item from list
-              Provider.of<MenuProvider>(context, listen: false)
-                  .removeMenuItemLocally(itemIndex: itemIndex);
+              bool isDeleted =
+                  await Provider.of<MenuProvider>(context, listen: false)
+                      .deleteMenuItem(
+                index: itemIndex,
+                id: Provider.of<MenuProvider>(context, listen: false)
+                    .menuItemsByCategory[
+                        Provider.of<MenuProvider>(context, listen: false)
+                            .selectedCategoryIndex]
+                    .menuItems[itemIndex]
+                    .id!,
+                accessToken: Provider.of<AuthProvider>(context, listen: false)
+                    .user
+                    .accessToken!,
+                isItem: true,
+                context: context,
+              );
+              setState(() {
+                isLoading = false;
+              });
+              if (isDeleted) {
+                if (mounted) {
+                  // Check if the widget is still mounted
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.success(
+                      message: "Item successfully deleted.",
+                    ),
+                  );
+                }
+              } else {
+                if (mounted) {
+                  // Check if the widget is still mounted
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.error(
+                      message: "Item could not be deleted",
+                    ),
+                  );
+                }
+              }
             },
           ),
         ),

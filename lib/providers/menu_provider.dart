@@ -359,7 +359,7 @@ class MenuProvider extends ChangeNotifier {
     } else if (isCategory) {
       url = Uri.parse("${Data.baseUrl}/api/categories/$id");
     } else if (isItem) {
-      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+      url = Uri.parse("${Data.baseUrl}/api/menu-items/$id");
     }
 
     try {
