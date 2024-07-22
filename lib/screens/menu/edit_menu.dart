@@ -3,6 +3,7 @@ import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/screens/menu/update_data.dart';
 import 'package:flutter/material.dart';
@@ -310,38 +311,80 @@ class _EditMenuState extends State<EditMenu> {
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
         tableItem((itemIndex + 1).toString(), width),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Column(
-            children: [
-              tableItem(
-                  Provider.of<MenuProvider>(context, listen: true)
-                      .menuItemsByCategory[
-                          Provider.of<MenuProvider>(context, listen: true)
-                              .selectedCategoryIndex]
-                      .menuItems[itemIndex]
-                      .name,
-                  width),
-              buildCustomText(
-                Provider.of<MenuProvider>(context, listen: true)
+        InkWell(
+          onTap: () {
+            if (isEditing) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UpdateData(
+                          isItem: true,
+                          menuItems:
+                              Provider.of<MenuProvider>(context, listen: false)
+                                  .menuItemsByCategory[
+                                      Provider.of<MenuProvider>(context,
+                                              listen: false)
+                                          .selectedCategoryIndex]
+                                  .menuItems[itemIndex],
+                          isEdit: true,
+                          index: itemIndex,
+                        )),
+              );
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Column(
+              children: [
+                tableItem(
+                    Provider.of<MenuProvider>(context, listen: true)
                         .menuItemsByCategory[
                             Provider.of<MenuProvider>(context, listen: true)
                                 .selectedCategoryIndex]
                         .menuItems[itemIndex]
-                        .status
-                    ? "Active"
-                    : "Inactive",
-                Provider.of<MenuProvider>(context, listen: true)
-                        .menuItemsByCategory[
-                            Provider.of<MenuProvider>(context, listen: true)
-                                .selectedCategoryIndex]
-                        .menuItems[itemIndex]
-                        .status
-                    ? Data.greenColor
-                    : Data.redColor,
-                width,
-              )
-            ],
+                        .name,
+                    width),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    buildCustomText(
+                      Provider.of<MenuProvider>(context, listen: true)
+                              .menuItemsByCategory[Provider.of<MenuProvider>(
+                                      context,
+                                      listen: true)
+                                  .selectedCategoryIndex]
+                              .menuItems[itemIndex]
+                              .status
+                          ? "Active"
+                          : "Inactive",
+                      Provider.of<MenuProvider>(context, listen: true)
+                              .menuItemsByCategory[Provider.of<MenuProvider>(
+                                      context,
+                                      listen: true)
+                                  .selectedCategoryIndex]
+                              .menuItems[itemIndex]
+                              .status
+                          ? Data.greenColor
+                          : Data.redColor,
+                      width,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: width),
+                      child: isEditing
+                          ? label(
+                              text: "edit",
+                              height: height,
+                              width: width,
+                              labelColor: Provider.of<InfoProvider>(context,
+                                      listen: true)
+                                  .systemInfo
+                                  .iconsColor)
+                          : const SizedBox(),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
         Padding(

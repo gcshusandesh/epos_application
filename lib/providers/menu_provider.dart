@@ -458,7 +458,7 @@ class MenuProvider extends ChangeNotifier {
     } else if (isCategory) {
       url = Uri.parse("${Data.baseUrl}/api/categories/${editedCategory!.id}");
     } else if (isItem) {
-      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+      url = Uri.parse("${Data.baseUrl}/api/menu-items/${editedMenuItems!.id}");
     }
 
     try {
@@ -482,7 +482,17 @@ class MenuProvider extends ChangeNotifier {
             "isActive": editedCategory.status,
           }
         };
-      } else if (isItem) {}
+      } else if (isItem) {
+        payloadBody = {
+          "data": {
+            "name": editedMenuItems!.name,
+            "description": editedMenuItems.description,
+            "ingredients": editedMenuItems.ingredients,
+            "price": editedMenuItems.price,
+            "isActive": editedMenuItems.status,
+          }
+        };
+      }
 
       var response = await http.put(
         url,
@@ -500,7 +510,7 @@ class MenuProvider extends ChangeNotifier {
         } else if (isCategory) {
           updateCategoryLocally(editedCategory: editedCategory!, index: index);
         } else if (isItem) {
-          removeMenuItemLocally(itemIndex: index);
+          updateMenuItemLocally(menuItem: editedMenuItems!, itemIndex: index);
         }
         notifyListeners();
         return true;
@@ -641,6 +651,12 @@ class MenuProvider extends ChangeNotifier {
   void changeMenuItemStatusLocally({required int itemIndex}) {
     menuItemsByCategory[selectedCategoryIndex].menuItems[itemIndex].status =
         !menuItemsByCategory[selectedCategoryIndex].menuItems[itemIndex].status;
+    notifyListeners();
+  }
+
+  void updateMenuItemLocally(
+      {required int itemIndex, required MenuItems menuItem}) {
+    menuItemsByCategory[selectedCategoryIndex].menuItems[itemIndex] = menuItem;
     notifyListeners();
   }
 

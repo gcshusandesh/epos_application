@@ -341,19 +341,22 @@ class _UpdateDataState extends State<UpdateData> {
   Future<bool> itemLogic() async {
     late bool isSuccessful;
     if (widget.isEdit) {
-      // isSuccessful = await Provider.of<MenuProvider>(context, listen: false)
-      //     .updateMenuItem(
-      //   isCategory: true,
-      //   editedCategory: Category(
-      //     id: widget.category!.id,
-      //     name: nameController.text,
-      //     status: widget.category!.status,
-      //   ),
-      //   index: widget.index!,
-      //   accessToken:
-      //   Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
-      //   context: context,
-      // );
+      isSuccessful = await Provider.of<MenuProvider>(context, listen: false)
+          .updateMenuItem(
+        isItem: true,
+        editedMenuItems: MenuItems(
+          id: widget.menuItems!.id,
+          name: nameController.text,
+          description: descriptionController.text,
+          ingredients: ingredientsController.text,
+          price: double.parse(priceController.text),
+          status: widget.menuItems!.status,
+        ),
+        index: widget.index!,
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+        context: context,
+      );
     } else {
       isSuccessful = await Provider.of<MenuProvider>(context, listen: false)
           .createMenuItem(
