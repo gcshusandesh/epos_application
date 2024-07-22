@@ -368,46 +368,60 @@ class _EditCategoryState extends State<EditCategory> {
             textColor: Data.redColor,
             buttonColor: Data.redColor,
             onTap: () async {
-              setState(() {
-                isLoading = true;
-              });
-              // delete item from list
-              bool isDeleted =
-                  await Provider.of<MenuProvider>(context, listen: false)
-                      .deleteMenuItem(
-                index: index,
-                id: Provider.of<MenuProvider>(context, listen: false)
-                    .categoryList[index]
-                    .id!,
-                accessToken: Provider.of<AuthProvider>(context, listen: false)
-                    .user
-                    .accessToken!,
-                isCategory: true,
-                context: context,
-              );
-              setState(() {
-                isLoading = false;
-              });
-              if (isDeleted) {
-                if (mounted) {
-                  // Check if the widget is still mounted
-                  showTopSnackBar(
-                    Overlay.of(context),
-                    const CustomSnackBar.success(
-                      message: "Item successfully deleted.",
-                    ),
-                  );
+              if (Provider.of<MenuProvider>(context, listen: false)
+                  .menuItemsByCategory[
+                      Provider.of<MenuProvider>(context, listen: false)
+                          .selectedCategoryIndex]
+                  .menuItems
+                  .isEmpty) {
+                setState(() {
+                  isLoading = true;
+                });
+                // delete item from list
+                bool isDeleted =
+                    await Provider.of<MenuProvider>(context, listen: false)
+                        .deleteMenuItem(
+                  index: index,
+                  id: Provider.of<MenuProvider>(context, listen: false)
+                      .categoryList[index]
+                      .id!,
+                  accessToken: Provider.of<AuthProvider>(context, listen: false)
+                      .user
+                      .accessToken!,
+                  isCategory: true,
+                  context: context,
+                );
+                setState(() {
+                  isLoading = false;
+                });
+                if (isDeleted) {
+                  if (mounted) {
+                    // Check if the widget is still mounted
+                    showTopSnackBar(
+                      Overlay.of(context),
+                      const CustomSnackBar.success(
+                        message: "Item successfully deleted.",
+                      ),
+                    );
+                  }
+                } else {
+                  if (mounted) {
+                    // Check if the widget is still mounted
+                    showTopSnackBar(
+                      Overlay.of(context),
+                      const CustomSnackBar.error(
+                        message: "Item could not be deleted.",
+                      ),
+                    );
+                  }
                 }
               } else {
-                if (mounted) {
-                  // Check if the widget is still mounted
-                  showTopSnackBar(
-                    Overlay.of(context),
-                    const CustomSnackBar.error(
-                      message: "Item could not be deleted",
-                    ),
-                  );
-                }
+                showTopSnackBar(
+                  Overlay.of(context),
+                  const CustomSnackBar.error(
+                    message: "Non empty category cannot be deleted.",
+                  ),
+                );
               }
             },
           ),
