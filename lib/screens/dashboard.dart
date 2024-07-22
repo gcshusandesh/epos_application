@@ -52,8 +52,8 @@ class _DashboardState extends State<Dashboard> {
 
     if (mounted) {
       // Get Menu Items by Category Data from API
-      Provider.of<MenuProvider>(context, listen: false)
-          .getMenuItemsByCategory(init: true);
+      // Provider.of<MenuProvider>(context, listen: false)
+      //     .getMenuItemsByCategory(init: true);
     }
     setState(() {
       isLoading = false;

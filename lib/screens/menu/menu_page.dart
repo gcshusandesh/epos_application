@@ -143,16 +143,19 @@ class _MenuPageState extends State<MenuPage> {
             Expanded(
               flex: 3,
               child: Provider.of<MenuProvider>(context, listen: true)
-                      .menuItemsByCategory[
-                          Provider.of<MenuProvider>(context, listen: true)
-                              .selectedCategoryIndex]
-                      .menuItems
-                      .isEmpty
+                          .menuItemsByCategory
+                          .isEmpty ||
+                      Provider.of<MenuProvider>(context, listen: true)
+                          .menuItemsByCategory[
+                              Provider.of<MenuProvider>(context, listen: true)
+                                  .selectedCategoryIndex]
+                          .menuItems
+                          .isEmpty
                   ? Center(
                       child: buildBodyText(
                         "No Data Available",
                         Data.darkTextColor,
-                        width * 1.3,
+                        width * 1,
                         fontFamily: "RobotoMedium",
                       ),
                     )
