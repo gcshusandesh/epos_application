@@ -641,21 +641,25 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// to manage case where no item is active
-  // Function to count the number of active menu items across all categories
-  int getActiveItemsCount() {
-    // Initialize a counter for active items
-    int activeItemCount = 0;
-    // Iterate through each category in menuItemsByCategory
-    for (var category in menuItemsByCategory) {
-      // Filter the menu items in the current category to find active ones
-      List<MenuItems> activeItems =
-          category.menuItems.where((item) => item.status).toList();
-      // Add the count of active items in the current category to the total count
-      activeItemCount += activeItems.length;
+  /// Function to count the number of active menu items in a selected category using its index
+  int getActiveItemsCountByCategory() {
+    // Check if the provided index is valid
+    if (selectedCategoryIndex < 0 ||
+        selectedCategoryIndex >= menuItemsByCategory.length) {
+      // If the index is out of bounds, return 0
+      return 0;
     }
-    // Return the total count of active items across all categories
-    return activeItemCount;
+
+    // Get the selected category
+    var selectedCategory = menuItemsByCategory[selectedCategoryIndex];
+
+    // Filter the menu items in the selected category to find active ones
+    List<MenuItems> activeItems =
+        selectedCategory.menuItems.where((item) => item.status).toList();
+
+    // Return the count of active items in the selected category
+    print("Active count");
+    return activeItems.length;
   }
 
   List<MenuItemsByCategory> menuItemsByCategory = [];

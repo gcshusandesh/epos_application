@@ -148,7 +148,7 @@ class _MenuPageState extends State<MenuPage> {
                           .menuItems
                           .isEmpty ||
                       Provider.of<MenuProvider>(context, listen: false)
-                              .getActiveItemsCount() ==
+                              .getActiveItemsCountByCategory() ==
                           0
                   ? Center(
                       child: buildBodyText(
