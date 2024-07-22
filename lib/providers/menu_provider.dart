@@ -510,9 +510,7 @@ class MenuProvider extends ChangeNotifier {
         } else if (isCategory) {
           updateCategoryLocally(editedCategory: editedCategory!, index: index);
         } else if (isItem) {
-          await updateMenuItemLocally(
-              menuItem: editedMenuItems!, itemIndex: index);
-          resetCategory();
+          updateMenuItemLocally(menuItem: editedMenuItems!, itemIndex: index);
         }
         notifyListeners();
         return true;
@@ -618,6 +616,8 @@ class MenuProvider extends ChangeNotifier {
       }
     }
 
+    print("index to select = $indexToSelect");
+
     for (int i = 0; i < categoryList.length; i++) {
       if (i == indexToSelect) {
         categoryList[i].isSelected = true;
@@ -676,8 +676,8 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateMenuItemLocally(
-      {required int itemIndex, required MenuItems menuItem}) async {
+  void updateMenuItemLocally(
+      {required int itemIndex, required MenuItems menuItem}) {
     menuItemsByCategory[selectedCategoryIndex].menuItems[itemIndex] = menuItem;
     notifyListeners();
   }

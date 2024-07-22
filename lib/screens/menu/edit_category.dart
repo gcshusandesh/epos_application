@@ -62,6 +62,7 @@ class _EditCategoryState extends State<EditCategory> {
           DeviceOrientation.portraitUp,
           DeviceOrientation.portraitDown,
         ]);
+        Provider.of<MenuProvider>(context, listen: false).resetCategory();
       },
       child: Stack(
         children: [
@@ -163,6 +164,7 @@ class _EditCategoryState extends State<EditCategory> {
               DeviceOrientation.portraitUp,
               DeviceOrientation.portraitDown,
             ]);
+            Provider.of<MenuProvider>(context, listen: false).resetCategory();
           },
           context: context,
         ),
