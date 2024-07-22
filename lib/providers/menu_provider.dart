@@ -80,9 +80,9 @@ class MenuProvider extends ChangeNotifier {
       var extractedData = json.decode(response.body);
       var data = extractedData['data'];
       print("data = $data");
+
       if (response.statusCode == 200) {
         if (isSpecials) {
-          //empty list before fetching new data
           totalSpecialsList = [];
           data.forEach((specialItem) {
             totalSpecialsList.add(Specials(
@@ -96,7 +96,6 @@ class MenuProvider extends ChangeNotifier {
           });
           getActiveSpecials();
         } else if (isCategory) {
-          //empty list before fetching new data
           categoryList = [];
           data.forEach((categoryItem) {
             categoryList.add(Category(
@@ -109,11 +108,17 @@ class MenuProvider extends ChangeNotifier {
             ));
           });
         } else if (isItem) {
+          // Ensure categories are fetched first
+          if (categoryList.isEmpty) {
+            throw Exception('Categories are not fetched yet.');
+          }
+
           // Empty list before fetching new data
           menuItemsByCategory = [];
 
           // Group menu items by category
           Map<String, List<MenuItems>> groupedItems = {};
+
           for (var item in data) {
             var attributes = item['attributes'];
             String categoryType = attributes['categoryType'];
@@ -135,24 +140,22 @@ class MenuProvider extends ChangeNotifier {
             ));
           }
 
-          // Map the grouped items to the structure
-          groupedItems.forEach((categoryName, items) {
+          // Populate menuItemsByCategory using categoryList
+          for (var category in categoryList) {
             menuItemsByCategory.add(MenuItemsByCategory(
-              category: Category(
-                name: categoryName,
-                image:
-                    "assets/category/default.png", // Use a default image or map it based on your data
-                status: true, // Or map the status from your data if available
-              ),
-              menuItems: items,
+              category: category,
+              menuItems: groupedItems[category.name] ?? [],
             ));
-          });
+          }
+
+          print("menuItemsByCategory length: ${menuItemsByCategory.length}");
         }
+        notifyListeners();
+      } else {
+        throw Exception('Failed to load data');
       }
-      notifyListeners();
     } on SocketException {
       if (context.mounted) {
-        // Navigate to Error Page
         await Navigator.push(
             context,
             MaterialPageRoute(
@@ -163,7 +166,6 @@ class MenuProvider extends ChangeNotifier {
             ));
       }
       if (context.mounted) {
-        //retry api
         await getMenuList(
           isSpecials: isSpecials,
           isCategory: isCategory,
@@ -173,9 +175,8 @@ class MenuProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print("Error$e");
+      print("Error: $e");
       if (context.mounted) {
-        // Navigate to Error Page
         await Navigator.push(
             context,
             MaterialPageRoute(
@@ -185,7 +186,6 @@ class MenuProvider extends ChangeNotifier {
             ));
       }
       if (context.mounted) {
-        //retry api
         await getMenuList(
           isSpecials: isSpecials,
           isCategory: isCategory,
