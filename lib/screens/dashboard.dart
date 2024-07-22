@@ -5,7 +5,6 @@ import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
-import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/providers/user_provider.dart';
 import 'package:epos_application/screens/menu/menu_page.dart';
 import 'package:epos_application/screens/profile_screen.dart';
@@ -200,9 +199,6 @@ class _DashboardState extends State<Dashboard> {
               height,
               width,
               () {
-                //can be used to initialise category as well
-                Provider.of<MenuProvider>(context, listen: false)
-                    .resetCategory();
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const MenuPage()),

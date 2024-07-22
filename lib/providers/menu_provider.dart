@@ -510,7 +510,9 @@ class MenuProvider extends ChangeNotifier {
         } else if (isCategory) {
           updateCategoryLocally(editedCategory: editedCategory!, index: index);
         } else if (isItem) {
-          updateMenuItemLocally(menuItem: editedMenuItems!, itemIndex: index);
+          await updateMenuItemLocally(
+              menuItem: editedMenuItems!, itemIndex: index);
+          resetCategory();
         }
         notifyListeners();
         return true;
@@ -607,6 +609,15 @@ class MenuProvider extends ChangeNotifier {
 
   void resetCategory() {
     int indexToSelect = 0;
+
+    // Loop to find the first active category
+    for (int i = 0; i < categoryList.length; i++) {
+      if (categoryList[i].status == true) {
+        indexToSelect = i;
+        break;
+      }
+    }
+
     for (int i = 0; i < categoryList.length; i++) {
       if (i == indexToSelect) {
         categoryList[i].isSelected = true;
@@ -661,8 +672,8 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateMenuItemLocally(
-      {required int itemIndex, required MenuItems menuItem}) {
+  Future<void> updateMenuItemLocally(
+      {required int itemIndex, required MenuItems menuItem}) async {
     menuItemsByCategory[selectedCategoryIndex].menuItems[itemIndex] = menuItem;
     notifyListeners();
   }

@@ -62,8 +62,7 @@ class _MenuPageState extends State<MenuPage> {
     }
     if (mounted) {
       ///choose first category by default
-      Provider.of<MenuProvider>(context, listen: false)
-          .changeSelectedCategory(0);
+      Provider.of<MenuProvider>(context, listen: false).resetCategory();
       // Get menuItems from API
       await Provider.of<MenuProvider>(context, listen: false).getMenuList(
           accessToken: Provider.of<AuthProvider>(context, listen: false)
@@ -702,26 +701,26 @@ class _MenuPageState extends State<MenuPage> {
           itemBuilder: (context, index) {
             var category = Provider.of<MenuProvider>(context, listen: true)
                 .categoryList[index];
-            if (category.status) {
-              return Row(
-                children: [
-                  menuOption(
-                    category.name,
-                    category.image!,
-                    height,
-                    width,
-                    () {
-                      Provider.of<MenuProvider>(context, listen: false)
-                          .changeSelectedCategory(index);
-                    },
-                    index: index,
-                    context: context,
-                  ),
-                  SizedBox(width: width),
-                ],
-              );
-            }
-            return null;
+
+            return category.status
+                ? Row(
+                    children: [
+                      menuOption(
+                        category.name,
+                        category.image!,
+                        height,
+                        width,
+                        () {
+                          Provider.of<MenuProvider>(context, listen: false)
+                              .changeSelectedCategory(index);
+                        },
+                        index: index,
+                        context: context,
+                      ),
+                      SizedBox(width: width),
+                    ],
+                  )
+                : const SizedBox();
           },
         ),
       );

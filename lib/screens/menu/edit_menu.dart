@@ -100,39 +100,78 @@ class _EditMenuState extends State<EditMenu> {
     );
   }
 
-  Expanded optionsSection(BuildContext context) {
-    return Expanded(
-      flex: 1,
-      child: ListView.builder(
-        padding: EdgeInsets.zero,
-        scrollDirection:
-            Axis.horizontal, // Assuming you want a horizontal list view
-        itemCount: Provider.of<MenuProvider>(context, listen: true)
-            .categoryList
-            .length,
-        itemBuilder: (context, index) {
-          final category = Provider.of<MenuProvider>(context, listen: true)
-              .categoryList[index];
-          return Row(
+  Widget optionsSection(BuildContext context) {
+    return Provider.of<MenuProvider>(context, listen: true).categoryList.isEmpty
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              menuOption(
-                category.name,
-                category.image,
-                height,
-                width,
-                () {
-                  Provider.of<MenuProvider>(context, listen: false)
-                      .changeSelectedCategory(index);
-                },
-                index: index,
-                context: context,
+              Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: width * 1,
+                ),
+                height: width * 10,
+                width: width * 10,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Provider.of<InfoProvider>(context, listen: true)
+                        .systemInfo
+                        .iconsColor, // Outline color
+                    width: 0.5, // Outline width
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.25), // Shadow color
+                      spreadRadius: 0, // How much the shadow spreads
+                      blurRadius: 4, // How much the shadow blurs
+                      offset: const Offset(0, 5), // The offset of the shadow
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: buildCustomText(
+                    "No Data",
+                    Data.darkTextColor,
+                    width * 1.5,
+                  ),
+                ),
               ),
-              SizedBox(width: width),
             ],
+          )
+        : Expanded(
+            flex: 1,
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              scrollDirection:
+                  Axis.horizontal, // Assuming you want a horizontal list view
+              itemCount: Provider.of<MenuProvider>(context, listen: true)
+                  .categoryList
+                  .length,
+              itemBuilder: (context, index) {
+                final category =
+                    Provider.of<MenuProvider>(context, listen: true)
+                        .categoryList[index];
+                return Row(
+                  children: [
+                    menuOption(
+                      category.name,
+                      category.image,
+                      height,
+                      width,
+                      () {
+                        Provider.of<MenuProvider>(context, listen: false)
+                            .changeSelectedCategory(index);
+                      },
+                      index: index,
+                      context: context,
+                    ),
+                    SizedBox(width: width),
+                  ],
+                );
+              },
+            ),
           );
-        },
-      ),
-    );
   }
 
   Row topSection(
