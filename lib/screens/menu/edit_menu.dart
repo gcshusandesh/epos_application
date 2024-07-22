@@ -382,17 +382,17 @@ class _EditMenuState extends State<EditMenu> {
         ),
         Padding(
           padding: const EdgeInsets.all(15.0),
-          child: Image.asset(
-            Provider.of<MenuProvider>(context, listen: true)
-                .menuItemsByCategory[
-                    Provider.of<MenuProvider>(context, listen: true)
-                        .selectedCategoryIndex]
-                .menuItems[itemIndex]
-                .image!,
-            height: height * 10,
-            width: width * 20,
-            fit: BoxFit.fill,
-          ),
+          child: buildImage(
+              Provider.of<MenuProvider>(context, listen: true)
+                  .menuItemsByCategory[
+                      Provider.of<MenuProvider>(context, listen: true)
+                          .selectedCategoryIndex]
+                  .menuItems[itemIndex]
+                  .image!,
+              height * 10,
+              width * 20,
+              context: context,
+              isNetworkImage: true),
         ),
         tableItem(
           Provider.of<MenuProvider>(context, listen: true)

@@ -68,7 +68,7 @@ class MenuProvider extends ChangeNotifier {
     } else if (isCategory) {
       url = Uri.parse("${Data.baseUrl}/api/categories?populate=image");
     } else if (isItem) {
-      // url = Uri.parse("${Data.baseUrl}/api/testdatas/1");
+      url = Uri.parse("${Data.baseUrl}/api/menu-items?populate=image");
     }
 
     try {
@@ -109,8 +109,44 @@ class MenuProvider extends ChangeNotifier {
             ));
           });
         } else if (isItem) {
-          //empty list before fetching new data
+          // Empty list before fetching new data
           menuItemsByCategory = [];
+
+          // Group menu items by category
+          Map<String, List<MenuItems>> groupedItems = {};
+          for (var item in data) {
+            var attributes = item['attributes'];
+            String categoryType = attributes['categoryType'];
+
+            if (!groupedItems.containsKey(categoryType)) {
+              groupedItems[categoryType] = [];
+            }
+
+            groupedItems[categoryType]!.add(MenuItems(
+              id: item['id'],
+              name: attributes['name'],
+              image: attributes['image']['data'] == null
+                  ? null
+                  : "${Data.baseUrl}${attributes['image']['data'][0]['attributes']['url']}",
+              description: attributes['description'],
+              ingredients: attributes['ingredients'],
+              price: attributes['price'].toDouble(),
+              status: attributes['isActive'],
+            ));
+          }
+
+          // Map the grouped items to the structure
+          groupedItems.forEach((categoryName, items) {
+            menuItemsByCategory.add(MenuItemsByCategory(
+              category: Category(
+                name: categoryName,
+                image:
+                    "assets/category/default.png", // Use a default image or map it based on your data
+                status: true, // Or map the status from your data if available
+              ),
+              menuItems: items,
+            ));
+          });
         }
       }
       notifyListeners();
@@ -137,6 +173,7 @@ class MenuProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
+      print("Error$e");
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(

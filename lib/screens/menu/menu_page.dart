@@ -63,18 +63,14 @@ class _MenuPageState extends State<MenuPage> {
       ///choose first category by default
       Provider.of<MenuProvider>(context, listen: false)
           .changeSelectedCategory(0);
+      // Get menuItems from API
+      await Provider.of<MenuProvider>(context, listen: false).getMenuList(
+          accessToken: Provider.of<AuthProvider>(context, listen: false)
+              .user
+              .accessToken!,
+          isItem: true,
+          context: context);
     }
-
-    if (mounted) {
-      // Get Menu Item Data from API
-      // await Provider.of<MenuProvider>(context, listen: false).getMenuList(
-      //     accessToken: Provider.of<AuthProvider>(context, listen: false)
-      //         .user
-      //         .accessToken!,
-      //     isItem: true,
-      //     context: context);
-    }
-
     setState(() {
       isLoading = false;
     });
@@ -174,7 +170,15 @@ class _MenuPageState extends State<MenuPage> {
                         crossAxisSpacing: 10.0, // spacing between columns
                       ),
                       itemBuilder: (BuildContext context, int itemIndex) {
-                        return menuItem(itemIndex);
+                        if (Provider.of<MenuProvider>(context, listen: true)
+                            .menuItemsByCategory[
+                                Provider.of<MenuProvider>(context, listen: true)
+                                    .selectedCategoryIndex]
+                            .menuItems[itemIndex]
+                            .status) {
+                          return menuItem(itemIndex);
+                        }
+                        return null;
                       },
                     ),
             ),
@@ -246,16 +250,35 @@ class _MenuPageState extends State<MenuPage> {
             flex: 9,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10.0),
-              child: buildImage(
-                  Provider.of<MenuProvider>(context, listen: true)
-                      .menuItemsByCategory[
-                          Provider.of<MenuProvider>(context, listen: true)
-                              .selectedCategoryIndex]
-                      .menuItems[itemIndex]
-                      .image!,
-                  width * 12,
-                  width * 12,
-                  context: context),
+              child: Provider.of<MenuProvider>(context, listen: true)
+                          .menuItemsByCategory[
+                              Provider.of<MenuProvider>(context, listen: true)
+                                  .selectedCategoryIndex]
+                          .menuItems[itemIndex]
+                          .image ==
+                      null
+                  ? SizedBox(
+                      height: width * 12,
+                      width: width * 12,
+                      child: Center(
+                        child: buildCustomText(
+                          "No Image",
+                          Data.darkTextColor,
+                          width * 1.5,
+                        ),
+                      ),
+                    )
+                  : buildImage(
+                      Provider.of<MenuProvider>(context, listen: true)
+                          .menuItemsByCategory[
+                              Provider.of<MenuProvider>(context, listen: true)
+                                  .selectedCategoryIndex]
+                          .menuItems[itemIndex]
+                          .image!,
+                      width * 12,
+                      width * 12,
+                      isNetworkImage: true,
+                      context: context),
             ),
           ),
           const Flexible(child: SizedBox(height: 10)),

@@ -206,7 +206,7 @@ class MenuItems {
   String? image;
   String description;
   String ingredients;
-  int price;
+  double price;
   bool status;
 
   MenuItems({
