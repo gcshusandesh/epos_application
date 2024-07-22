@@ -268,11 +268,14 @@ class _EditMenuState extends State<EditMenu> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(6),
           child: Provider.of<MenuProvider>(context, listen: true)
-                  .menuItemsByCategory[
-                      Provider.of<MenuProvider>(context, listen: true)
-                          .selectedCategoryIndex]
-                  .menuItems
-                  .isEmpty
+                      .menuItemsByCategory
+                      .isEmpty ||
+                  Provider.of<MenuProvider>(context, listen: true)
+                      .menuItemsByCategory[
+                          Provider.of<MenuProvider>(context, listen: true)
+                              .selectedCategoryIndex]
+                      .menuItems
+                      .isEmpty
               ? Column(
                   children: [
                     Table(
