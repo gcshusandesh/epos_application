@@ -147,7 +147,10 @@ class _MenuPageState extends State<MenuPage> {
                               Provider.of<MenuProvider>(context, listen: true)
                                   .selectedCategoryIndex]
                           .menuItems
-                          .isEmpty
+                          .isEmpty ||
+                      Provider.of<MenuProvider>(context, listen: false)
+                              .getActiveItemsCount() ==
+                          0
                   ? Center(
                       child: buildBodyText(
                         "No Data Available",

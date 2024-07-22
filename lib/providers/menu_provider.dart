@@ -620,6 +620,23 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// to manage case where no item is active
+  // Function to count the number of active menu items across all categories
+  int getActiveItemsCount() {
+    // Initialize a counter for active items
+    int activeItemCount = 0;
+    // Iterate through each category in menuItemsByCategory
+    for (var category in menuItemsByCategory) {
+      // Filter the menu items in the current category to find active ones
+      List<MenuItems> activeItems =
+          category.menuItems.where((item) => item.status).toList();
+      // Add the count of active items in the current category to the total count
+      activeItemCount += activeItems.length;
+    }
+    // Return the total count of active items across all categories
+    return activeItemCount;
+  }
+
   List<MenuItemsByCategory> menuItemsByCategory = [];
   void changeMenuItemStatusLocally({required int itemIndex}) {
     menuItemsByCategory[selectedCategoryIndex].menuItems[itemIndex].status =
@@ -635,142 +652,5 @@ class MenuProvider extends ChangeNotifier {
   void addMenuItemLocally({required MenuItems menuItem}) {
     menuItemsByCategory[selectedCategoryIndex].menuItems.add(menuItem);
     notifyListeners();
-  }
-
-  Future<void> getMenuItemsByCategory({required bool init}) async {
-    // var url = Uri.parse("$baseUrl/api/testdatas/1");
-    try {
-      // var headers = {
-      //   "Accept": "application/json",
-      // };
-      // var response = await http.get(url, headers: headers);
-      // var extractedData = json.decode(response.body);
-      // if (response.statusCode == 200) {
-      //   print(extractedData);
-      // }
-      menuItemsByCategory = [
-        MenuItemsByCategory(
-          category: Category(
-            name: "Breakfast",
-            image: "assets/category/breakfast.png",
-            status: true,
-          ),
-          menuItems: [
-            MenuItems(
-              name: "Eggs",
-              image: "assets/food/eggs.jpg",
-              description: "Some description about food",
-              ingredients: "Ingredient 1, Ingredient 2",
-              price: 8,
-              status: true,
-            ),
-            MenuItems(
-              name: "Pancake",
-              image: "assets/food/pancakes_cropped.jpg",
-              description: "Some description about food",
-              ingredients: "Ingredient 1, Ingredient 2",
-              price: 10,
-              status: true,
-            ),
-            MenuItems(
-              name: "French Toast",
-              image: "assets/food/toast.jpg",
-              description: "Some description about food",
-              ingredients: "Ingredient 1, Ingredient 2",
-              price: 10,
-              status: true,
-            ),
-            MenuItems(
-              name: "Bacon",
-              image: "assets/food/bacon.jpg",
-              description: "Some description about food",
-              ingredients: "Ingredient 1, Ingredient 2",
-              price: 8,
-              status: true,
-            ),
-            MenuItems(
-              name: "Sausage",
-              image: "assets/food/sausage1.jpg",
-              description: "Some description about food",
-              ingredients: "Ingredient 1, Ingredient 2",
-              price: 8,
-              status: true,
-            ),
-            MenuItems(
-              name: "Cereal",
-              image: "assets/food/cereal.jpg",
-              description: "Some description about food",
-              ingredients: "Ingredient 1, Ingredient 2",
-              price: 8,
-              status: true,
-            ),
-          ],
-        ),
-        MenuItemsByCategory(
-          category: Category(
-            name: "Appetizers",
-            image: "assets/category/burger.jpeg",
-            status: true,
-          ),
-          menuItems: [
-            MenuItems(
-              name: "Burger",
-              image: "assets/category/burger.jpeg",
-              description: "Some description about food",
-              ingredients: "Ingredient 1, Ingredient 2",
-              price: 10,
-              status: true,
-            ),
-          ],
-        ),
-        MenuItemsByCategory(
-          category: Category(
-            name: "Sides",
-            image: "assets/category/fries.jpeg",
-            status: true,
-          ),
-          menuItems: [],
-        ),
-        MenuItemsByCategory(
-          category: Category(
-            name: "Salads",
-            image: "assets/category/salad.png",
-            status: true,
-          ),
-          menuItems: [],
-        ),
-        MenuItemsByCategory(
-          category: Category(
-            name: "Soups",
-            image: "assets/category/soup.jpeg",
-            status: true,
-          ),
-          menuItems: [],
-        ),
-        MenuItemsByCategory(
-          category: Category(
-            name: "Coffee",
-            image: "assets/category/coffee1.jpeg",
-            status: true,
-          ),
-          menuItems: [],
-        ),
-        MenuItemsByCategory(
-          category: Category(
-            name: "Beverages",
-            image: "assets/category/beverages1.jpeg",
-            status: true,
-          ),
-          menuItems: [],
-        ),
-      ];
-      if (!init) {
-        notifyListeners();
-      }
-    } catch (e) {
-      // ignore: avoid_print
-      print(e);
-      rethrow;
-    }
   }
 }
