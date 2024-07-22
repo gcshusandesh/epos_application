@@ -289,7 +289,7 @@ Widget customTextButton({
 }
 
 Widget menuOption(
-    String name, String image, double height, double width, Function() onTap,
+    String name, String? image, double height, double width, Function() onTap,
     {required BuildContext context, required int index}) {
   return InkWell(
     onTap: onTap,
@@ -329,8 +329,16 @@ Widget menuOption(
           SizedBox(
             height: width,
           ),
-          buildImage(image, width * 8, width * 8,
-              context: context, isNetworkImage: true),
+          image == null
+              ? SizedBox(
+                  height: width * 8,
+                  width: width * 8,
+                  child: Center(
+                      child: buildSmallText(
+                          "No Image", Data.greyTextColor, width)),
+                )
+              : buildImage(image, width * 8, width * 8,
+                  context: context, isNetworkImage: true),
           buildBodyText(name, Data.greyTextColor, width * 0.7,
               fontFamily: "RobotoMedium"),
         ],

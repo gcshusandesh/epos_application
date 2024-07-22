@@ -218,11 +218,6 @@ class MenuProvider extends ChangeNotifier {
       url = Uri.parse("${Data.baseUrl}/api/menu-items");
     }
 
-    print("name: ${menuItem!.name}");
-    print("description: ${menuItem.description}");
-    print("ingredients: ${menuItem.ingredients}");
-    print("price: ${menuItem.price}");
-    print("categoryType: $selectedCategory");
     try {
       var headers = {
         "Accept": "application/json",
@@ -245,7 +240,7 @@ class MenuProvider extends ChangeNotifier {
       } else if (isItem) {
         payloadBody = {
           "data": {
-            "name": menuItem.name,
+            "name": menuItem!.name,
             "description": menuItem.description,
             "ingredients": menuItem.ingredients,
             "price": menuItem.price,
