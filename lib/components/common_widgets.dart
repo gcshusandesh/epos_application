@@ -51,6 +51,9 @@ Row topSection(
         height,
         width,
         () {
+          // get settings data back again from api so that unsaved changes can be reverted
+          Provider.of<InfoProvider>(context, listen: false)
+              .getSettings(context: context);
           Navigator.pop(context);
         },
         context: context,

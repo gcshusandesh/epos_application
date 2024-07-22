@@ -108,11 +108,6 @@ class MenuProvider extends ChangeNotifier {
             ));
           });
         } else if (isItem) {
-          // Ensure categories are fetched first
-          if (categoryList.isEmpty) {
-            throw Exception('Categories are not fetched yet.');
-          }
-
           // Empty list before fetching new data
           menuItemsByCategory = [];
 

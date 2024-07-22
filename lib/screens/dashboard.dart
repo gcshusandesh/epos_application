@@ -344,19 +344,27 @@ class _DashboardState extends State<Dashboard> {
           context: context,
         ),
         SizedBox(width: width * 2),
-        iconButton(
-          "assets/svg/settings.svg",
-          height,
-          width,
-          () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Settings()),
-            );
-          },
-          context: context,
-        ),
-        SizedBox(width: width * 2),
+        Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                UserType.owner
+            ? Row(
+                children: [
+                  iconButton(
+                    "assets/svg/settings.svg",
+                    height,
+                    width,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Settings()),
+                      );
+                    },
+                    context: context,
+                  ),
+                  SizedBox(width: width * 2),
+                ],
+              )
+            : const SizedBox(),
       ],
     );
   }

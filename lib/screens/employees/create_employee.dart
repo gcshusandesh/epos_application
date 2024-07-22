@@ -373,7 +373,6 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                     });
                                   },
                                   items: <String>[
-                                    UserType.owner.name,
                                     UserType.manager.name,
                                     UserType.chef.name,
                                     UserType.waiter.name,
