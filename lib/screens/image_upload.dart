@@ -330,7 +330,11 @@ class _ImageUploadState extends State<ImageUpload> {
                       Provider.of<MenuProvider>(context, listen: false)
                           .updateCategoryImageLocally(
                               index: widget.index!, imageUrl: imageUrl);
-                    } else if (widget.isItemImage) {}
+                    } else if (widget.isItemImage) {
+                      Provider.of<MenuProvider>(context, listen: false)
+                          .updateMenuItemImageLocally(
+                              itemIndex: widget.index!, imageUrl: imageUrl);
+                    }
 
                     Navigator.pop(context);
                   }

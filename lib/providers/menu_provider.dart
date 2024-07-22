@@ -654,6 +654,13 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateMenuItemImageLocally(
+      {required String imageUrl, required int itemIndex}) {
+    menuItemsByCategory[selectedCategoryIndex].menuItems[itemIndex].image =
+        imageUrl;
+    notifyListeners();
+  }
+
   void updateMenuItemLocally(
       {required int itemIndex, required MenuItems menuItem}) {
     menuItemsByCategory[selectedCategoryIndex].menuItems[itemIndex] = menuItem;

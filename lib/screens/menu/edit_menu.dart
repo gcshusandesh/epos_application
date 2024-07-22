@@ -5,6 +5,7 @@ import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
+import 'package:epos_application/screens/image_upload.dart';
 import 'package:epos_application/screens/menu/update_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -387,38 +388,59 @@ class _EditMenuState extends State<EditMenu> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Provider.of<MenuProvider>(context, listen: true)
-                      .menuItemsByCategory[
-                          Provider.of<MenuProvider>(context, listen: true)
-                              .selectedCategoryIndex]
-                      .menuItems[itemIndex]
-                      .image ==
-                  null
-              ? Container(
-                  height: height * 10,
-                  width: width * 20,
-                  color: Colors.white60,
-                  child: Center(
-                    child: buildCustomText(
-                      "No Image",
-                      Data.greyTextColor,
-                      width * 1.3,
+        InkWell(
+          onTap: () {
+            if (isEditing) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ImageUpload(
+                          isItemImage: true,
+                          menuItems:
+                              Provider.of<MenuProvider>(context, listen: false)
+                                  .menuItemsByCategory[
+                                      Provider.of<MenuProvider>(context,
+                                              listen: false)
+                                          .selectedCategoryIndex]
+                                  .menuItems[itemIndex],
+                          index: itemIndex,
+                        )),
+              );
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Provider.of<MenuProvider>(context, listen: true)
+                        .menuItemsByCategory[
+                            Provider.of<MenuProvider>(context, listen: true)
+                                .selectedCategoryIndex]
+                        .menuItems[itemIndex]
+                        .image ==
+                    null
+                ? Container(
+                    height: height * 10,
+                    width: width * 20,
+                    color: Colors.white60,
+                    child: Center(
+                      child: buildCustomText(
+                        "No Image",
+                        Data.greyTextColor,
+                        width * 1.3,
+                      ),
                     ),
-                  ),
-                )
-              : buildImage(
-                  Provider.of<MenuProvider>(context, listen: true)
-                      .menuItemsByCategory[
-                          Provider.of<MenuProvider>(context, listen: true)
-                              .selectedCategoryIndex]
-                      .menuItems[itemIndex]
-                      .image!,
-                  height * 10,
-                  width * 20,
-                  context: context,
-                  isNetworkImage: true),
+                  )
+                : buildImage(
+                    Provider.of<MenuProvider>(context, listen: true)
+                        .menuItemsByCategory[
+                            Provider.of<MenuProvider>(context, listen: true)
+                                .selectedCategoryIndex]
+                        .menuItems[itemIndex]
+                        .image!,
+                    height * 10,
+                    width * 20,
+                    context: context,
+                    isNetworkImage: true),
+          ),
         ),
         tableItem(
           Provider.of<MenuProvider>(context, listen: true)
