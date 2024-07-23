@@ -220,10 +220,12 @@ class _SettingsState extends State<Settings> {
             child: Column(
               children: [
                 topSection(
-                    context: context,
-                    height: height,
-                    text: "Settings",
-                    width: width),
+                  context: context,
+                  height: height,
+                  text: "Settings",
+                  width: width,
+                  initialSetup: widget.initialSetup,
+                ),
                 SizedBox(height: height * 2),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,

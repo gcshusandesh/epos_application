@@ -42,22 +42,27 @@ Row topSection(
     {required BuildContext context,
     required double height,
     required String text,
-    required double width}) {
+    required double width,
+    bool initialSetup = false}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      iconButton(
-        "assets/svg/arrow_back.svg",
-        height,
-        width,
-        () {
-          // get settings data back again from api so that unsaved changes can be reverted
-          Provider.of<InfoProvider>(context, listen: false)
-              .getSettings(context: context);
-          Navigator.pop(context);
-        },
-        context: context,
-      ),
+      !initialSetup
+          ? iconButton(
+              "assets/svg/arrow_back.svg",
+              height,
+              width,
+              () {
+                // get settings data back again from api so that unsaved changes can be reverted
+                Provider.of<InfoProvider>(context, listen: false)
+                    .getSettings(context: context);
+                Navigator.pop(context);
+              },
+              context: context,
+            )
+          : SizedBox(
+              width: width * 5,
+            ),
       buildTitleText(text, Data.darkTextColor, width),
       SizedBox(
         width: width * 5,
