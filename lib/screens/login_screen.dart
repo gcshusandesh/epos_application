@@ -43,9 +43,11 @@ class _LoginScreenState extends State<LoginScreen> {
     await Provider.of<InfoProvider>(context, listen: false).getSettings(
       context: context,
     );
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override

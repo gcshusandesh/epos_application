@@ -33,7 +33,6 @@ class UploadProvider extends ChangeNotifier {
       request.headers.addAll({
         "Accept": "application/json",
         "Content-Type": "multipart/form-data",
-        "Authorization": "Bearer ${user.accessToken}"
       });
 
       request.files.add(http.MultipartFile(

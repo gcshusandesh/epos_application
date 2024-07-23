@@ -96,7 +96,6 @@ class InfoProvider extends ChangeNotifier {
       Map<String, String> headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer ${user.accessToken!}',
       };
       late Map<String, String> body;
       if (isDefault) {
@@ -109,7 +108,7 @@ class InfoProvider extends ChangeNotifier {
         body = {
           "primaryColor": colorToHexString(editedSystemInfo.primaryColor),
           "iconColor": colorToHexString(editedSystemInfo.iconsColor),
-          "currency": editedSystemInfo.currencySymbol!,
+          "currency": editedSystemInfo.currencySymbol ?? "£",
         };
       }
 
@@ -144,6 +143,7 @@ class InfoProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
+      print("error = $e");
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
@@ -183,7 +183,6 @@ class InfoProvider extends ChangeNotifier {
       Map<String, String> headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer ${user.accessToken!}',
       };
       Map<String, String> body = {
         "name": editedRestaurantInfo.name!,
@@ -227,6 +226,7 @@ class InfoProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
+      print("error = $e");
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
