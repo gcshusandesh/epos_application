@@ -293,7 +293,7 @@ class _SettingsState extends State<Settings> {
                     title: "Language",
                     data: Provider.of<InfoProvider>(context, listen: true)
                         .systemInfo
-                        .language,
+                        .language!,
                   ),
                 ),
               ],
@@ -410,7 +410,7 @@ class _SettingsState extends State<Settings> {
                       title: "Currency",
                       data: Provider.of<InfoProvider>(context, listen: true)
                           .systemInfo
-                          .currencySymbol,
+                          .currencySymbol!,
                       isEditable: true,
                     ),
                   ),

@@ -111,7 +111,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ? SizedBox(
                     height: height * 25,
                     width: width * 30,
-                  )
+                    child: buildImage(
+                      "assets/restaurant_image.png",
+                      height * 25,
+                      width * 30,
+                      context: context,
+                    ))
                 : buildImage(
                     Provider.of<InfoProvider>(context, listen: false)
                         .restaurantInfo

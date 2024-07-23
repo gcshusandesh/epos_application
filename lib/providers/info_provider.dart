@@ -109,7 +109,7 @@ class InfoProvider extends ChangeNotifier {
         body = {
           "primaryColor": colorToHexString(editedSystemInfo.primaryColor),
           "iconColor": colorToHexString(editedSystemInfo.iconsColor),
-          "currency": editedSystemInfo.currencySymbol,
+          "currency": editedSystemInfo.currencySymbol!,
         };
       }
 
@@ -261,7 +261,7 @@ class InfoProvider extends ChangeNotifier {
       final result = data["data"]["attributes"];
       if (response.statusCode == 200) {
         restaurantInfo = RestaurantInfo(
-          name: result["name"],
+          name: result["name"] ?? "EPOS System",
           imageUrl: result["image"]["data"] == null
               ? null
               : "${Data.baseUrl}${result["image"]["data"]["attributes"]["formats"]["small"]["url"]}",
@@ -272,13 +272,16 @@ class InfoProvider extends ChangeNotifier {
           logoUrl: result["logo"]["data"] == null
               ? null
               : "${Data.baseUrl}${result["logo"]["data"]["attributes"]["url"]}",
+          hasAdmin: result["hasAdmin"] ?? false,
         );
         systemInfo = SystemInfo(
           versionNumber: result["version"],
           language: result["language"],
           currencySymbol: result["currency"],
-          primaryColor: hexStringToColor(result["primaryColor"]),
-          iconsColor: hexStringToColor(result["iconColor"]),
+          primaryColor: hexStringToColor(
+              result["primaryColor"] ?? "populateDefaultPrimaryColor"),
+          iconsColor: hexStringToColor(
+              result["iconColor"] ?? "populateDefaultIconsColor"),
         );
 
         ///save data to cache
@@ -303,6 +306,7 @@ class InfoProvider extends ChangeNotifier {
       }
     } catch (e) {
       if (context.mounted) {
+        print(e);
         // Navigate to Error Page
         await Navigator.push(
           context,
@@ -320,9 +324,15 @@ class InfoProvider extends ChangeNotifier {
   }
 
   Color hexStringToColor(String hexColor) {
-    final int colorInt = int.parse('0xff$hexColor');
-    // Return the Color object
-    return Color(colorInt);
+    if (hexColor == "populateDefaultPrimaryColor") {
+      return const Color(0xff063B9D);
+    } else if (hexColor == "populateDefaultIconsColor") {
+      return const Color(0xff4071B6);
+    } else {
+      final int colorInt = int.parse('0xff$hexColor');
+      // Return the Color object
+      return Color(colorInt);
+    }
   }
 
   String colorToHexString(Color color) {

@@ -8,6 +8,7 @@ class RestaurantInfo {
   String? postcode;
   String? countryOfOperation;
   String? logoUrl;
+  bool hasAdmin;
 
   RestaurantInfo({
     required this.name,
@@ -17,6 +18,7 @@ class RestaurantInfo {
     required this.postcode,
     required this.countryOfOperation,
     required this.logoUrl,
+    this.hasAdmin = false,
   });
 
   static Map<String, dynamic> toMap(RestaurantInfo restaurantInfo) => {
@@ -27,6 +29,7 @@ class RestaurantInfo {
         'postcode': restaurantInfo.postcode,
         'countryOfOperation': restaurantInfo.countryOfOperation,
         'logoUrl': restaurantInfo.logoUrl,
+        'hasAdmin': restaurantInfo.hasAdmin,
       };
 
   factory RestaurantInfo.fromJson(Map<String, dynamic> jsonData) {
@@ -38,14 +41,15 @@ class RestaurantInfo {
       postcode: jsonData['postcode'],
       countryOfOperation: jsonData['countryOfOperation'],
       logoUrl: jsonData['logoUrl'],
+      hasAdmin: jsonData['hasAdmin'] ?? false,
     );
   }
 }
 
 class SystemInfo {
-  String versionNumber;
-  String language;
-  String currencySymbol;
+  String? versionNumber;
+  String? language;
+  String? currencySymbol;
   Color primaryColor;
   Color iconsColor;
 
