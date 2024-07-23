@@ -395,15 +395,7 @@ class _MenuPageState extends State<MenuPage> {
 
   Row specials() {
     return Row(
-      mainAxisAlignment:
-          (Provider.of<AuthProvider>(context, listen: false).user.userType ==
-                      UserType.owner) ||
-                  (Provider.of<AuthProvider>(context, listen: false)
-                          .user
-                          .userType ==
-                      UserType.manager)
-              ? MainAxisAlignment.spaceBetween
-              : MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         buildBodyText(
           "Specials",
@@ -424,25 +416,29 @@ class _MenuPageState extends State<MenuPage> {
               },
               context: context,
             ),
-            SizedBox(width: width),
             (Provider.of<AuthProvider>(context, listen: false).user.userType ==
                         UserType.owner) ||
                     (Provider.of<AuthProvider>(context, listen: false)
                             .user
                             .userType ==
                         UserType.manager)
-                ? iconButton(
-                    "assets/svg/edit.svg",
-                    height,
-                    width,
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const EditSpecials()),
-                      );
-                    },
-                    context: context,
+                ? Row(
+                    children: [
+                      SizedBox(width: width),
+                      iconButton(
+                        "assets/svg/edit.svg",
+                        height,
+                        width,
+                        () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const EditSpecials()),
+                          );
+                        },
+                        context: context,
+                      ),
+                    ],
                   )
                 : const SizedBox(),
           ],

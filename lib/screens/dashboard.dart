@@ -116,9 +116,9 @@ class _DashboardState extends State<Dashboard> {
         false,
         false,
         false,
-        true,
-        true,
         false,
+        true,
+        true,
         false,
       ];
     } else {
@@ -160,28 +160,23 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  Center buildBody(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Column(
-            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedBox(
-                height: height * 2,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: width * 2),
-                child: topSection(context),
-              ),
-              optionsSection(context),
-            ]),
-      ),
+  Widget buildBody(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+        SizedBox(
+          height: height * 2,
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: width * 2),
+          child: topSection(context),
+        ),
+        optionsSection(context),
+      ]),
     );
   }
 
   Column optionsSection(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         SizedBox(
           height: height * 5,
@@ -248,6 +243,21 @@ class _DashboardState extends State<Dashboard> {
                   ? MainAxisAlignment.center
                   : MainAxisAlignment.spaceEvenly,
           children: [
+            dashboardItem(
+              "assets/dashboard/employees.svg",
+              "My Employee",
+              height,
+              width,
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ManageEmployee()),
+                );
+              },
+              context,
+              isVisible: dashboardVisibility[4],
+            ),
             Padding(
               padding: EdgeInsets.only(
                   right: Provider.of<AuthProvider>(context, listen: true)
@@ -257,35 +267,20 @@ class _DashboardState extends State<Dashboard> {
                       ? width * 20
                       : 0),
               child: dashboardItem(
-                "assets/dashboard/employees.svg",
-                "My Employee",
+                "assets/dashboard/kitchen.svg",
+                "Kitchen",
                 height,
                 width,
                 () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ManageEmployee()),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //       builder: (context) => const ManageEmployee()),
+                  // );
                 },
                 context,
-                isVisible: dashboardVisibility[4],
+                isVisible: dashboardVisibility[5],
               ),
-            ),
-            dashboardItem(
-              "assets/dashboard/kitchen.svg",
-              "Kitchen",
-              height,
-              width,
-              () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //       builder: (context) => const ManageEmployee()),
-                // );
-              },
-              context,
-              isVisible: dashboardVisibility[5],
             ),
             dashboardItem(
               "assets/dashboard/inventory.svg",
