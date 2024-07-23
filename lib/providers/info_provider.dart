@@ -15,12 +15,12 @@ class InfoProvider extends ChangeNotifier {
     vatNumber: null,
     address: null,
     postcode: null,
-    countryOfOperation: null,
+    countryOfOperation: "United Kingdom",
     logoUrl: null,
   );
 
   SystemInfo systemInfo = SystemInfo(
-    versionNumber: "X.X.X",
+    versionNumber: "1.0.0",
     language: "English",
     currencySymbol: "£",
     primaryColor: const Color(0xff063B9D),
@@ -87,10 +87,10 @@ class InfoProvider extends ChangeNotifier {
 
   Future<bool> updateSystemSettings({
     required BuildContext context,
-    required UserDataModel user,
     required SystemInfo editedSystemInfo,
     bool isDefault = false,
   }) async {
+    print("setting data");
     var url = Uri.parse("${Data.baseUrl}/api/setting");
     try {
       Map<String, String> headers = {
@@ -100,6 +100,8 @@ class InfoProvider extends ChangeNotifier {
       late Map<String, String> body;
       if (isDefault) {
         body = {
+          "version": "1.0.0",
+          "language": "English",
           "primaryColor": "063B9E",
           "iconColor": "4071B6",
           "currency": "£",
@@ -139,7 +141,7 @@ class InfoProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await updateSystemSettings(
-            context: context, user: user, editedSystemInfo: editedSystemInfo);
+            context: context, editedSystemInfo: editedSystemInfo);
       }
       return false;
     } catch (e) {
@@ -157,7 +159,7 @@ class InfoProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await updateSystemSettings(
-            context: context, user: user, editedSystemInfo: editedSystemInfo);
+            context: context, editedSystemInfo: editedSystemInfo);
       }
     }
     return false;
@@ -268,7 +270,7 @@ class InfoProvider extends ChangeNotifier {
           vatNumber: result["vat"],
           address: result["address"],
           postcode: result["postcode"],
-          countryOfOperation: result["country"],
+          countryOfOperation: result["country"] ?? "United Kingdom",
           logoUrl: result["logo"]["data"] == null
               ? null
               : "${Data.baseUrl}${result["logo"]["data"]["attributes"]["url"]}",

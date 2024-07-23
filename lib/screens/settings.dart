@@ -25,6 +25,7 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
   bool init = true;
   late double height;
@@ -35,6 +36,12 @@ class _SettingsState extends State<Settings> {
   TextEditingController addressController = TextEditingController();
   TextEditingController postcodeController = TextEditingController();
   TextEditingController countryController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _setData();
+  }
 
   @override
   void didChangeDependencies() {
@@ -56,19 +63,37 @@ class _SettingsState extends State<Settings> {
         countryController.text = restaurantInfo.countryOfOperation!;
       } else {
         isEditingRestaurantDetails = true;
+        // to replace null values with default values
       }
 
       init = false;
     }
   }
 
+  Future<void> _setData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await Provider.of<InfoProvider>(context, listen: false)
+        .updateSystemSettings(
+      isDefault: true,
+      context: context,
+      editedSystemInfo:
+          Provider.of<InfoProvider>(context, listen: false).systemInfo,
+    );
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   Future<void> _fetchData() async {
     setState(() {
       isLoading = true;
     });
-    await Provider.of<InfoProvider>(context, listen: false).getSettings(
-      context: context,
-    );
+
+    await Provider.of<InfoProvider>(context, listen: false)
+        .getSettings(context: context);
+
     setState(() {
       isLoading = false;
     });
@@ -449,8 +474,6 @@ class _SettingsState extends State<Settings> {
                               listen: false)
                           .updateSystemSettings(
                         context: context,
-                        user: Provider.of<AuthProvider>(context, listen: false)
-                            .user,
                         editedSystemInfo: SystemInfo(
                           versionNumber:
                               Provider.of<InfoProvider>(context, listen: false)
@@ -522,7 +545,6 @@ class _SettingsState extends State<Settings> {
     Provider.of<InfoProvider>(context, listen: false).updateSystemSettings(
       isDefault: true,
       context: context,
-      user: Provider.of<AuthProvider>(context, listen: false).user,
       editedSystemInfo:
           Provider.of<InfoProvider>(context, listen: false).systemInfo,
     );
@@ -548,7 +570,6 @@ class _SettingsState extends State<Settings> {
                 .updateSystemSettings(
               isDefault: true,
               context: context,
-              user: Provider.of<AuthProvider>(context, listen: false).user,
               editedSystemInfo:
                   Provider.of<InfoProvider>(context, listen: false).systemInfo,
             );
@@ -658,192 +679,230 @@ class _SettingsState extends State<Settings> {
           editSection(
             "Restaurant's Details",
             () {
-              setState(() {
-                isEditingRestaurantDetails = !isEditingRestaurantDetails;
-              });
+              //dont let user toggle out of setup mode in initial setup
+              if (!widget.initialSetup) {
+                setState(() {
+                  isEditingRestaurantDetails = !isEditingRestaurantDetails;
+                });
+              }
             },
             isSelected: isEditingRestaurantDetails,
           ),
           SizedBox(height: height * 2),
           Expanded(
             child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  InkWell(
-                    onTap: () {
-                      if (isEditingRestaurantDetails) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ImageUpload(
-                              isChangeRestaurantImage: true,
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    child: Provider.of<InfoProvider>(context, listen: true)
-                                .restaurantInfo
-                                .imageUrl ==
-                            null
-                        ? Container(
-                            height: height * 25,
-                            width: width * 31,
-                            color: Colors.white,
-                            child: Center(
-                              child: buildCustomText("No Image",
-                                  Data.lightGreyTextColor, width * 3),
-                            ),
-                          )
-                        : buildImage(
-                            Provider.of<InfoProvider>(context, listen: true)
-                                .restaurantInfo
-                                .imageUrl!,
-                            height * 25,
-                            width * 31,
-                            context: context,
-                            isNetworkImage: true,
-                          ),
-                  ),
-                  SizedBox(height: height * 2),
-                  formDataBox(
-                    title: "Name",
-                    hintText: "Name",
-                    controller: nameController,
-                    data: Provider.of<InfoProvider>(context, listen: true)
-                            .restaurantInfo
-                            .name ??
-                        "",
-                  ),
-                  SizedBox(height: height),
-                  formDataBox(
-                    title: "VAT/PAN Number",
-                    hintText: "VAT/PAN Number",
-                    controller: vatController,
-                    data: Provider.of<InfoProvider>(context, listen: true)
-                            .restaurantInfo
-                            .vatNumber ??
-                        "",
-                    isNumber: true,
-                  ),
-                  SizedBox(height: height),
-                  formDataBox(
-                    title: "Address",
-                    hintText: "Address",
-                    controller: addressController,
-                    data: Provider.of<InfoProvider>(context, listen: true)
-                            .restaurantInfo
-                            .address ??
-                        "",
-                  ),
-                  SizedBox(height: height),
-                  formDataBox(
-                    title: "Postcode",
-                    hintText: "Postcode",
-                    controller: postcodeController,
-                    data: Provider.of<InfoProvider>(context, listen: true)
-                            .restaurantInfo
-                            .postcode ??
-                        "",
-                  ),
-                  SizedBox(height: height),
-                  formDataBox(
-                    title: "Country of Operation",
-                    hintText: "Country of Operation",
-                    controller: countryController,
-                    data: Provider.of<InfoProvider>(context, listen: true)
-                            .restaurantInfo
-                            .countryOfOperation ??
-                        "",
-                    isCountry: true,
-                  ),
-                  SizedBox(height: height),
-                  InkWell(
-                    onTap: () {
-                      if (isEditingRestaurantDetails) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ImageUpload(
-                              isChangeRestaurantLogo: true,
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    child: dataBox(
-                        title: "Logo",
-                        isImage: true,
-                        data: Provider.of<InfoProvider>(context, listen: true)
-                            .restaurantInfo
-                            .logoUrl),
-                  ),
-                  isEditingRestaurantDetails
-                      ? buildButton(
-                          Icons.update,
-                          "Update",
-                          height,
-                          width,
-                          () async {
-                            final overlayContext = Overlay.of(context);
-                            //submit form
-                            // TODO: add form validation here
-                            setState(() {
-                              isLoading = true;
-                            });
-
-                            RestaurantInfo restaurantInfo =
-                                Provider.of<InfoProvider>(context,
-                                        listen: false)
-                                    .restaurantInfo;
-                            // update setting to user chosen values
-                            bool isUpdateSuccessful =
-                                await Provider.of<InfoProvider>(context,
-                                        listen: false)
-                                    .updateRestaurantSettings(
-                              context: context,
-                              user: Provider.of<AuthProvider>(context,
-                                      listen: false)
-                                  .user,
-                              editedRestaurantInfo: RestaurantInfo(
-                                name: nameController.text,
-                                imageUrl: restaurantInfo.imageUrl,
-                                vatNumber: vatController.text,
-                                address: addressController.text,
-                                postcode: postcodeController.text,
-                                countryOfOperation:
-                                    restaurantInfo.countryOfOperation,
-                                logoUrl: restaurantInfo.logoUrl,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        if (isEditingRestaurantDetails) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ImageUpload(
+                                isChangeRestaurantImage: true,
                               ),
-                            );
-                            setState(() {
-                              isLoading = false;
-                            });
-                            if (isUpdateSuccessful) {
-                              // show success massage
-                              showTopSnackBar(
-                                overlayContext,
-                                const CustomSnackBar.success(
-                                  message: "User Details Updated Successfully",
-                                ),
-                              );
-                              setState(() {
-                                isEditingRestaurantDetails = false;
-                              });
-                            } else {
-                              // show failure massage
-                              showTopSnackBar(
-                                overlayContext,
-                                const CustomSnackBar.error(
-                                  message: "User Details not updated",
-                                ),
-                              );
-                            }
-                          },
-                          context,
-                        )
-                      : const SizedBox(),
-                ],
+                            ),
+                          );
+                        }
+                      },
+                      child: Provider.of<InfoProvider>(context, listen: true)
+                                  .restaurantInfo
+                                  .imageUrl ==
+                              null
+                          ? Container(
+                              height: height * 25,
+                              width: width * 31,
+                              color: Colors.white,
+                              child: Center(
+                                child: buildCustomText("No Image",
+                                    Data.lightGreyTextColor, width * 3),
+                              ),
+                            )
+                          : buildImage(
+                              Provider.of<InfoProvider>(context, listen: true)
+                                  .restaurantInfo
+                                  .imageUrl!,
+                              height * 25,
+                              width * 31,
+                              context: context,
+                              isNetworkImage: true,
+                            ),
+                    ),
+                    SizedBox(height: height * 2),
+                    formDataBox(
+                      title: "Name",
+                      hintText: "Name",
+                      controller: nameController,
+                      data: Provider.of<InfoProvider>(context, listen: true)
+                              .restaurantInfo
+                              .name ??
+                          "",
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Enter a valid name';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: height),
+                    formDataBox(
+                      title: "VAT/PAN Number",
+                      hintText: "VAT/PAN Number",
+                      controller: vatController,
+                      data: Provider.of<InfoProvider>(context, listen: true)
+                              .restaurantInfo
+                              .vatNumber ??
+                          "",
+                      isNumber: true,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Enter a valid VAT Number';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: height),
+                    formDataBox(
+                      title: "Address",
+                      hintText: "Address",
+                      controller: addressController,
+                      data: Provider.of<InfoProvider>(context, listen: true)
+                              .restaurantInfo
+                              .address ??
+                          "",
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Enter a valid address';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: height),
+                    formDataBox(
+                      title: "Postcode",
+                      hintText: "Postcode",
+                      controller: postcodeController,
+                      data: Provider.of<InfoProvider>(context, listen: true)
+                              .restaurantInfo
+                              .postcode ??
+                          "",
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Enter a valid postcode';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: height),
+                    formDataBox(
+                      title: "Country of Operation",
+                      hintText: "Country of Operation",
+                      controller: countryController,
+                      data: Provider.of<InfoProvider>(context, listen: true)
+                              .restaurantInfo
+                              .countryOfOperation ??
+                          "",
+                      isCountry: true,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Enter a valid country';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: height),
+                    InkWell(
+                      onTap: () {
+                        if (isEditingRestaurantDetails) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ImageUpload(
+                                isChangeRestaurantLogo: true,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      child: dataBox(
+                          title: "Logo",
+                          isImage: true,
+                          data: Provider.of<InfoProvider>(context, listen: true)
+                              .restaurantInfo
+                              .logoUrl),
+                    ),
+                    isEditingRestaurantDetails
+                        ? buildButton(
+                            Icons.update,
+                            "Update",
+                            height,
+                            width,
+                            () async {
+                              final overlayContext = Overlay.of(context);
+                              //submit form
+                              if (_formKey.currentState!.validate()) {
+                                setState(() {
+                                  isLoading = true;
+                                });
+
+                                RestaurantInfo restaurantInfo =
+                                    Provider.of<InfoProvider>(context,
+                                            listen: false)
+                                        .restaurantInfo;
+                                // update setting to user chosen values
+                                bool isUpdateSuccessful =
+                                    await Provider.of<InfoProvider>(context,
+                                            listen: false)
+                                        .updateRestaurantSettings(
+                                  context: context,
+                                  user: Provider.of<AuthProvider>(context,
+                                          listen: false)
+                                      .user,
+                                  editedRestaurantInfo: RestaurantInfo(
+                                    name: nameController.text,
+                                    imageUrl: restaurantInfo.imageUrl,
+                                    vatNumber: vatController.text,
+                                    address: addressController.text,
+                                    postcode: postcodeController.text,
+                                    countryOfOperation:
+                                        restaurantInfo.countryOfOperation,
+                                    logoUrl: restaurantInfo.logoUrl,
+                                  ),
+                                );
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                if (isUpdateSuccessful) {
+                                  // show success massage
+                                  showTopSnackBar(
+                                    overlayContext,
+                                    const CustomSnackBar.success(
+                                      message:
+                                          "User Details Updated Successfully",
+                                    ),
+                                  );
+                                  setState(() {
+                                    isEditingRestaurantDetails = false;
+                                  });
+                                } else {
+                                  // show failure massage
+                                  showTopSnackBar(
+                                    overlayContext,
+                                    const CustomSnackBar.error(
+                                      message: "User Details not updated",
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            context,
+                          )
+                        : const SizedBox(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -944,6 +1003,7 @@ class _SettingsState extends State<Settings> {
     String? data = "",
     bool isCountry = false,
     bool isNumber = false,
+    Function? validator,
   }) {
     return Container(
       width: width * 31,
@@ -1000,7 +1060,7 @@ class _SettingsState extends State<Settings> {
                     )
                   : buildInputField(
                       hintText, height, width, context, controller,
-                      isNumber: isNumber),
+                      isNumber: isNumber, validator: validator),
         ],
       ),
     );
