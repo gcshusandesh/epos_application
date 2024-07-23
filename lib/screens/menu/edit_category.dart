@@ -369,9 +369,7 @@ class _EditCategoryState extends State<EditCategory> {
             buttonColor: Data.redColor,
             onTap: () async {
               if (Provider.of<MenuProvider>(context, listen: false)
-                  .menuItemsByCategory[
-                      Provider.of<MenuProvider>(context, listen: false)
-                          .selectedCategoryIndex]
+                  .menuItemsByCategory[index]
                   .menuItems
                   .isEmpty) {
                 setState(() {
