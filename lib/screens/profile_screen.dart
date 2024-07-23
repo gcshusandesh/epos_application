@@ -76,16 +76,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isEditing = false;
 
   Future<void> _refresh() async {
+    setState(() {
+      isLoading = true;
+    });
     await Provider.of<AuthProvider>(context, listen: false)
         .getUserDetails(init: false, context: context);
-    setState(() {
+
+    if (mounted) {
       UserDataModel user =
-          Provider.of<AuthProvider>(context, listen: true).user;
+          Provider.of<AuthProvider>(context, listen: false).user;
       nameController.text = user.name;
       emailController.text = user.email;
       usernameController.text = user.username;
       phoneController.text = user.phone;
       genderDropDownValue = user.gender;
+    }
+
+    setState(() {
+      isLoading = false;
     });
   }
 
@@ -104,402 +112,406 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Scaffold mainBody(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: RefreshIndicator(
-        onRefresh: _refresh,
-        color: Provider.of<InfoProvider>(context, listen: true)
-            .systemInfo
-            .primaryColor,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                iconButton(
-                  "assets/svg/arrow_back.svg",
-                  height,
-                  width,
-                  () {
-                    Navigator.pop(context);
-                  },
-                  context: context,
-                ),
-                SizedBox(height: height * 2),
-                Center(
-                  child: Container(
-                    height: height * 82,
-                    width: width * 35,
-                    padding: EdgeInsets.symmetric(
-                        vertical: height * 2, horizontal: width * 2),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Data.lightGreyBodyColor50,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.25), // Shadow color
-                          spreadRadius: 0, // How much the shadow spreads
-                          blurRadius: 4, // How much the shadow blurs
-                          offset:
-                              const Offset(0, 5), // The offset of the shadow
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              iconButton(
+                "assets/svg/arrow_back.svg",
+                height,
+                width,
+                () {
+                  Navigator.pop(context);
+                },
+                context: context,
+              ),
+              SizedBox(height: height * 2),
+              Center(
+                child: Container(
+                  height: height * 82,
+                  width: width * 35,
+                  padding: EdgeInsets.symmetric(
+                      vertical: height * 2, horizontal: width * 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Data.lightGreyBodyColor50,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.25), // Shadow color
+                        spreadRadius: 0, // How much the shadow spreads
+                        blurRadius: 4, // How much the shadow blurs
+                        offset: const Offset(0, 5), // The offset of the shadow
+                      ),
+                    ],
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            textButton(
+                              text: "Change Password",
+                              height: height * 0.75,
+                              width: width * 0.75,
+                              textColor: Provider.of<InfoProvider>(context,
+                                      listen: true)
+                                  .systemInfo
+                                  .primaryColor,
+                              buttonColor: Provider.of<InfoProvider>(context,
+                                      listen: true)
+                                  .systemInfo
+                                  .primaryColor,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const ResetPassword(
+                                            isChangePassword: true,
+                                          )),
+                                );
+                              },
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              textButton(
-                                text: "Change Password",
-                                height: height * 0.75,
-                                width: width * 0.75,
-                                textColor: Provider.of<InfoProvider>(context,
-                                        listen: true)
-                                    .systemInfo
-                                    .primaryColor,
-                                buttonColor: Provider.of<InfoProvider>(context,
-                                        listen: true)
-                                    .systemInfo
-                                    .primaryColor,
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ResetPassword(
-                                              isChangePassword: true,
-                                            )),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              buildTitleText("My Profile", Data.darkTextColor,
-                                  width * 0.8),
-                              SizedBox(width: width),
-                              iconButton(
-                                "assets/svg/edit.svg",
-                                height * 0.8,
-                                width * 0.8,
-                                () {
-                                  setState(() {
-                                    isEditing = !isEditing;
-                                  });
-                                },
-                                context: context,
-                                isSelected: isEditing,
-                              ),
-                              SizedBox(width: width),
-                              iconButton(
-                                "assets/svg/logout.svg",
-                                height * 0.8,
-                                width * 0.8,
-                                () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return alert();
-                                    },
-                                  );
-                                },
-                                context: context,
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: height),
-                          Form(
-                            key: _formKey,
-                            child: Column(
+                        SizedBox(height: height * 2),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildTitleText(
+                                "My Profile", Data.darkTextColor, width * 0.8),
+                            SizedBox(width: width),
+                            iconButton(
+                              "assets/svg/edit.svg",
+                              height * 0.8,
+                              width * 0.8,
+                              () {
+                                setState(() {
+                                  isEditing = !isEditing;
+                                });
+                              },
+                              context: context,
+                              isSelected: isEditing,
+                            ),
+                            SizedBox(width: width),
+                            Column(
                               children: [
-                                Container(
-                                  width: width * 15,
-                                  height: width * 15,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Data.lightGreyBodyColor,
-                                  ),
-                                  child: Center(
-                                      child: InkWell(
-                                    onTap: () async {
-                                      // image picker
-                                      if (isEditing) {
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                          builder: (context) {
-                                            return ImageUpload(
-                                              isChangeDP: true,
-                                            );
-                                          },
-                                        ));
-                                      }
-                                    },
-                                    child: ClipOval(
-                                      child: Stack(
-                                        children: [
-                                          Provider.of<AuthProvider>(context,
-                                                          listen: true)
-                                                      .user
-                                                      .imageUrl ==
-                                                  null
-                                              ? Center(
-                                                  child: Icon(
-                                                    Icons.person,
-                                                    size: width * 15,
+                                iconButton(
+                                  isSvg: false,
+                                  "",
+                                  icon: Icons.refresh,
+                                  height * 0.8,
+                                  width * 0.8,
+                                  () {
+                                    _refresh();
+                                  },
+                                  context: context,
+                                ),
+                                SizedBox(height: height),
+                                iconButton(
+                                  "assets/svg/logout.svg",
+                                  height * 0.8,
+                                  width * 0.8,
+                                  () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return alert();
+                                      },
+                                    );
+                                  },
+                                  context: context,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: height),
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              Container(
+                                width: width * 15,
+                                height: width * 15,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Data.lightGreyBodyColor,
+                                ),
+                                child: Center(
+                                    child: InkWell(
+                                  onTap: () async {
+                                    // image picker
+                                    if (isEditing) {
+                                      Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) {
+                                          return ImageUpload(
+                                            isChangeDP: true,
+                                          );
+                                        },
+                                      ));
+                                    }
+                                  },
+                                  child: ClipOval(
+                                    child: Stack(
+                                      children: [
+                                        Provider.of<AuthProvider>(context,
+                                                        listen: true)
+                                                    .user
+                                                    .imageUrl ==
+                                                null
+                                            ? Center(
+                                                child: Icon(
+                                                  Icons.person,
+                                                  size: width * 15,
+                                                  color:
+                                                      Provider.of<InfoProvider>(
+                                                              context,
+                                                              listen: true)
+                                                          .systemInfo
+                                                          .iconsColor,
+                                                ),
+                                              )
+                                            : buildImage(
+                                                Provider.of<AuthProvider>(
+                                                        context,
+                                                        listen: true)
+                                                    .user
+                                                    .imageUrl!,
+                                                width * 15,
+                                                width * 15,
+                                                isNetworkImage: true,
+                                                context: context,
+                                              ),
+                                        isEditing
+                                            ? Align(
+                                                alignment: Alignment.topCenter,
+                                                child: Container(
+                                                  height: width * 2.25,
+                                                  decoration: BoxDecoration(
                                                     color: Provider.of<
                                                                 InfoProvider>(
                                                             context,
                                                             listen: true)
                                                         .systemInfo
-                                                        .iconsColor,
+                                                        .primaryColor
+                                                        .withOpacity(0.8),
                                                   ),
-                                                )
-                                              : buildImage(
+                                                  child: Center(
+                                                    child: buildSmallText(
+                                                        "Edit",
+                                                        Colors.white,
+                                                        width),
+                                                  ),
+                                                ),
+                                              )
+                                            : const SizedBox(),
+                                        Align(
+                                          alignment: Alignment.bottomCenter,
+                                          child: Container(
+                                            height: width * 2.25,
+                                            decoration: BoxDecoration(
+                                              color: Data.greenColor
+                                                  .withOpacity(0.8),
+                                            ),
+                                            child: Center(
+                                              child: buildSmallText(
                                                   Provider.of<AuthProvider>(
                                                           context,
                                                           listen: true)
                                                       .user
-                                                      .imageUrl!,
-                                                  width * 15,
-                                                  width * 15,
-                                                  isNetworkImage: true,
-                                                  context: context,
-                                                ),
-                                          isEditing
-                                              ? Align(
-                                                  alignment:
-                                                      Alignment.topCenter,
-                                                  child: Container(
-                                                    height: width * 2.25,
-                                                    decoration: BoxDecoration(
-                                                      color: Provider.of<
-                                                                  InfoProvider>(
-                                                              context,
-                                                              listen: true)
-                                                          .systemInfo
-                                                          .primaryColor
-                                                          .withOpacity(0.8),
-                                                    ),
-                                                    child: Center(
-                                                      child: buildSmallText(
-                                                          "Edit",
-                                                          Colors.white,
-                                                          width),
-                                                    ),
-                                                  ),
-                                                )
-                                              : const SizedBox(),
-                                          Align(
-                                            alignment: Alignment.bottomCenter,
-                                            child: Container(
-                                              height: width * 2.25,
-                                              decoration: BoxDecoration(
-                                                color: Data.greenColor
-                                                    .withOpacity(0.8),
-                                              ),
-                                              child: Center(
-                                                child: buildSmallText(
-                                                    Provider.of<AuthProvider>(
-                                                            context,
-                                                            listen: true)
-                                                        .user
-                                                        .userType
-                                                        .name,
-                                                    Colors.white,
-                                                    width),
-                                              ),
+                                                      .userType
+                                                      .name,
+                                                  Colors.white,
+                                                  width),
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  )),
-                                ),
-                                SizedBox(height: height),
-                                dataBox(
-                                  title: "Full Name",
-                                  hintText: "Full Name",
-                                  isRequired: true,
-                                  controller: nameController,
-                                  data: Provider.of<AuthProvider>(context,
-                                          listen: true)
-                                      .user
-                                      .name,
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'Enter a valid name!';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                dataBox(
-                                  title: "Username",
-                                  hintText: "Username",
-                                  isRequired: true,
-                                  controller: usernameController,
-                                  data: Provider.of<AuthProvider>(context,
-                                          listen: true)
-                                      .user
-                                      .username,
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'Enter a valid username!';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                SizedBox(height: height),
-                                dataBox(
-                                  title: "Email",
-                                  hintText: "Email",
-                                  isRequired: true,
-                                  controller: emailController,
-                                  data: Provider.of<AuthProvider>(context,
-                                          listen: true)
-                                      .user
-                                      .email,
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'Enter an email address!';
-                                    }
+                                  ),
+                                )),
+                              ),
+                              SizedBox(height: height),
+                              dataBox(
+                                title: "Full Name",
+                                hintText: "Full Name",
+                                isRequired: true,
+                                controller: nameController,
+                                data: Provider.of<AuthProvider>(context,
+                                        listen: true)
+                                    .user
+                                    .name,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Enter a valid name!';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              dataBox(
+                                title: "Username",
+                                hintText: "Username",
+                                isRequired: true,
+                                controller: usernameController,
+                                data: Provider.of<AuthProvider>(context,
+                                        listen: true)
+                                    .user
+                                    .username,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Enter a valid username!';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: height),
+                              dataBox(
+                                title: "Email",
+                                hintText: "Email",
+                                isRequired: true,
+                                controller: emailController,
+                                data: Provider.of<AuthProvider>(context,
+                                        listen: true)
+                                    .user
+                                    .email,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Enter an email address!';
+                                  }
 
-                                    // Regular expression for validating email format
-                                    RegExp regex = RegExp(
-                                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-                                    if (!regex.hasMatch(value)) {
-                                      return 'Enter a valid email!';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                SizedBox(height: height),
-                                dataBox(
-                                  title: "Phone",
-                                  hintText: "Phone",
-                                  isRequired: true,
-                                  controller: phoneController,
-                                  data: Provider.of<AuthProvider>(context,
-                                          listen: true)
-                                      .user
-                                      .phone,
-                                  isNumber: true,
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      return 'Enter a valid phone number!';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                SizedBox(height: height),
-                                buildDataBoxDropDown(
-                                  context: context,
-                                  title: "Gender",
-                                  hintText: "Gender",
-                                  dataList: <String>[
-                                    'Male',
-                                    'Female',
-                                    'Others',
-                                  ],
-                                  controller: placeHolderGenderController,
-                                  validator: () {},
-                                ),
-                                SizedBox(height: height),
-                                isEditing
-                                    ? buildButton(
-                                        Icons.person,
-                                        "Update",
-                                        height,
-                                        width,
-                                        () async {
-                                          final overlayContext =
-                                              Overlay.of(context);
-                                          //submit form
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            setState(() {
-                                              isLoading = true;
-                                            });
+                                  // Regular expression for validating email format
+                                  RegExp regex = RegExp(
+                                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+                                  if (!regex.hasMatch(value)) {
+                                    return 'Enter a valid email!';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: height),
+                              dataBox(
+                                title: "Phone",
+                                hintText: "Phone",
+                                isRequired: true,
+                                controller: phoneController,
+                                data: Provider.of<AuthProvider>(context,
+                                        listen: true)
+                                    .user
+                                    .phone,
+                                isNumber: true,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Enter a valid phone number!';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: height),
+                              buildDataBoxDropDown(
+                                context: context,
+                                title: "Gender",
+                                hintText: "Gender",
+                                dataList: <String>[
+                                  'Male',
+                                  'Female',
+                                  'Others',
+                                ],
+                                controller: placeHolderGenderController,
+                                validator: () {},
+                              ),
+                              SizedBox(height: height),
+                              isEditing
+                                  ? buildButton(
+                                      Icons.person,
+                                      "Update",
+                                      height,
+                                      width,
+                                      () async {
+                                        final overlayContext =
+                                            Overlay.of(context);
+                                        //submit form
+                                        if (_formKey.currentState!.validate()) {
+                                          setState(() {
+                                            isLoading = true;
+                                          });
 
-                                            UserDataModel user =
-                                                Provider.of<AuthProvider>(
-                                                        context,
-                                                        listen: false)
-                                                    .user;
-                                            bool isUpdateSuccessful =
-                                                await Provider.of<AuthProvider>(
-                                                        context,
-                                                        listen: false)
-                                                    .updateUserDetails(
-                                                        editedDetails:
-                                                            UserDataModel(
-                                                          id: user.id,
-                                                          name: nameController
-                                                              .text,
-                                                          username:
-                                                              usernameController
-                                                                  .text,
-                                                          imageUrl:
-                                                              user.imageUrl,
-                                                          email: emailController
-                                                              .text,
-                                                          phone: phoneController
-                                                              .text,
-                                                          gender:
-                                                              genderDropDownValue!,
-                                                          isBlocked:
-                                                              user.isBlocked,
-                                                          userType:
-                                                              user.userType,
-                                                          accessToken:
-                                                              user.accessToken,
-                                                          isLoggedIn:
-                                                              user.isLoggedIn,
-                                                        ),
-                                                        isLoggedIn: true,
-                                                        context: context);
+                                          UserDataModel user =
+                                              Provider.of<AuthProvider>(context,
+                                                      listen: false)
+                                                  .user;
+                                          bool isUpdateSuccessful =
+                                              await Provider.of<AuthProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .updateUserDetails(
+                                                      editedDetails:
+                                                          UserDataModel(
+                                                        id: user.id,
+                                                        name:
+                                                            nameController.text,
+                                                        username:
+                                                            usernameController
+                                                                .text,
+                                                        imageUrl: user.imageUrl,
+                                                        email: emailController
+                                                            .text,
+                                                        phone: phoneController
+                                                            .text,
+                                                        gender:
+                                                            genderDropDownValue!,
+                                                        isBlocked:
+                                                            user.isBlocked,
+                                                        userType: user.userType,
+                                                        accessToken:
+                                                            user.accessToken,
+                                                        isLoggedIn:
+                                                            user.isLoggedIn,
+                                                      ),
+                                                      isLoggedIn: true,
+                                                      context: context);
+                                          setState(() {
+                                            isLoading = false;
+                                          });
+                                          if (isUpdateSuccessful) {
+                                            // show success massage
+                                            showTopSnackBar(
+                                              overlayContext,
+                                              const CustomSnackBar.success(
+                                                message:
+                                                    "User Details Updated Successfully",
+                                              ),
+                                            );
                                             setState(() {
-                                              isLoading = false;
+                                              isEditing = false;
                                             });
-                                            if (isUpdateSuccessful) {
-                                              // show success massage
-                                              showTopSnackBar(
-                                                overlayContext,
-                                                const CustomSnackBar.success(
-                                                  message:
-                                                      "User Details Updated Successfully",
-                                                ),
-                                              );
-                                              setState(() {
-                                                isEditing = false;
-                                              });
-                                            } else {
-                                              // show failure massage
-                                              showTopSnackBar(
-                                                overlayContext,
-                                                const CustomSnackBar.error(
-                                                  message:
-                                                      "User Details not updated",
-                                                ),
-                                              );
-                                            }
+                                          } else {
+                                            // show failure massage
+                                            showTopSnackBar(
+                                              overlayContext,
+                                              const CustomSnackBar.error(
+                                                message:
+                                                    "User Details not updated",
+                                              ),
+                                            );
                                           }
-                                        },
-                                        context,
-                                      )
-                                    : const SizedBox(),
-                              ],
-                            ),
+                                        }
+                                      },
+                                      context,
+                                    )
+                                  : const SizedBox(),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

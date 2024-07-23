@@ -48,12 +48,6 @@ class _DashboardState extends State<Dashboard> {
           user: Provider.of<AuthProvider>(context, listen: false).user,
           context: context);
     }
-
-    if (mounted) {
-      // Get Menu Items by Category Data from API
-      // Provider.of<MenuProvider>(context, listen: false)
-      //     .getMenuItemsByCategory(init: true);
-    }
     setState(() {
       isLoading = false;
     });
@@ -168,18 +162,20 @@ class _DashboardState extends State<Dashboard> {
 
   Center buildBody(BuildContext context) {
     return Center(
-      child: Column(
-          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            SizedBox(
-              height: height * 2,
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 2),
-              child: topSection(context),
-            ),
-            optionsSection(context),
-          ]),
+      child: SingleChildScrollView(
+        child: Column(
+            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                height: height * 2,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 2),
+                child: topSection(context),
+              ),
+              optionsSection(context),
+            ]),
+      ),
     );
   }
 
@@ -331,6 +327,18 @@ class _DashboardState extends State<Dashboard> {
   Row options(BuildContext context) {
     return Row(
       children: [
+        iconButton(
+          isSvg: false,
+          "",
+          icon: Icons.refresh,
+          height,
+          width,
+          () {
+            _fetchData();
+          },
+          context: context,
+        ),
+        SizedBox(width: width * 2),
         iconButton(
           "assets/svg/profile_icon.svg",
           height,
