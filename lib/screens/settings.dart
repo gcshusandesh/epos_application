@@ -55,6 +55,18 @@ class _SettingsState extends State<Settings> {
     }
   }
 
+  Future<void> _fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await Provider.of<InfoProvider>(context, listen: false).getSettings(
+      context: context,
+    );
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   OverlayEntry? _overlayEntry;
   late Color newColor;
 
@@ -815,34 +827,35 @@ class _SettingsState extends State<Settings> {
       {bool noEdit = false, required bool isSelected}) {
     return Row(
       mainAxisAlignment:
-          noEdit ? MainAxisAlignment.center : MainAxisAlignment.spaceBetween,
+          noEdit ? MainAxisAlignment.center : MainAxisAlignment.end,
       children: noEdit
           ? [
               buildBodyText(title, Data.lightGreyTextColor, width,
                   fontFamily: "RobotoMedium"),
             ]
           : [
-              Opacity(
-                opacity: 0,
-                child: iconButton(
-                  "assets/svg/edit.svg",
-                  height,
-                  width,
-                  () {
-                    //do nothing
-                  },
-                  context: context,
-                ),
-              ),
               buildBodyText(title, Data.lightGreyTextColor, width,
                   fontFamily: "RobotoMedium"),
+              SizedBox(width: width),
               iconButton(
                 "assets/svg/edit.svg",
-                height,
-                width,
+                height * 0.8,
+                width * 0.8,
                 onPressed,
                 context: context,
                 isSelected: isSelected,
+              ),
+              SizedBox(width: width),
+              iconButton(
+                isSvg: false,
+                "",
+                icon: Icons.refresh,
+                height * 0.8,
+                width * 0.8,
+                () {
+                  _fetchData();
+                },
+                context: context,
               ),
             ],
     );
