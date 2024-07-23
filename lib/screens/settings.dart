@@ -54,6 +54,8 @@ class _SettingsState extends State<Settings> {
         addressController.text = restaurantInfo.address!;
         postcodeController.text = restaurantInfo.postcode!;
         countryController.text = restaurantInfo.countryOfOperation!;
+      } else {
+        isEditingRestaurantDetails = true;
       }
 
       init = false;
