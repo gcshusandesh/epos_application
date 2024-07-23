@@ -80,13 +80,18 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!Provider.of<InfoProvider>(context, listen: false)
         .restaurantInfo
         .hasAdmin) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
             builder: (context) => Settings(
-                  initialSetup: true,
-                )),
-      );
+              initialSetup: true,
+            ),
+          ),
+          (Route<dynamic> route) =>
+              false, // This predicate removes all previous routes
+        );
+      });
     }
     return Stack(
       children: [
