@@ -836,7 +836,7 @@ class _SettingsState extends State<Settings> {
           : [
               buildBodyText(title, Data.lightGreyTextColor, width,
                   fontFamily: "RobotoMedium"),
-              SizedBox(width: width),
+              SizedBox(width: title == "System Settings" ? width * 2.5 : width),
               iconButton(
                 "assets/svg/edit.svg",
                 height * 0.8,
@@ -845,18 +845,24 @@ class _SettingsState extends State<Settings> {
                 context: context,
                 isSelected: isSelected,
               ),
-              SizedBox(width: width),
-              iconButton(
-                isSvg: false,
-                "",
-                icon: Icons.refresh,
-                height * 0.8,
-                width * 0.8,
-                () {
-                  _fetchData();
-                },
-                context: context,
-              ),
+              title != "System Settings"
+                  ? Row(
+                      children: [
+                        SizedBox(width: width),
+                        iconButton(
+                          isSvg: false,
+                          "",
+                          icon: Icons.refresh,
+                          height * 0.8,
+                          width * 0.8,
+                          () {
+                            _fetchData();
+                          },
+                          context: context,
+                        ),
+                      ],
+                    )
+                  : const SizedBox(),
             ],
     );
   }
