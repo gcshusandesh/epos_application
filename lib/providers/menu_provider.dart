@@ -268,6 +268,14 @@ class MenuProvider extends ChangeNotifier {
             status: data['attributes']['isActive'],
           );
           addCategoryLocally(category: newCategory);
+          if (context.mounted) {
+            ///need to load menu items again to map ds with new category
+            await getMenuList(
+              isItem: isCategory,
+              accessToken: accessToken,
+              context: context,
+            );
+          }
         } else if (isItem) {
           MenuItems newMenuItem = MenuItems(
             id: data['id'],
