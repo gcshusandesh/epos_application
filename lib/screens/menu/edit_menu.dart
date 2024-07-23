@@ -210,27 +210,31 @@ class _EditMenuState extends State<EditMenu> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        iconButton(
-          "assets/svg/add.svg",
-          height,
-          width,
-          () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => UpdateData(
-                        isItem: true,
-                        selectedCategory: Provider.of<MenuProvider>(context,
-                                listen: false)
-                            .categoryList[
-                                Provider.of<MenuProvider>(context, listen: true)
-                                    .selectedCategoryIndex]
-                            .name,
-                      )),
-            );
-          },
-          context: context,
-        ),
+        Provider.of<MenuProvider>(context, listen: false).categoryList.isEmpty
+            ? const SizedBox()
+            : iconButton(
+                "assets/svg/add.svg",
+                height,
+                width,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => UpdateData(
+                              isItem: true,
+                              selectedCategory: Provider.of<MenuProvider>(
+                                      context,
+                                      listen: false)
+                                  .categoryList[Provider.of<MenuProvider>(
+                                          context,
+                                          listen: true)
+                                      .selectedCategoryIndex]
+                                  .name,
+                            )),
+                  );
+                },
+                context: context,
+              ),
         SizedBox(width: width),
         iconButton(
           "assets/svg/edit.svg",
