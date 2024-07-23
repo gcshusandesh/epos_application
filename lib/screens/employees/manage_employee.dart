@@ -79,10 +79,8 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                 height: height,
                 width: width),
             SizedBox(height: height * 2),
-            Provider.of<AuthProvider>(context, listen: false).user.userType ==
-                    UserType.owner
-                ? editSection()
-                : const SizedBox(),
+            editSection(),
+            SizedBox(height: height * 2),
             SizedBox(
                 height: Provider.of<AuthProvider>(context, listen: false)
                             .user
@@ -189,32 +187,40 @@ class _ManageEmployeeState extends State<ManageEmployee> {
           },
           context: context,
         ),
-        SizedBox(width: width),
-        iconButton(
-          "assets/svg/add.svg",
-          height,
-          width,
-          () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const CreateEmployee()),
-            );
-          },
-          context: context,
-        ),
-        SizedBox(width: width),
-        iconButton(
-          "assets/svg/edit.svg",
-          height,
-          width,
-          () {
-            setState(() {
-              isEditing = !isEditing;
-            });
-          },
-          context: context,
-          isSelected: isEditing,
-        ),
+        Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                UserType.owner
+            ? Row(
+                children: [
+                  SizedBox(width: width),
+                  iconButton(
+                    "assets/svg/add.svg",
+                    height,
+                    width,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CreateEmployee()),
+                      );
+                    },
+                    context: context,
+                  ),
+                  SizedBox(width: width),
+                  iconButton(
+                    "assets/svg/edit.svg",
+                    height,
+                    width,
+                    () {
+                      setState(() {
+                        isEditing = !isEditing;
+                      });
+                    },
+                    context: context,
+                    isSelected: isEditing,
+                  ),
+                ],
+              )
+            : const SizedBox(),
       ],
     );
   }

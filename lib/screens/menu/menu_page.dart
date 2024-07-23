@@ -411,26 +411,42 @@ class _MenuPageState extends State<MenuPage> {
           width * 0.9,
           fontFamily: "RobotoMedium",
         ),
-        (Provider.of<AuthProvider>(context, listen: false).user.userType ==
-                    UserType.owner) ||
-                (Provider.of<AuthProvider>(context, listen: false)
-                        .user
-                        .userType ==
-                    UserType.manager)
-            ? iconButton(
-                "assets/svg/edit.svg",
-                height,
-                width,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const EditSpecials()),
-                  );
-                },
-                context: context,
-              )
-            : const SizedBox(),
+        Row(
+          children: [
+            iconButton(
+              isSvg: false,
+              "",
+              icon: Icons.refresh,
+              height,
+              width,
+              () {
+                _fetchData();
+              },
+              context: context,
+            ),
+            SizedBox(width: width),
+            (Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                        UserType.owner) ||
+                    (Provider.of<AuthProvider>(context, listen: false)
+                            .user
+                            .userType ==
+                        UserType.manager)
+                ? iconButton(
+                    "assets/svg/edit.svg",
+                    height,
+                    width,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const EditSpecials()),
+                      );
+                    },
+                    context: context,
+                  )
+                : const SizedBox(),
+          ],
+        ),
       ],
     );
   }
