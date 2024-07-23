@@ -261,7 +261,7 @@ class InfoProvider extends ChangeNotifier {
       final result = data["data"]["attributes"];
       if (response.statusCode == 200) {
         restaurantInfo = RestaurantInfo(
-          name: result["name"] ?? "EPOS System",
+          name: result["name"],
           imageUrl: result["image"]["data"] == null
               ? null
               : "${Data.baseUrl}${result["image"]["data"]["attributes"]["formats"]["small"]["url"]}",

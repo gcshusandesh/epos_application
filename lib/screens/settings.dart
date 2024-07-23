@@ -14,9 +14,11 @@ import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
+// ignore: must_be_immutable
 class Settings extends StatefulWidget {
-  const Settings({super.key});
+  Settings({super.key, this.initialSetup = false});
   static const routeName = "settings";
+  bool initialSetup;
 
   @override
   State<Settings> createState() => _SettingsState();
@@ -43,14 +45,17 @@ class _SettingsState extends State<Settings> {
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
 
-      /// Initialise values to controllers
-      RestaurantInfo restaurantInfo =
-          Provider.of<InfoProvider>(context, listen: false).restaurantInfo;
-      nameController.text = restaurantInfo.name!;
-      vatController.text = restaurantInfo.vatNumber!;
-      addressController.text = restaurantInfo.address!;
-      postcodeController.text = restaurantInfo.postcode!;
-      countryController.text = restaurantInfo.countryOfOperation!;
+      if (!widget.initialSetup) {
+        /// Initialise values to controllers
+        RestaurantInfo restaurantInfo =
+            Provider.of<InfoProvider>(context, listen: false).restaurantInfo;
+        nameController.text = restaurantInfo.name!;
+        vatController.text = restaurantInfo.vatNumber!;
+        addressController.text = restaurantInfo.address!;
+        postcodeController.text = restaurantInfo.postcode!;
+        countryController.text = restaurantInfo.countryOfOperation!;
+      }
+
       init = false;
     }
   }
@@ -280,7 +285,7 @@ class _SettingsState extends State<Settings> {
                   child: systemDataBox(
                     title: "Version",
                     data:
-                        "#${Provider.of<InfoProvider>(context, listen: true).systemInfo.versionNumber}",
+                        "#${Provider.of<InfoProvider>(context, listen: true).systemInfo.versionNumber ?? "1.0.0"}",
                   ),
                 ),
                 SizedBox(height: height),
@@ -292,8 +297,9 @@ class _SettingsState extends State<Settings> {
                   child: systemDataBox(
                     title: "Language",
                     data: Provider.of<InfoProvider>(context, listen: true)
-                        .systemInfo
-                        .language!,
+                            .systemInfo
+                            .language ??
+                        "English",
                   ),
                 ),
               ],
@@ -409,8 +415,9 @@ class _SettingsState extends State<Settings> {
                     child: systemDataBox(
                       title: "Currency",
                       data: Provider.of<InfoProvider>(context, listen: true)
-                          .systemInfo
-                          .currencySymbol!,
+                              .systemInfo
+                              .currencySymbol ??
+                          "£",
                       isEditable: true,
                     ),
                   ),
@@ -671,15 +678,28 @@ class _SettingsState extends State<Settings> {
                         );
                       }
                     },
-                    child: buildImage(
-                      Provider.of<InfoProvider>(context, listen: true)
-                          .restaurantInfo
-                          .imageUrl!,
-                      height * 25,
-                      width * 31,
-                      context: context,
-                      isNetworkImage: true,
-                    ),
+                    child: Provider.of<InfoProvider>(context, listen: true)
+                                .restaurantInfo
+                                .imageUrl ==
+                            null
+                        ? Container(
+                            height: height * 25,
+                            width: width * 31,
+                            color: Colors.white,
+                            child: Center(
+                              child: buildCustomText("No Image",
+                                  Data.lightGreyTextColor, width * 3),
+                            ),
+                          )
+                        : buildImage(
+                            Provider.of<InfoProvider>(context, listen: true)
+                                .restaurantInfo
+                                .imageUrl!,
+                            height * 25,
+                            width * 31,
+                            context: context,
+                            isNetworkImage: true,
+                          ),
                   ),
                   SizedBox(height: height * 2),
                   formDataBox(
@@ -687,8 +707,9 @@ class _SettingsState extends State<Settings> {
                     hintText: "Name",
                     controller: nameController,
                     data: Provider.of<InfoProvider>(context, listen: true)
-                        .restaurantInfo
-                        .name!,
+                            .restaurantInfo
+                            .name ??
+                        "",
                   ),
                   SizedBox(height: height),
                   formDataBox(
@@ -696,8 +717,9 @@ class _SettingsState extends State<Settings> {
                     hintText: "VAT/PAN Number",
                     controller: vatController,
                     data: Provider.of<InfoProvider>(context, listen: true)
-                        .restaurantInfo
-                        .vatNumber!,
+                            .restaurantInfo
+                            .vatNumber ??
+                        "",
                     isNumber: true,
                   ),
                   SizedBox(height: height),
@@ -706,8 +728,9 @@ class _SettingsState extends State<Settings> {
                     hintText: "Address",
                     controller: addressController,
                     data: Provider.of<InfoProvider>(context, listen: true)
-                        .restaurantInfo
-                        .address!,
+                            .restaurantInfo
+                            .address ??
+                        "",
                   ),
                   SizedBox(height: height),
                   formDataBox(
@@ -715,8 +738,9 @@ class _SettingsState extends State<Settings> {
                     hintText: "Postcode",
                     controller: postcodeController,
                     data: Provider.of<InfoProvider>(context, listen: true)
-                        .restaurantInfo
-                        .postcode!,
+                            .restaurantInfo
+                            .postcode ??
+                        "",
                   ),
                   SizedBox(height: height),
                   formDataBox(
@@ -724,8 +748,9 @@ class _SettingsState extends State<Settings> {
                     hintText: "Country of Operation",
                     controller: countryController,
                     data: Provider.of<InfoProvider>(context, listen: true)
-                        .restaurantInfo
-                        .countryOfOperation!,
+                            .restaurantInfo
+                            .countryOfOperation ??
+                        "",
                     isCountry: true,
                   ),
                   SizedBox(height: height),

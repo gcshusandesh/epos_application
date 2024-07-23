@@ -5,6 +5,7 @@ import 'package:epos_application/providers/extra_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/screens/dashboard.dart';
 import 'package:epos_application/screens/reset_password.dart';
+import 'package:epos_application/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -76,6 +77,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!Provider.of<InfoProvider>(context, listen: false)
+        .restaurantInfo
+        .hasAdmin) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Settings(
+                  initialSetup: true,
+                )),
+      );
+    }
     return Stack(
       children: [
         mainBody(context),
