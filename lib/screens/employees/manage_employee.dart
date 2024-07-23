@@ -40,10 +40,16 @@ class _ManageEmployeeState extends State<ManageEmployee> {
     }
   }
 
-  Future<void> _refresh() async {
+  Future<void> _fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
     await Provider.of<UserProvider>(context, listen: false).getUserList(
         user: Provider.of<AuthProvider>(context, listen: false).user,
         context: context);
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -85,86 +91,80 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                     ? height * 2
                     : 0),
             Expanded(
-              child: RefreshIndicator(
-                onRefresh: _refresh,
-                color: Provider.of<InfoProvider>(context, listen: true)
-                    .systemInfo
-                    .primaryColor,
-                child: SingleChildScrollView(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: Provider.of<UserProvider>(context, listen: true)
-                            .userList
-                            .isEmpty
-                        ? Column(
-                            children: [
-                              Table(
-                                border: TableBorder.all(color: Colors.black),
-                                defaultVerticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                children: [
-                                  TableRow(
-                                      decoration: const BoxDecoration(
-                                          color: Data.lightGreyBodyColor),
-                                      children: [
-                                        tableTitle("S.N.", width),
-                                        tableTitle("Full Name", width),
-                                        tableTitle("Email", width),
-                                        tableTitle("Phone", width),
-                                        tableTitle("Gender", width),
-                                        tableTitle("User Type", width),
-                                        tableTitle("Status", width),
-                                      ]),
-                                ],
+              child: SingleChildScrollView(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Provider.of<UserProvider>(context, listen: true)
+                          .userList
+                          .isEmpty
+                      ? Column(
+                          children: [
+                            Table(
+                              border: TableBorder.all(color: Colors.black),
+                              defaultVerticalAlignment:
+                                  TableCellVerticalAlignment.middle,
+                              children: [
+                                TableRow(
+                                    decoration: const BoxDecoration(
+                                        color: Data.lightGreyBodyColor),
+                                    children: [
+                                      tableTitle("S.N.", width),
+                                      tableTitle("Full Name", width),
+                                      tableTitle("Email", width),
+                                      tableTitle("Phone", width),
+                                      tableTitle("Gender", width),
+                                      tableTitle("User Type", width),
+                                      tableTitle("Status", width),
+                                    ]),
+                              ],
+                            ),
+                            Container(
+                              width: width * 100,
+                              decoration: const BoxDecoration(
+                                color: Data.lightGreyBodyColor,
+                                border: Border(
+                                  left:
+                                      BorderSide(color: Colors.black, width: 1),
+                                  right:
+                                      BorderSide(color: Colors.black, width: 1),
+                                  bottom:
+                                      BorderSide(color: Colors.black, width: 1),
+                                ),
                               ),
-                              Container(
-                                width: width * 100,
+                              child: Center(
+                                child: buildSmallText("No Data Available",
+                                    Data.lightGreyTextColor, width),
+                              ),
+                            )
+                          ],
+                        )
+                      : Table(
+                          border: TableBorder.all(color: Colors.black),
+                          defaultVerticalAlignment:
+                              TableCellVerticalAlignment.middle,
+                          children: [
+                            TableRow(
                                 decoration: const BoxDecoration(
-                                  color: Data.lightGreyBodyColor,
-                                  border: Border(
-                                    left: BorderSide(
-                                        color: Colors.black, width: 1),
-                                    right: BorderSide(
-                                        color: Colors.black, width: 1),
-                                    bottom: BorderSide(
-                                        color: Colors.black, width: 1),
-                                  ),
-                                ),
-                                child: Center(
-                                  child: buildSmallText("No Data Available",
-                                      Data.lightGreyTextColor, width),
-                                ),
-                              )
-                            ],
-                          )
-                        : Table(
-                            border: TableBorder.all(color: Colors.black),
-                            defaultVerticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            children: [
-                              TableRow(
-                                  decoration: const BoxDecoration(
-                                      color: Data.lightGreyBodyColor),
-                                  children: [
-                                    tableTitle("S.N.", width),
-                                    tableTitle("Full Name", width),
-                                    tableTitle("Email", width),
-                                    tableTitle("Phone", width),
-                                    tableTitle("Gender", width),
-                                    tableTitle("User Type", width),
-                                    tableTitle("Status", width),
-                                  ]),
-                              for (int i = 0;
-                                  i <
-                                      Provider.of<UserProvider>(context,
-                                              listen: true)
-                                          .userList
-                                          .length;
-                                  i++)
-                                buildEmployeeRow(i),
-                            ],
-                          ),
-                  ),
+                                    color: Data.lightGreyBodyColor),
+                                children: [
+                                  tableTitle("S.N.", width),
+                                  tableTitle("Full Name", width),
+                                  tableTitle("Email", width),
+                                  tableTitle("Phone", width),
+                                  tableTitle("Gender", width),
+                                  tableTitle("User Type", width),
+                                  tableTitle("Status", width),
+                                ]),
+                            for (int i = 0;
+                                i <
+                                    Provider.of<UserProvider>(context,
+                                            listen: true)
+                                        .userList
+                                        .length;
+                                i++)
+                              buildEmployeeRow(i),
+                          ],
+                        ),
                 ),
               ),
             )
@@ -178,6 +178,18 @@ class _ManageEmployeeState extends State<ManageEmployee> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
+        iconButton(
+          isSvg: false,
+          "",
+          icon: Icons.refresh,
+          height,
+          width,
+          () {
+            _fetchData();
+          },
+          context: context,
+        ),
+        SizedBox(width: width),
         iconButton(
           "assets/svg/add.svg",
           height,

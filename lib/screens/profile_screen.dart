@@ -75,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   bool isEditing = false;
 
-  Future<void> _refresh() async {
+  Future<void> _fetchData() async {
     setState(() {
       isLoading = true;
     });
@@ -206,7 +206,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   height * 0.8,
                                   width * 0.8,
                                   () {
-                                    _refresh();
+                                    _fetchData();
                                   },
                                   context: context,
                                 ),
