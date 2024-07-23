@@ -589,7 +589,7 @@ class _EditMenuState extends State<EditMenu> {
               showTopSnackBar(
                 Overlay.of(context),
                 const CustomSnackBar.error(
-                  message: "Please add image to publish category",
+                  message: "Please add image to publish item",
                 ),
               );
             } else {

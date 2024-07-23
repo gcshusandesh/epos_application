@@ -116,7 +116,7 @@ class MenuProvider extends ChangeNotifier {
 
           for (var item in data) {
             var attributes = item['attributes'];
-            String categoryType = attributes['categoryType'];
+            String categoryType = attributes['categoryType'] ?? 'null';
 
             if (!groupedItems.containsKey(categoryType)) {
               groupedItems[categoryType] = [];
