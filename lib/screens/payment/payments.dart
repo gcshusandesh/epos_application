@@ -1,7 +1,9 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -139,20 +141,36 @@ class _PaymentState extends State<Payment> {
                     TableRow(
                         decoration:
                             const BoxDecoration(color: Data.lightGreyBodyColor),
-                        children: [
-                          tableTitle("S.N.", width),
-                          tableTitle("Name", width),
-                          tableTitle("Quantity", width),
-                          tableTitle("Price", width),
-                          tableTitle("Action", width),
-                        ]),
-                    // for (int index = 0;
-                    //     index <
-                    //         Provider.of<OrderProvider>(context, listen: true)
-                    //             .orderList
-                    //             .length;
-                    //     index++)
-                    // buildSpecialsRow(index),
+                        children: widget.isSales
+                            ? [
+                                tableTitle("S.N.", width),
+                                tableTitle("Order ID", width),
+                                tableTitle("Table Number", width),
+                                tableTitle("Items", width),
+                                tableTitle("Price", width),
+                                tableTitle("Timestamp", width),
+                                tableTitle("Action", width),
+                              ]
+                            : [
+                                tableTitle("S.N.", width),
+                                tableTitle("Order ID", width),
+                                tableTitle("Table Number", width),
+                                tableTitle("Items", width),
+                                tableTitle("Price", width),
+                                tableTitle("Adjusted Price", width),
+                                tableTitle("Action", width),
+                              ]),
+                    for (int index = 0;
+                        index <
+                            Provider.of<OrderProvider>(context, listen: true)
+                                .processedOrders
+                                .length;
+                        index++)
+                      buildPaymentRow(
+                          index: index,
+                          order:
+                              Provider.of<OrderProvider>(context, listen: true)
+                                  .processedOrders[index]),
                   ],
                 ),
         ),
@@ -160,25 +178,74 @@ class _PaymentState extends State<Payment> {
     );
   }
 
-  TableRow buildOrdersRow(int index) {
+  TableRow buildPaymentRow(
+      {required int index, required ProcessedOrder order}) {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
         tableItem((index + 1).toString(), width, context),
-        tableItem((index + 1).toString(), width, context),
-        tableItem((index + 1).toString(), width, context),
-        tableItem((index + 1).toString(), width, context),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: width * 6),
-          child: textButton(
-            text: "Delete",
-            height: height,
-            width: width,
-            textColor: Data.redColor,
-            buttonColor: Data.redColor,
-            onTap: () async {},
-          ),
-        ),
+        tableItem("#${order.id}", width, context),
+        tableItem(order.tableNumber, width, context),
+        tableItem(order.items, width, context),
+        tableItem("£${order.price.toStringAsFixed(2)}", width, context),
+        tableItem("£${order.adjustedPrice.toStringAsFixed(2)}", width, context),
+        widget.isSales
+            ? Padding(
+                padding:
+                    EdgeInsets.symmetric(vertical: height, horizontal: width),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    textButton(
+                      text: "View",
+                      height: height,
+                      width: width,
+                      textColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .primaryColor,
+                      buttonColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .primaryColor,
+                      onTap: () async {},
+                    ),
+                    SizedBox(width: width),
+                    textButton(
+                      text: "Send",
+                      height: height,
+                      width: width,
+                      textColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .primaryColor,
+                      buttonColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .primaryColor,
+                      onTap: () async {},
+                    )
+                  ],
+                ),
+              )
+            : Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: width * 3,
+                  vertical: height,
+                ),
+                child: textButton(
+                  text: "Pay",
+                  height: height,
+                  width: width,
+                  textColor: Provider.of<InfoProvider>(context, listen: true)
+                      .systemInfo
+                      .primaryColor,
+                  buttonColor: Provider.of<InfoProvider>(context, listen: true)
+                      .systemInfo
+                      .primaryColor,
+                  onTap: () async {},
+                ),
+              ),
       ],
     );
   }
@@ -186,7 +253,7 @@ class _PaymentState extends State<Payment> {
   Widget tableTitle(String text, double width) {
     return Center(
         child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 15.0),
+      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 5),
       child: buildBodyText(
         text,
         Data.lightGreyTextColor,
@@ -211,19 +278,26 @@ class _PaymentState extends State<Payment> {
           },
           context: context,
         ),
-        SizedBox(width: width),
-        iconButton(
-          "assets/svg/edit.svg",
-          height,
-          width,
-          () {
-            setState(() {
-              isEditing = !isEditing;
-            });
-          },
-          context: context,
-          isSelected: isEditing,
-        ),
+        widget.isSales
+            ? Row(
+                children: [
+                  SizedBox(width: width),
+                  textButton(
+                      text: "Export",
+                      height: height,
+                      width: width,
+                      textColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .primaryColor,
+                      buttonColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .primaryColor,
+                      onTap: () {}),
+                ],
+              )
+            : const SizedBox(),
       ],
     );
   }

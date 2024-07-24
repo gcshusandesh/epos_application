@@ -324,14 +324,14 @@ class _DashboardState extends State<Dashboard> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Opacity(opacity: 0, child: options(context)),
+        Opacity(opacity: 0, child: options(context, isDisabled: true)),
         buildTitleText("Dashboard", Data.darkTextColor, width),
         options(context),
       ],
     );
   }
 
-  Row options(BuildContext context) {
+  Row options(BuildContext context, {bool isDisabled = false}) {
     return Row(
       children: [
         iconButton(
@@ -341,7 +341,9 @@ class _DashboardState extends State<Dashboard> {
           height,
           width,
           () {
-            _fetchData();
+            if (!isDisabled) {
+              _fetchData();
+            }
           },
           context: context,
         ),
@@ -351,10 +353,12 @@ class _DashboardState extends State<Dashboard> {
           height,
           width,
           () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ProfileScreen()),
-            );
+            if (!isDisabled) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
+            }
           },
           context: context,
         ),
@@ -368,11 +372,13 @@ class _DashboardState extends State<Dashboard> {
                     height,
                     width,
                     () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Settings()),
-                      );
+                      if (!isDisabled) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Settings()),
+                        );
+                      }
                     },
                     context: context,
                   ),
