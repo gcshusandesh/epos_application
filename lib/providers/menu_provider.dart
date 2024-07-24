@@ -713,4 +713,20 @@ class MenuProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  double totalAmount = 0;
+  int totalCount = 0;
+  void calculateTotal() {
+    double total = 0;
+    int count = 0;
+    for (var category in menuItemsByCategory) {
+      for (var item in category.menuItems) {
+        total += item.price * item.quantity;
+        count += item.quantity;
+      }
+    }
+    totalAmount = total;
+    totalCount = count;
+    notifyListeners();
+  }
 }
