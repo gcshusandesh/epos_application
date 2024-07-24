@@ -9,7 +9,7 @@ import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';
 import 'package:epos_application/screens/menu/edit_menu.dart';
 import 'package:epos_application/screens/menu/edit_specials.dart';
-import 'package:epos_application/screens/menu/take_orders.dart';
+import 'package:epos_application/screens/order/take_orders.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';

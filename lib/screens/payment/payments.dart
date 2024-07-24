@@ -1,7 +1,10 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
+import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/order_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Payment extends StatefulWidget {
   const Payment({
@@ -53,13 +56,121 @@ class _PaymentState extends State<Payment> {
         child: Column(
           children: [
             topSection(
-                context: context, text: "Orders", height: height, width: width),
+                context: context,
+                text: widget.isSales ? "Sales History" : "Payment",
+                height: height,
+                width: width),
             SizedBox(height: height * 2),
             editSection(),
+            SizedBox(height: height * 2),
+            tableSection(context),
           ],
         ),
       ),
     );
+  }
+
+  Expanded tableSection(BuildContext context) {
+    return Expanded(
+      child: SingleChildScrollView(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: Provider.of<OrderProvider>(context, listen: true)
+                  .orderList
+                  .isEmpty
+              ? Column(
+                  children: [
+                    Table(
+                      border: TableBorder.all(color: Colors.black),
+                      defaultVerticalAlignment:
+                          TableCellVerticalAlignment.middle,
+                      children: [
+                        TableRow(
+                            decoration: const BoxDecoration(
+                                color: Data.lightGreyBodyColor),
+                            children: widget.isSales
+                                ? [
+                                    tableTitle("S.N.", width),
+                                    tableTitle("Order ID", width),
+                                    tableTitle("Table Number", width),
+                                    tableTitle("Items", width),
+                                    tableTitle("Price", width),
+                                    tableTitle("Timestamp", width),
+                                    tableTitle("Action", width),
+                                  ]
+                                : [
+                                    tableTitle("S.N.", width),
+                                    tableTitle("Order ID", width),
+                                    tableTitle("Table Number", width),
+                                    tableTitle("Items", width),
+                                    tableTitle("Price", width),
+                                    tableTitle("Adjusted Price", width),
+                                    tableTitle("Action", width),
+                                  ]),
+                      ],
+                    ),
+                    Container(
+                      width: width * 100,
+                      decoration: const BoxDecoration(
+                        color: Data.lightGreyBodyColor,
+                        border: Border(
+                          left: BorderSide(color: Colors.black, width: 1),
+                          right: BorderSide(color: Colors.black, width: 1),
+                          bottom: BorderSide(color: Colors.black, width: 1),
+                        ),
+                      ),
+                      child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: height),
+                          child: buildSmallText(
+                            "No Data Available",
+                            Data.lightGreyTextColor,
+                            width * 1.5,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                )
+              : Table(
+                  border: TableBorder.all(color: Colors.black),
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  children: [
+                    TableRow(
+                        decoration:
+                            const BoxDecoration(color: Data.lightGreyBodyColor),
+                        children: [
+                          tableTitle("S.N.", width),
+                          tableTitle("Name", width),
+                          tableTitle("Quantity", width),
+                          tableTitle("Price", width),
+                          tableTitle("Action", width),
+                        ]),
+                    // for (int index = 0;
+                    //     index <
+                    //         Provider.of<OrderProvider>(context, listen: true)
+                    //             .orderList
+                    //             .length;
+                    //     index++)
+                    // buildSpecialsRow(index),
+                  ],
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget tableTitle(String text, double width) {
+    return Center(
+        child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 15.0),
+      child: buildBodyText(
+        text,
+        Data.lightGreyTextColor,
+        width,
+        fontFamily: "RobotoMedium",
+      ),
+    ));
   }
 
   Row editSection() {
