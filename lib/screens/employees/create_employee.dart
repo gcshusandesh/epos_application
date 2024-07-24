@@ -6,6 +6,7 @@ import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/user_provider.dart';
+import 'package:epos_application/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -54,6 +55,15 @@ class _CreateEmployeeState extends State<CreateEmployee> {
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
       if (widget.isInitialSetup) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) {
+              return alert();
+            },
+          );
+        });
         userDropDownList = [
           UserType.owner.name,
         ];
@@ -509,13 +519,30 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                           userType: assignUserType(
                                               typeDropdownValue!),
                                         ));
-                                        Navigator.pop(context);
+
+                                        if (widget.isInitialSetup) {
+                                          // if initial setup navigate user to settings page
+                                          Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const Settings(
+                                                isInitialSetup: true,
+                                              ),
+                                            ),
+                                            (Route<dynamic> route) =>
+                                                false, // This predicate removes all previous routes
+                                          );
+                                        } else {
+                                          Navigator.pop(context);
+                                        }
                                         // show success massage
                                         showTopSnackBar(
                                           Overlay.of(context),
-                                          const CustomSnackBar.success(
-                                            message:
-                                                "Employee Created Successfully",
+                                          CustomSnackBar.success(
+                                            message: widget.isInitialSetup
+                                                ? "Admin Created Successfully. An Email has been send with login details"
+                                                : "Employee Created Successfully. An Email has been send with login details",
                                           ),
                                         );
                                       }
@@ -598,6 +625,30 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                   validator: validator, isNumber: isNumber),
         ],
       ),
+    );
+  }
+
+  // set up the AlertDialog
+  Widget alert() {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text("Initial Setup"),
+      content: const Text(
+          "No Admin Account detected.\nPlease create admin account and complete initial setup to continue"),
+      actions: [
+        SizedBox(height: height * 2),
+        textButton(
+          text: "Okay",
+          height: height,
+          width: width,
+          textColor: const Color(0xff063B9D),
+          buttonColor: const Color(0xff063B9D),
+          onTap: () {
+            // close dialog box
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 }

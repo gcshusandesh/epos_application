@@ -25,6 +25,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool value = false;
   bool isLoading = false;
+  bool initialCheck = false;
 
   bool init = true;
   late double height;
@@ -43,6 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
     await Provider.of<InfoProvider>(context, listen: false).getSettings(
       context: context,
     );
+    initialCheck = true;
     if (mounted) {
       setState(() {
         isLoading = false;
@@ -79,9 +81,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!Provider.of<InfoProvider>(context, listen: false)
-        .restaurantInfo
-        .hasAdmin) {
+    if (initialCheck &&
+        !Provider.of<InfoProvider>(context, listen: false)
+            .restaurantInfo
+            .hasAdmin) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pushAndRemoveUntil(
           context,
