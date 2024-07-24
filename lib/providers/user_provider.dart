@@ -32,7 +32,6 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<bool> createUser({
-    required String accessToken,
     required String name,
     required String username,
     required String email,
@@ -70,7 +69,6 @@ class UserProvider extends ChangeNotifier {
         // Send account creation email
         if (context.mounted) {
           sendAccountCreationEmail(
-              accessToken: accessToken,
               email: email,
               username: username,
               password: password,
@@ -95,7 +93,6 @@ class UserProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await createUser(
-            accessToken: accessToken,
             name: name,
             username: username,
             email: email,
@@ -119,7 +116,6 @@ class UserProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await createUser(
-            accessToken: accessToken,
             name: name,
             username: username,
             email: email,
@@ -133,7 +129,6 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<bool> sendAccountCreationEmail({
-    required String accessToken,
     required String email,
     required String username,
     required String password,
@@ -144,7 +139,6 @@ class UserProvider extends ChangeNotifier {
       Map<String, String> headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $accessToken',
       };
       Map<String, String> body = {
         "to": email,
@@ -177,7 +171,6 @@ class UserProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await sendAccountCreationEmail(
-            accessToken: accessToken,
             username: username,
             email: email,
             password: password,
@@ -198,7 +191,6 @@ class UserProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await sendAccountCreationEmail(
-            accessToken: accessToken,
             username: username,
             email: email,
             password: password,

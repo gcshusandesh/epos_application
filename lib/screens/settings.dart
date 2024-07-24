@@ -9,16 +9,16 @@ import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/screens/custom_color_picker.dart';
 import 'package:epos_application/screens/image_upload.dart';
+import 'package:epos_application/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
-// ignore: must_be_immutable
 class Settings extends StatefulWidget {
-  Settings({super.key, this.initialSetup = false});
+  const Settings({super.key, this.isInitialSetup = false});
   static const routeName = "settings";
-  bool initialSetup;
+  final bool isInitialSetup;
 
   @override
   State<Settings> createState() => _SettingsState();
@@ -52,7 +52,7 @@ class _SettingsState extends State<Settings> {
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
 
-      if (!widget.initialSetup) {
+      if (!widget.isInitialSetup) {
         /// Initialise values to controllers
         RestaurantInfo restaurantInfo =
             Provider.of<InfoProvider>(context, listen: false).restaurantInfo;
@@ -251,7 +251,7 @@ class _SettingsState extends State<Settings> {
                   height: height,
                   text: "Settings",
                   width: width,
-                  initialSetup: widget.initialSetup,
+                  initialSetup: widget.isInitialSetup,
                 ),
                 SizedBox(height: height * 2),
                 Row(
@@ -680,7 +680,7 @@ class _SettingsState extends State<Settings> {
             "Restaurant's Details",
             () {
               //dont let user toggle out of setup mode in initial setup
-              if (!widget.initialSetup) {
+              if (!widget.isInitialSetup) {
                 setState(() {
                   isEditingRestaurantDetails = !isEditingRestaurantDetails;
                 });
@@ -843,7 +843,24 @@ class _SettingsState extends State<Settings> {
                             () async {
                               final overlayContext = Overlay.of(context);
                               //submit form
-                              if (_formKey.currentState!.validate()) {
+                              if (Provider.of<InfoProvider>(context,
+                                              listen: false)
+                                          .restaurantInfo
+                                          .logoUrl ==
+                                      null ||
+                                  Provider.of<InfoProvider>(context,
+                                              listen: false)
+                                          .restaurantInfo
+                                          .imageUrl ==
+                                      null) {
+                                // show failure massage
+                                showTopSnackBar(
+                                    overlayContext,
+                                    const CustomSnackBar.error(
+                                      message:
+                                          "Please upload picture to proceed",
+                                    ));
+                              } else if (_formKey.currentState!.validate()) {
                                 setState(() {
                                   isLoading = true;
                                 });
@@ -870,6 +887,11 @@ class _SettingsState extends State<Settings> {
                                     countryOfOperation:
                                         restaurantInfo.countryOfOperation,
                                     logoUrl: restaurantInfo.logoUrl,
+
+                                    ///set hasAdmin to true if it is initial setup
+                                    hasAdmin: widget.isInitialSetup
+                                        ? true
+                                        : restaurantInfo.hasAdmin,
                                   ),
                                 );
                                 setState(() {
@@ -880,19 +902,28 @@ class _SettingsState extends State<Settings> {
                                   showTopSnackBar(
                                     overlayContext,
                                     const CustomSnackBar.success(
-                                      message:
-                                          "User Details Updated Successfully",
+                                      message: "Details Updated Successfully",
                                     ),
                                   );
                                   setState(() {
                                     isEditingRestaurantDetails = false;
                                   });
+                                  if (widget.isInitialSetup && mounted) {
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginScreen()),
+                                      (Route<dynamic> route) =>
+                                          false, // This predicate removes all previous routes
+                                    );
+                                  }
                                 } else {
                                   // show failure massage
                                   showTopSnackBar(
                                     overlayContext,
                                     const CustomSnackBar.error(
-                                      message: "User Details not updated",
+                                      message: "Details not updated",
                                     ),
                                   );
                                 }

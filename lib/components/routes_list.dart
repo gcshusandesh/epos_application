@@ -17,7 +17,7 @@ Map<String, Widget Function(BuildContext)> routes = {
   LoginScreen.routeName: (ctx) => const LoginScreen(),
   ResetPassword.routeName: (ctx) => const ResetPassword(),
   Dashboard.routeName: (ctx) => const Dashboard(),
-  Settings.routeName: (ctx) => Settings(),
+  Settings.routeName: (ctx) => const Settings(),
   ProfileScreen.routeName: (ctx) => const ProfileScreen(),
   ImageUpload.routeName: (ctx) => ImageUpload(),
 

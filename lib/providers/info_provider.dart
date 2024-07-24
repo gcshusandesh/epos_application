@@ -186,12 +186,13 @@ class InfoProvider extends ChangeNotifier {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       };
-      Map<String, String> body = {
+      Map<String, dynamic> body = {
         "name": editedRestaurantInfo.name!,
         "vat": editedRestaurantInfo.vatNumber!,
         "address": editedRestaurantInfo.address!,
         "postcode": editedRestaurantInfo.postcode!,
         "country": editedRestaurantInfo.countryOfOperation!,
+        "hasAdmin": editedRestaurantInfo.hasAdmin,
       };
 
       Map<String, dynamic> payloadBody = {

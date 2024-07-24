@@ -18,11 +18,13 @@ class CreateEmployee extends StatefulWidget {
     this.isEdit = false,
     this.user,
     this.index,
+    this.isInitialSetup = false,
   });
   static const routeName = "makeEmployee";
   final bool isEdit;
   final UserDataModel? user;
   final int? index;
+  final bool isInitialSetup;
 
   @override
   State<CreateEmployee> createState() => _CreateEmployeeState();
@@ -33,6 +35,7 @@ class _CreateEmployeeState extends State<CreateEmployee> {
   bool init = true;
   late double height;
   late double width;
+  List<String> userDropDownList = [];
 
   String? genderDropdownValue;
   String? typeDropdownValue;
@@ -50,6 +53,18 @@ class _CreateEmployeeState extends State<CreateEmployee> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
+      if (widget.isInitialSetup) {
+        userDropDownList = [
+          UserType.owner.name,
+        ];
+      } else {
+        userDropDownList = [
+          UserType.manager.name,
+          UserType.chef.name,
+          UserType.waiter.name,
+        ];
+      }
+
       if (widget.isEdit) {
         // populate controller with current employee value
         nameController.text = widget.user!.name;
@@ -103,19 +118,21 @@ class _CreateEmployeeState extends State<CreateEmployee> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              iconButton(
-                "assets/svg/arrow_back.svg",
-                height,
-                width,
-                () {
-                  Navigator.pop(context);
-                },
-                context: context,
-              ),
+              widget.isInitialSetup
+                  ? const SizedBox()
+                  : iconButton(
+                      "assets/svg/arrow_back.svg",
+                      height,
+                      width,
+                      () {
+                        Navigator.pop(context);
+                      },
+                      context: context,
+                    ),
               SizedBox(height: height * 2),
               Center(
                 child: Container(
-                  height: height * 82,
+                  height: widget.isInitialSetup ? height * 87 : height * 82,
                   width: width * 35,
                   padding: EdgeInsets.symmetric(
                       vertical: height * 2, horizontal: width * 2),
@@ -372,12 +389,9 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                       typeDropdownValue = newValue!;
                                     });
                                   },
-                                  items: <String>[
-                                    UserType.manager.name,
-                                    UserType.chef.name,
-                                    UserType.waiter.name,
-                                  ].map<DropdownMenuItem<String>>(
-                                      (String value) {
+                                  items: userDropDownList
+                                      .map<DropdownMenuItem<String>>(
+                                          (String value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Text(
@@ -394,7 +408,17 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                 height,
                                 width,
                                 () async {
-                                  if (_formKey.currentState!.validate()) {
+                                  if (genderDropdownValue == null ||
+                                      typeDropdownValue == null) {
+                                    showTopSnackBar(
+                                      Overlay.of(context),
+                                      const CustomSnackBar.error(
+                                        message:
+                                            "Please select gender and user type",
+                                      ),
+                                    );
+                                  } else if (_formKey.currentState!
+                                      .validate()) {
                                     setState(() {
                                       isLoading = true;
                                     });
@@ -428,11 +452,6 @@ class _CreateEmployeeState extends State<CreateEmployee> {
                                                   context,
                                                   listen: false)
                                               .createUser(
-                                        accessToken: Provider.of<AuthProvider>(
-                                                context,
-                                                listen: false)
-                                            .user
-                                            .accessToken!,
                                         name: nameController.text,
                                         username: usernameController.text,
                                         email: emailController.text,
