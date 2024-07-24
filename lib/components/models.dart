@@ -262,3 +262,22 @@ class OrderItem {
     required this.price,
   });
 }
+
+class ProcessedOrder {
+  int id;
+  String tableNumber;
+  String items;
+  String instructions;
+  double price;
+  String timestamp;
+  OrderStatus status;
+
+  ProcessedOrder(
+      {required this.id,
+      required this.tableNumber,
+      required this.items,
+      required this.instructions,
+      required this.price,
+      required this.timestamp,
+      required this.status});
+}

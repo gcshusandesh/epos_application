@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class OrderProvider extends ChangeNotifier {
-  List<Order> orders = [];
+  List<ProcessedOrder> processedOrders = [];
 
   Future<void> getOrders(
       {required String accessToken, required BuildContext context}) async {
@@ -28,97 +28,47 @@ class OrderProvider extends ChangeNotifier {
       //   notifyListeners();
       // }
       ///empty list before populating
-      orders = [];
-      orders.add(Order(
+      processedOrders = [];
+      processedOrders.add(ProcessedOrder(
           id: 1,
           tableNumber: "1A",
-          items: [
-            OrderItem(
-              name: "Chicken Burger",
-              price: 10.00,
-              quantity: 1,
-            ),
-            OrderItem(
-              name: "Coke",
-              price: 2.00,
-              quantity: 1,
-            ),
-          ],
+          items: "Burger x1",
           instructions: "Less Salt",
+          price: 10.0,
           timestamp: "2021-09-01 12:00:00",
           status: OrderStatus.processing));
-      orders.add(Order(
+      processedOrders.add(ProcessedOrder(
           id: 1,
           tableNumber: "1A",
-          items: [
-            OrderItem(
-              name: "Chicken Burger",
-              price: 10.00,
-              quantity: 1,
-            ),
-            OrderItem(
-              name: "Coke",
-              price: 2.00,
-              quantity: 1,
-            ),
-          ],
+          items: "Burger x1",
           instructions: "Less Salt",
+          price: 10.0,
           timestamp: "2021-09-01 12:00:00",
           status: OrderStatus.preparing));
-      orders.add(Order(
+      processedOrders.add(ProcessedOrder(
           id: 1,
           tableNumber: "1A",
-          items: [
-            OrderItem(
-              name: "Chicken Burger",
-              price: 10.00,
-              quantity: 1,
-            ),
-            OrderItem(
-              name: "Coke",
-              price: 2.00,
-              quantity: 1,
-            ),
-          ],
+          items: "Burger x1",
           instructions: "Less Salt",
+          price: 10.0,
           timestamp: "2021-09-01 12:00:00",
           status: OrderStatus.ready));
-      orders.add(Order(
+      processedOrders.add(ProcessedOrder(
           id: 1,
           tableNumber: "1A",
-          items: [
-            OrderItem(
-              name: "Chicken Burger",
-              price: 10.00,
-              quantity: 1,
-            ),
-            OrderItem(
-              name: "Coke",
-              price: 2.00,
-              quantity: 1,
-            ),
-          ],
+          items: "Burger x1",
           instructions: "Less Salt",
-          timestamp: "2021-09-01 12:00:00",
-          status: OrderStatus.cancelled));
-      orders.add(Order(
-          id: 1,
-          tableNumber: "1A",
-          items: [
-            OrderItem(
-              name: "Chicken Burger",
-              price: 10.00,
-              quantity: 1,
-            ),
-            OrderItem(
-              name: "Coke",
-              price: 2.00,
-              quantity: 1,
-            ),
-          ],
-          instructions: "Less Salt",
+          price: 10.0,
           timestamp: "2021-09-01 12:00:00",
           status: OrderStatus.served));
+      processedOrders.add(ProcessedOrder(
+          id: 1,
+          tableNumber: "1A",
+          items: "Burger x1",
+          instructions: "Less Salt",
+          price: 10.0,
+          timestamp: "2021-09-01 12:00:00",
+          status: OrderStatus.cancelled));
     } on SocketException {
       if (context.mounted) {
         await Navigator.push(
@@ -156,17 +106,6 @@ class OrderProvider extends ChangeNotifier {
         );
       }
     }
-  }
-
-  String displayItems({required List<OrderItem> items}) {
-    String display = "";
-    for (int i = 0; i < items.length; i++) {
-      display += items[i].name;
-      if (i != items.length - 1) {
-        display += ", ";
-      }
-    }
-    return display;
   }
 
   Future<void> updateOrders(

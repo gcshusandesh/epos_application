@@ -715,7 +715,7 @@ class MenuProvider extends ChangeNotifier {
   }
 
   Order order = Order(
-    id: 1,
+    id: 0,
     tableNumber: "",
     items: [],
     instructions: "",

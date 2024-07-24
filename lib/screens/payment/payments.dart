@@ -76,7 +76,7 @@ class _PaymentState extends State<Payment> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(6),
           child: Provider.of<OrderProvider>(context, listen: true)
-                  .orders
+                  .processedOrders
                   .isEmpty
               ? Column(
                   children: [

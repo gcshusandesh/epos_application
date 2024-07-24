@@ -88,7 +88,7 @@ class _OrdersState extends State<Orders> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(6),
           child: Provider.of<OrderProvider>(context, listen: true)
-                  .orders
+                  .processedOrders
                   .isEmpty
               ? Column(
                   children: [
@@ -155,13 +155,13 @@ class _OrdersState extends State<Orders> {
                     for (int index = 0;
                         index <
                             Provider.of<OrderProvider>(context, listen: true)
-                                .orders
+                                .processedOrders
                                 .length;
                         index++)
                       buildOrdersRow(
                         index: index,
                         order: Provider.of<OrderProvider>(context, listen: true)
-                            .orders[index],
+                            .processedOrders[index],
                       ),
                   ],
                 ),
@@ -170,20 +170,16 @@ class _OrdersState extends State<Orders> {
     );
   }
 
-  TableRow buildOrdersRow({required int index, required Order order}) {
+  TableRow buildOrdersRow({required int index, required ProcessedOrder order}) {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
         tableItem((index + 1).toString(), width, context),
-        tableItem(order.id.toString(), width, context),
+        tableItem("#${order.id.toString()}", width, context),
         tableItem(order.tableNumber, width, context),
-        tableItem(
-            Provider.of<OrderProvider>(context, listen: false)
-                .displayItems(items: order.items),
-            width,
-            context),
+        tableItem(order.items, width, context),
         tableItem(order.instructions, width, context),
-        tableItem("", width, context),
+        tableItem("£${order.price.toStringAsFixed(2)}", width, context),
         tableItem(order.timestamp, width, context),
         tableItem(order.status.name, width, context),
       ],
