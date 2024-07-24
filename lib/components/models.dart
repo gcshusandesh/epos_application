@@ -272,14 +272,17 @@ class ProcessedOrder {
   double adjustedPrice;
   String timestamp;
   OrderStatus status;
+  String? billedTo;
 
-  ProcessedOrder(
-      {required this.id,
-      required this.tableNumber,
-      required this.items,
-      required this.instructions,
-      required this.adjustedPrice,
-      required this.price,
-      required this.timestamp,
-      required this.status});
+  ProcessedOrder({
+    required this.id,
+    required this.tableNumber,
+    required this.items,
+    required this.instructions,
+    required this.adjustedPrice,
+    required this.price,
+    required this.timestamp,
+    required this.status,
+    this.billedTo,
+  });
 }
