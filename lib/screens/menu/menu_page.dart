@@ -9,6 +9,7 @@ import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';
 import 'package:epos_application/screens/menu/edit_menu.dart';
 import 'package:epos_application/screens/menu/edit_specials.dart';
+import 'package:epos_application/screens/menu/take_orders.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -528,27 +529,7 @@ class _MenuPageState extends State<MenuPage> {
                   ),
                   backgroundColor: Data.lightGreyBodyColor,
                   context: context,
-                  builder: (context) => SizedBox(
-                    height: height * 10,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(height: height * 2),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                              color: Colors.black, // Outline color
-                              width: 0.5, // Outline width
-                            ),
-                            borderRadius: BorderRadius.circular(6.0),
-                          ),
-                          height: 10,
-                          width: width * 20,
-                        ),
-                      ],
-                    ),
-                  ),
+                  builder: (context) => const OrderTaker(),
                 );
               },
             ),

@@ -20,7 +20,7 @@ Widget buildInputField(String hintText, double height, double width,
     BuildContext context, TextEditingController controller,
     {Function? validator, bool isNumber = false}) {
   return Container(
-    height: height * 6,
+    // height: height * 6,
     width: width * 40,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(5.0),

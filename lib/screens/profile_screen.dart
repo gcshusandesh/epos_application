@@ -352,6 +352,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   return null;
                                 },
                               ),
+                              SizedBox(height: height),
                               dataBox(
                                 title: "Username",
                                 hintText: "Username",
