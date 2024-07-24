@@ -6,7 +6,10 @@ import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/user_provider.dart';
+import 'package:epos_application/screens/kitchen.dart';
 import 'package:epos_application/screens/menu/menu_page.dart';
+import 'package:epos_application/screens/order/orders.dart';
+import 'package:epos_application/screens/payment/payments.dart';
 import 'package:epos_application/screens/profile_screen.dart';
 import 'package:epos_application/screens/settings.dart';
 import 'package:flutter/material.dart';
@@ -204,11 +207,10 @@ class _DashboardState extends State<Dashboard> {
               height,
               width,
               () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //       builder: (context) => const ColorPickerExample()),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Orders()),
+                );
               },
               context,
               isVisible: dashboardVisibility[1],
@@ -218,7 +220,12 @@ class _DashboardState extends State<Dashboard> {
               "Payment",
               height,
               width,
-              () {},
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Payment()),
+                );
+              },
               context,
               isVisible: dashboardVisibility[2],
             ),
@@ -227,7 +234,13 @@ class _DashboardState extends State<Dashboard> {
               "Sales History",
               height,
               width,
-              () {},
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const Payment(isSales: true)),
+                );
+              },
               context,
               isVisible: dashboardVisibility[3],
             ),
@@ -272,11 +285,10 @@ class _DashboardState extends State<Dashboard> {
                 height,
                 width,
                 () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //       builder: (context) => const ManageEmployee()),
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Kitchen()),
+                  );
                 },
                 context,
                 isVisible: dashboardVisibility[5],
