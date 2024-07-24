@@ -35,6 +35,9 @@ Widget buildInputField(String hintText, double height, double width,
       },
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
       decoration: InputDecoration(
+        isDense: true,
+        contentPadding:
+            EdgeInsets.symmetric(vertical: height * 1.1, horizontal: 5),
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(
             color: Data.lightGreyBodyColor, // Custom focused border color
@@ -224,6 +227,10 @@ Widget buildSmallText(
       : Text(
           text,
           style: style,
+          maxLines: null, // Allow unlimited lines
+          softWrap: true, // Enable text wrapping
+          overflow: TextOverflow
+              .visible, // Ensure text is visible if it exceeds bounds
         );
 }
 

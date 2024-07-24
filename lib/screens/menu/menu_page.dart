@@ -320,7 +320,7 @@ class _MenuPageState extends State<MenuPage> {
                   showChildAboveOverlay: false,
                   content: buildSmallText(
                       "${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].description}"
-                      "\nIngredients: ${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].description}",
+                      "\nIngredients: ${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].ingredients}",
                       Data.lightGreyTextColor,
                       width),
                   position: itemIndex % 3 == 0
@@ -586,19 +586,19 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  Expanded buildCarousel(BuildContext context) {
-    return Expanded(
-      flex: 1,
-      child: Provider.of<MenuProvider>(context, listen: true)
-                  .activeSpecialsList
-                  .isEmpty ||
-              Provider.of<MenuProvider>(context, listen: true)
-                      .activeSpecialsList
-                      .length ==
-                  1
-          ? Center(
-              child: Padding(
-                padding: EdgeInsets.only(top: height),
+  Widget buildCarousel(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: height),
+      child: Expanded(
+        flex: 1,
+        child: Provider.of<MenuProvider>(context, listen: true)
+                    .activeSpecialsList
+                    .isEmpty ||
+                Provider.of<MenuProvider>(context, listen: true)
+                        .activeSpecialsList
+                        .length ==
+                    1
+            ? Center(
                 child: Provider.of<MenuProvider>(context, listen: true)
                             .activeSpecialsList
                             .length ==
@@ -619,42 +619,42 @@ class _MenuPageState extends State<MenuPage> {
                             child: buildCustomText(
                                 "No Image", Data.darkTextColor, width * 2)),
                       ),
-              ),
-            )
-          : SizedBox(
-              height: height * 30,
-              child: CarouselSlider.builder(
-                itemCount: Provider.of<MenuProvider>(context, listen: true)
-                    .activeSpecialsList
-                    .length,
-                itemBuilder:
-                    (BuildContext context, int itemIndex, int pageViewIndex) {
-                  return Provider.of<MenuProvider>(context, listen: true)
-                              .activeSpecialsList[itemIndex]
-                              .image ==
-                          null
-                      ? Container(
-                          color: Data.lightGreyBodyColor,
-                          child: buildCustomText(
-                              "No Image", Data.darkTextColor, width),
-                        )
-                      : buildImage(
-                          Provider.of<MenuProvider>(context, listen: true)
-                              .activeSpecialsList[itemIndex]
-                              .image!,
-                          height * 25,
-                          width * 50,
-                          context: context,
-                          isNetworkImage: true,
-                        );
-                },
-                options: CarouselOptions(
-                  autoPlay: true,
-                  enlargeCenterPage: true,
-                  aspectRatio: 3.5,
+              )
+            : SizedBox(
+                height: height * 30,
+                child: CarouselSlider.builder(
+                  itemCount: Provider.of<MenuProvider>(context, listen: true)
+                      .activeSpecialsList
+                      .length,
+                  itemBuilder:
+                      (BuildContext context, int itemIndex, int pageViewIndex) {
+                    return Provider.of<MenuProvider>(context, listen: true)
+                                .activeSpecialsList[itemIndex]
+                                .image ==
+                            null
+                        ? Container(
+                            color: Data.lightGreyBodyColor,
+                            child: buildCustomText(
+                                "No Image", Data.darkTextColor, width),
+                          )
+                        : buildImage(
+                            Provider.of<MenuProvider>(context, listen: true)
+                                .activeSpecialsList[itemIndex]
+                                .image!,
+                            height * 25,
+                            width * 50,
+                            context: context,
+                            isNetworkImage: true,
+                          );
+                  },
+                  options: CarouselOptions(
+                    autoPlay: true,
+                    enlargeCenterPage: true,
+                    aspectRatio: 3.5,
+                  ),
                 ),
               ),
-            ),
+      ),
     );
   }
 

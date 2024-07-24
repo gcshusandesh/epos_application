@@ -436,14 +436,15 @@ class _UpdateDataState extends State<UpdateData> {
     );
   }
 
-  Container dataBox(
-      {required String title,
-      required String hintText,
-      required TextEditingController controller,
-      required Function? validator,
-      bool isRequired = false,
-      bool isNumber = false,
-      Widget dropDown = const SizedBox()}) {
+  Container dataBox({
+    required String title,
+    required String hintText,
+    required TextEditingController controller,
+    required Function? validator,
+    bool isRequired = false,
+    bool isNumber = false,
+    Widget dropDown = const SizedBox(),
+  }) {
     return Container(
       width: width * 31,
       padding: EdgeInsets.symmetric(vertical: height, horizontal: width * 2),
