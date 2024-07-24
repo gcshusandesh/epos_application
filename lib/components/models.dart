@@ -269,6 +269,7 @@ class ProcessedOrder {
   String items;
   String instructions;
   double price;
+  double adjustedPrice;
   String timestamp;
   OrderStatus status;
 
@@ -277,6 +278,7 @@ class ProcessedOrder {
       required this.tableNumber,
       required this.items,
       required this.instructions,
+      required this.adjustedPrice,
       required this.price,
       required this.timestamp,
       required this.status});

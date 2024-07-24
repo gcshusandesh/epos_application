@@ -35,6 +35,7 @@ class OrderProvider extends ChangeNotifier {
           items: "Burger x1",
           instructions: "Less Salt",
           price: 10.0,
+          adjustedPrice: 10.0,
           timestamp: "2021-09-01 12:00:00",
           status: OrderStatus.processing));
       processedOrders.add(ProcessedOrder(
@@ -43,6 +44,7 @@ class OrderProvider extends ChangeNotifier {
           items: "Burger x1",
           instructions: "Less Salt",
           price: 10.0,
+          adjustedPrice: 10.0,
           timestamp: "2021-09-01 12:00:00",
           status: OrderStatus.preparing));
       processedOrders.add(ProcessedOrder(
@@ -51,6 +53,7 @@ class OrderProvider extends ChangeNotifier {
           items: "Burger x1",
           instructions: "Less Salt",
           price: 10.0,
+          adjustedPrice: 10.0,
           timestamp: "2021-09-01 12:00:00",
           status: OrderStatus.ready));
       processedOrders.add(ProcessedOrder(
@@ -59,6 +62,7 @@ class OrderProvider extends ChangeNotifier {
           items: "Burger x1",
           instructions: "Less Salt",
           price: 10.0,
+          adjustedPrice: 10.0,
           timestamp: "2021-09-01 12:00:00",
           status: OrderStatus.served));
       processedOrders.add(ProcessedOrder(
@@ -67,6 +71,7 @@ class OrderProvider extends ChangeNotifier {
           items: "Burger x1",
           instructions: "Less Salt",
           price: 10.0,
+          adjustedPrice: 10.0,
           timestamp: "2021-09-01 12:00:00",
           status: OrderStatus.cancelled));
     } on SocketException {
