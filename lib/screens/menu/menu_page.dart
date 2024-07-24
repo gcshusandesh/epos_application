@@ -271,7 +271,7 @@ class _MenuPageState extends State<MenuPage> {
                           .image ==
                       null
                   ? SizedBox(
-                      height: width * 12,
+                      height: isTakingOrder ? width * 8 : width * 12,
                       width: width * 12,
                       child: Center(
                         child: buildCustomText(
@@ -288,7 +288,7 @@ class _MenuPageState extends State<MenuPage> {
                                   .selectedCategoryIndex]
                           .menuItems[itemIndex]
                           .image!,
-                      width * 12,
+                      isTakingOrder ? width * 8 : width * 12,
                       width * 12,
                       isNetworkImage: true,
                       context: context),
@@ -344,19 +344,52 @@ class _MenuPageState extends State<MenuPage> {
                     width,
                   ),
                 ),
-                // MyTooltip(
-                //   message: Provider.of<MenuProvider>(context, listen: true)
-                //       .menuItemsByCategory[
-                //           Provider.of<MenuProvider>(context, listen: true)
-                //               .selectedCategoryIndex]
-                //       .menuItems[itemIndex]
-                //       .description,
-                //   child: customIconButton(
-                //       "assets/svg/info.svg", height, width, () {}),
-                // )
               ],
             ),
           ),
+
+          ///add new code here
+          isTakingOrder
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    countButton(
+                      Icons.remove,
+                      height,
+                      width,
+                          () {
+                        Provider.of<MenuProvider>(context, listen: false)
+                            .decreaseMenuItemQuantity(itemIndex: itemIndex);
+                      },
+                    ),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: width),
+                      padding: EdgeInsets.symmetric(horizontal: width),
+                      decoration: BoxDecoration(
+                        color: Colors.white, // Inside color
+                        borderRadius: BorderRadius.circular(5), // Border radius
+                        border: Border.all(
+                            color: Data.lightGreyTextColor,
+                            width: 1.0), // Black border
+                      ),
+                      child: buildCustomText(
+                        "x${Provider.of<MenuProvider>(context, listen: false).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].quantity}",
+                        Data.lightGreyTextColor,
+                        width * 1.8,
+                      ),
+                    ),
+                    countButton(
+                      Icons.add,
+                      height,
+                      width,
+                          () {
+                        Provider.of<MenuProvider>(context, listen: false)
+                            .increaseMenuItemQuantity(itemIndex: itemIndex);
+                      },
+                    ),
+                  ],
+                )
+              : const SizedBox(),
         ],
       ),
     );
@@ -400,6 +433,47 @@ class _MenuPageState extends State<MenuPage> {
         width: width * 1.5,
         fit: BoxFit.contain,
       )),
+    );
+  }
+
+  Widget countButton(
+    IconData icon,
+    double height,
+    double width,
+    Function() onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        height: height * 5,
+        width: width * 4,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: Provider.of<InfoProvider>(context, listen: true)
+                .systemInfo
+                .iconsColor, // Outline color
+            width: 0.5, // Outline width
+          ),
+          borderRadius: BorderRadius.circular(6.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.25), // Shadow color
+              spreadRadius: 0, // How much the shadow spreads
+              blurRadius: 4, // How much the shadow blurs
+              offset: const Offset(0, 5), // The offset of the shadow
+            ),
+          ],
+        ),
+        child: Center(
+            child: Icon(
+          icon,
+          color: Provider.of<InfoProvider>(context, listen: false)
+              .systemInfo
+              .iconsColor,
+          size: width * 2,
+        )),
+      ),
     );
   }
 

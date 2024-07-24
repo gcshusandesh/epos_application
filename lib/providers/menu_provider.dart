@@ -696,4 +696,21 @@ class MenuProvider extends ChangeNotifier {
     menuItemsByCategory[selectedCategoryIndex].menuItems.add(menuItem);
     notifyListeners();
   }
+
+  void increaseMenuItemQuantity({required int itemIndex}) {
+    menuItemsByCategory[selectedCategoryIndex].menuItems[itemIndex].quantity++;
+    notifyListeners();
+  }
+
+  void decreaseMenuItemQuantity({required int itemIndex}) {
+    if (menuItemsByCategory[selectedCategoryIndex]
+            .menuItems[itemIndex]
+            .quantity >
+        0) {
+      menuItemsByCategory[selectedCategoryIndex]
+          .menuItems[itemIndex]
+          .quantity--;
+    }
+    notifyListeners();
+  }
 }

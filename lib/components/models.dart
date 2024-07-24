@@ -212,6 +212,7 @@ class MenuItems {
   String ingredients;
   double price;
   bool status;
+  int quantity;
 
   MenuItems({
     this.id,
@@ -221,5 +222,6 @@ class MenuItems {
     required this.ingredients,
     required this.price,
     required this.status,
+    this.quantity = 0,
   });
 }
