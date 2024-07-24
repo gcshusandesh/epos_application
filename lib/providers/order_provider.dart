@@ -158,6 +158,17 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
+  String displayItems({required List<OrderItem> items}) {
+    String display = "";
+    for (int i = 0; i < items.length; i++) {
+      display += items[i].name;
+      if (i != items.length - 1) {
+        display += ", ";
+      }
+    }
+    return display;
+  }
+
   Future<void> updateOrders(
       {required String accessToken, required BuildContext context}) async {
     Uri url = Uri.parse("${Data.baseUrl}/api/specials?populate=image");

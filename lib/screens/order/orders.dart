@@ -177,8 +177,12 @@ class _OrdersState extends State<Orders> {
         tableItem((index + 1).toString(), width, context),
         tableItem(order.id.toString(), width, context),
         tableItem(order.tableNumber, width, context),
-        tableItem("", width, context),
-        tableItem(order.tableNumber, width, context),
+        tableItem(
+            Provider.of<OrderProvider>(context, listen: false)
+                .displayItems(items: order.items),
+            width,
+            context),
+        tableItem(order.instructions, width, context),
         tableItem("", width, context),
         tableItem(order.timestamp, width, context),
         tableItem(order.status.name, width, context),
