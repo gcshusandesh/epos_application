@@ -714,19 +714,37 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Order order = Order(
+    id: 1,
+    tableNumber: "",
+    items: [],
+    instructions: "",
+    timestamp: DateTime.now().toString(),
+    status: "Pending",
+  );
   double totalAmount = 0;
   int totalCount = 0;
+  double vatAmount = 0;
+
   void calculateTotal() {
     double total = 0;
     int count = 0;
+    //clear list before generating new one
+    order.items.clear();
     for (var category in menuItemsByCategory) {
       for (var item in category.menuItems) {
         total += item.price * item.quantity;
         count += item.quantity;
+        if (item.quantity > 0) {
+          order.items.add(OrderItem(
+              name: item.name, quantity: item.quantity, price: item.price));
+        }
       }
     }
+    print("order items = ${order.items.length}");
     totalAmount = total;
     totalCount = count;
+    vatAmount = totalAmount * 0.20;
     notifyListeners();
   }
 }

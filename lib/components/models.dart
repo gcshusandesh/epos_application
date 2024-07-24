@@ -225,3 +225,32 @@ class MenuItems {
     this.quantity = 0,
   });
 }
+
+class Order {
+  int id;
+  String tableNumber;
+  List<OrderItem> items;
+  String instructions;
+  String timestamp;
+  String status;
+
+  Order(
+      {required this.id,
+      required this.tableNumber,
+      required this.items,
+      required this.instructions,
+      required this.timestamp,
+      required this.status});
+}
+
+class OrderItem {
+  String name;
+  int quantity;
+  double price;
+
+  OrderItem({
+    required this.name,
+    required this.quantity,
+    required this.price,
+  });
+}

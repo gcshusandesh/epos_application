@@ -1,9 +1,9 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
-import 'package:epos_application/providers/order_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -86,7 +86,7 @@ class _OrderTakerState extends State<OrderTaker> {
                         Data.greyTextColor,
                         width * 2.5),
                     buildCustomText(
-                        "Total Amount:  £ ${Provider.of<MenuProvider>(context, listen: true).totalAmount}",
+                        "Total Amount:  £ ${Provider.of<MenuProvider>(context, listen: true).totalAmount.toStringAsFixed(2)}",
                         Data.greyTextColor,
                         width * 2.5),
                   ],
@@ -154,11 +154,7 @@ class _OrderTakerState extends State<OrderTaker> {
               ],
             ),
             SizedBox(height: height),
-            Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(5),
-              child: tableSection(context),
-            ),
+            tableSection(context),
           ],
         ),
       ),
@@ -166,77 +162,157 @@ class _OrderTakerState extends State<OrderTaker> {
   }
 
   Widget tableSection(BuildContext context) {
-    return SingleChildScrollView(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(6),
-        child: Provider.of<OrderProvider>(context, listen: true)
-                .orderList
-                .isEmpty
-            ? Column(
-                children: [
-                  Table(
-                    border: TableBorder.all(color: Colors.black),
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Container(
+          color: Colors.white,
+          padding: const EdgeInsets.all(5),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: Provider.of<MenuProvider>(context, listen: true)
+                    .order
+                    .items
+                    .isEmpty
+                ? Column(
                     children: [
-                      TableRow(
+                      Table(
+                        border: TableBorder.all(color: Colors.black),
+                        defaultVerticalAlignment:
+                            TableCellVerticalAlignment.middle,
+                        children: [
+                          TableRow(
+                              decoration: const BoxDecoration(
+                                  color: Data.lightGreyBodyColor),
+                              children: [
+                                tableTitle("S.N.", width),
+                                tableTitle("Name", width),
+                                tableTitle("Quantity", width),
+                                tableTitle("Price", width),
+                                tableTitle("Action", width),
+                              ]),
+                        ],
+                      ),
+                      Container(
+                        width: width * 100,
+                        decoration: const BoxDecoration(
+                          color: Data.lightGreyBodyColor,
+                          border: Border(
+                            left: BorderSide(color: Colors.black, width: 1),
+                            right: BorderSide(color: Colors.black, width: 1),
+                            bottom: BorderSide(color: Colors.black, width: 1),
+                          ),
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: height),
+                            child: buildSmallText(
+                              "No Data Available",
+                              Data.lightGreyTextColor,
+                              width * 2,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  )
+                : Column(
+                    children: [
+                      Table(
+                        border: TableBorder.all(color: Colors.black),
+                        defaultVerticalAlignment:
+                            TableCellVerticalAlignment.middle,
+                        children: [
+                          TableRow(
+                              decoration: const BoxDecoration(
+                                  color: Data.lightGreyBodyColor),
+                              children: [
+                                tableTitle("S.N.", width),
+                                tableTitle("Name", width),
+                                tableTitle("Quantity", width),
+                                tableTitle("Price", width),
+                                tableTitle("Action", width),
+                              ]),
+                          for (int index = 0;
+                              index <
+                                  Provider.of<MenuProvider>(context,
+                                          listen: true)
+                                      .order
+                                      .items
+                                      .length;
+                              index++)
+                            buildOrdersRow(
+                              index: index,
+                              item: Provider.of<MenuProvider>(context,
+                                      listen: true)
+                                  .order
+                                  .items[index],
+                            ),
+                        ],
+                      ),
+                      Container(
+                          height: height * 5,
+                          width: double.infinity,
                           decoration: const BoxDecoration(
-                              color: Data.lightGreyBodyColor),
-                          children: [
-                            tableTitle("S.N.", width),
-                            tableTitle("Name", width),
-                            tableTitle("Quantity", width),
-                            tableTitle("Price", width),
-                            tableTitle("Action", width),
-                          ]),
+                            color: Data.lightGreyBodyColor,
+                            border: Border(
+                              left: BorderSide(color: Colors.black, width: 1),
+                              right: BorderSide(color: Colors.black, width: 1),
+                              bottom: BorderSide(color: Colors.black, width: 1),
+                            ),
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(5),
+                              bottomRight: Radius.circular(5),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Column(
+                                children: [
+                                  buildCustomText(
+                                      "Bill Amount: £ ${Provider.of<MenuProvider>(context, listen: true).totalAmount.toStringAsFixed(2)}",
+                                      Data.greyTextColor,
+                                      width * 2.5),
+                                  buildCustomText(
+                                      "(Inclusive 20% VAT @£${Provider.of<MenuProvider>(context, listen: true).vatAmount.toStringAsFixed(2)})",
+                                      Data.greyTextColor,
+                                      width * 2),
+                                ],
+                              ),
+                              SizedBox(width: width * 5),
+                            ],
+                          )),
                     ],
                   ),
-                  Container(
-                    width: width * 100,
-                    decoration: const BoxDecoration(
-                      color: Data.lightGreyBodyColor,
-                      border: Border(
-                        left: BorderSide(color: Colors.black, width: 1),
-                        right: BorderSide(color: Colors.black, width: 1),
-                        bottom: BorderSide(color: Colors.black, width: 1),
-                      ),
-                    ),
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: height),
-                        child: buildSmallText(
-                          "No Data Available",
-                          Data.lightGreyTextColor,
-                          width * 2,
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              )
-            : Table(
-                border: TableBorder.all(color: Colors.black),
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                children: [
-                  TableRow(
-                      decoration:
-                          const BoxDecoration(color: Data.lightGreyBodyColor),
-                      children: [
-                        tableTitle("S.N.", width),
-                        tableTitle("Name", width),
-                        tableTitle("Quantity", width),
-                        tableTitle("Price", width),
-                        tableTitle("Action", width),
-                      ]),
-                  // for (int index = 0;
-                  //     index <
-                  //         Provider.of<OrderProvider>(context, listen: true)
-                  //             .orderList
-                  //             .length;
-                  //     index++)
-                  // buildSpecialsRow(index),
-                ],
-              ),
+          ),
+        ),
       ),
+    );
+  }
+
+  TableRow buildOrdersRow({required int index, required OrderItem item}) {
+    return TableRow(
+      decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
+      children: [
+        tableItem((index + 1).toString(), width),
+        tableItem(item.name, width),
+        tableItem(item.quantity.toString(), width),
+        tableItem(item.price.toString(), width),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: width * 5,
+            vertical: height,
+          ),
+          child: textButton(
+            text: "Delete",
+            height: height * 0.6,
+            width: width * 1.2,
+            textColor: Data.redColor,
+            buttonColor: Data.redColor,
+            onTap: () async {},
+          ),
+        ),
+      ],
     );
   }
 
@@ -317,8 +393,20 @@ class _OrderTakerState extends State<OrderTaker> {
       child: buildBodyText(
         text,
         Data.lightGreyTextColor,
-        width,
+        width * 1.25,
         fontFamily: "RobotoMedium",
+      ),
+    ));
+  }
+
+  Widget tableItem(String text, double width) {
+    return Center(
+        child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: buildSmallText(
+        text,
+        Data.lightGreyTextColor,
+        width * 1.75,
       ),
     ));
   }

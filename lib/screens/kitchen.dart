@@ -142,6 +142,29 @@ class _KitchenState extends State<Kitchen> {
     );
   }
 
+  TableRow buildOrdersRow(int index) {
+    return TableRow(
+      decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
+      children: [
+        tableItem((index + 1).toString(), width),
+        tableItem((index + 1).toString(), width),
+        tableItem((index + 1).toString(), width),
+        tableItem((index + 1).toString(), width),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: width * 6),
+          child: textButton(
+            text: "Delete",
+            height: height,
+            width: width,
+            textColor: Data.redColor,
+            buttonColor: Data.redColor,
+            onTap: () async {},
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget tableTitle(String text, double width) {
     return Center(
         child: Padding(
