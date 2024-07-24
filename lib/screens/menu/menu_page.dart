@@ -42,6 +42,8 @@ class _MenuPageState extends State<MenuPage> {
     ]);
   }
 
+  TextEditingController tableNumberController = TextEditingController();
+
   Future<void> _fetchData() async {
     setState(() {
       isLoading = true;
@@ -81,6 +83,7 @@ class _MenuPageState extends State<MenuPage> {
   bool init = true;
   late double height;
   late double width;
+  bool isTakingOrder = false;
 
   @override
   void didChangeDependencies() async {
@@ -93,6 +96,12 @@ class _MenuPageState extends State<MenuPage> {
 
       init = false;
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    tableNumberController.dispose();
   }
 
   @override
@@ -119,7 +128,7 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  Scaffold mainBody(BuildContext context) {
+  Widget mainBody(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -509,6 +518,36 @@ class _MenuPageState extends State<MenuPage> {
         ),
         Row(
           children: [
+            isTakingOrder
+                ? textButton(
+                    text: "Proceed",
+                    height: height,
+                    width: width,
+                    textColor: Provider.of<InfoProvider>(context, listen: true)
+                        .systemInfo
+                        .iconsColor,
+                    buttonColor:
+                        Provider.of<InfoProvider>(context, listen: true)
+                            .systemInfo
+                            .iconsColor,
+                    onTap: () {
+                      showMaterialModalBottomSheet(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(12.0),
+                            topRight: Radius.circular(12.0),
+                          ),
+                        ),
+                        backgroundColor: Data.lightGreyBodyColor,
+                        context: context,
+                        builder: (context) => const OrderTaker(),
+                      );
+                    },
+                  )
+                : const SizedBox(),
+            SizedBox(
+              width: width,
+            ),
             textButton(
               text: "Take Order",
               height: height,
@@ -519,18 +558,11 @@ class _MenuPageState extends State<MenuPage> {
               buttonColor: Provider.of<InfoProvider>(context, listen: true)
                   .systemInfo
                   .iconsColor,
+              isSelected: isTakingOrder,
               onTap: () {
-                showMaterialModalBottomSheet(
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12.0),
-                      topRight: Radius.circular(12.0),
-                    ),
-                  ),
-                  backgroundColor: Data.lightGreyBodyColor,
-                  context: context,
-                  builder: (context) => const OrderTaker(),
-                );
+                setState(() {
+                  isTakingOrder = !isTakingOrder;
+                });
               },
             ),
             (Provider.of<AuthProvider>(context, listen: false).user.userType ==
@@ -718,5 +750,43 @@ class _MenuPageState extends State<MenuPage> {
         ),
       );
     }
+  }
+
+  Container dataBox({
+    required String title,
+    required String hintText,
+    required TextEditingController controller,
+    required Function? validator,
+    bool isRequired = false,
+    bool isNumber = false,
+  }) {
+    return Container(
+      width: width * 15,
+      padding: EdgeInsets.symmetric(vertical: height, horizontal: width),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              buildCustomText(title, Data.lightGreyTextColor, width * 1.75,
+                  fontFamily: "RobotoMedium"),
+              isRequired
+                  ? buildSmallText(
+                      "*",
+                      Data.redColor,
+                      width * 2,
+                    )
+                  : const SizedBox(),
+            ],
+          ),
+          SizedBox(height: height),
+          Container(
+            color: Colors.white,
+            child: buildInputField(hintText, height, width, context, controller,
+                validator: validator, isNumber: isNumber),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -185,6 +185,7 @@ Widget textButton({
   required Color textColor,
   required Color buttonColor,
   required Function() onTap,
+  bool isSelected = false,
 }) {
   return InkWell(
     onTap: onTap,
@@ -194,7 +195,7 @@ Widget textButton({
         color: Colors.white,
         border: Border.all(
           color: buttonColor, // Outline color
-          width: 0.5, // Outline width
+          width: isSelected ? 3 : 0.5, // Outline width
         ),
         borderRadius: BorderRadius.circular(6.0),
         boxShadow: [
