@@ -720,7 +720,7 @@ class MenuProvider extends ChangeNotifier {
     items: [],
     instructions: "",
     timestamp: DateTime.now().toString(),
-    status: "Pending",
+    status: OrderStatus.processing,
   );
   double totalAmount = 0;
   int totalCount = 0;

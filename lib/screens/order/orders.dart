@@ -1,7 +1,9 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +23,26 @@ class _OrdersState extends State<Orders> {
   bool isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await Provider.of<OrderProvider>(context, listen: false).getOrders(
+      accessToken:
+          Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+      context: context,
+    );
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (init) {
@@ -31,10 +53,6 @@ class _OrdersState extends State<Orders> {
 
       init = false;
     }
-  }
-
-  void _fetchData() {
-    //fetch data from api
   }
 
   @override
@@ -70,7 +88,7 @@ class _OrdersState extends State<Orders> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(6),
           child: Provider.of<OrderProvider>(context, listen: true)
-                  .orderList
+                  .orders
                   .isEmpty
               ? Column(
                   children: [
@@ -134,17 +152,37 @@ class _OrdersState extends State<Orders> {
                           tableTitle("Timestamp", width),
                           tableTitle("Status", width),
                         ]),
-                    // for (int index = 0;
-                    //     index <
-                    //         Provider.of<OrderProvider>(context, listen: true)
-                    //             .orderList
-                    //             .length;
-                    //     index++)
-                    // buildSpecialsRow(index),
+                    for (int index = 0;
+                        index <
+                            Provider.of<OrderProvider>(context, listen: true)
+                                .orders
+                                .length;
+                        index++)
+                      buildOrdersRow(
+                        index: index,
+                        order: Provider.of<OrderProvider>(context, listen: true)
+                            .orders[index],
+                      ),
                   ],
                 ),
         ),
       ),
+    );
+  }
+
+  TableRow buildOrdersRow({required int index, required Order order}) {
+    return TableRow(
+      decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
+      children: [
+        tableItem((index + 1).toString(), width, context),
+        tableItem(order.id.toString(), width, context),
+        tableItem(order.tableNumber, width, context),
+        tableItem("", width, context),
+        tableItem(order.tableNumber, width, context),
+        tableItem("", width, context),
+        tableItem(order.timestamp, width, context),
+        tableItem(order.status.name, width, context),
+      ],
     );
   }
 

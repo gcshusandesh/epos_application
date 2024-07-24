@@ -358,7 +358,7 @@ class _EditMenuState extends State<EditMenu> {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
-        tableItem((itemIndex + 1).toString(), width),
+        tableItem((itemIndex + 1).toString(), width, context),
         InkWell(
           onTap: () {
             if (isEditing) {
@@ -391,7 +391,8 @@ class _EditMenuState extends State<EditMenu> {
                                 .selectedCategoryIndex]
                         .menuItems[itemIndex]
                         .name,
-                    width),
+                    width,
+                    context),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -497,6 +498,7 @@ class _EditMenuState extends State<EditMenu> {
               .menuItems[itemIndex]
               .description,
           width,
+          context,
         ),
         tableItem(
           Provider.of<MenuProvider>(context, listen: true)
@@ -506,10 +508,12 @@ class _EditMenuState extends State<EditMenu> {
               .menuItems[itemIndex]
               .ingredients,
           width,
+          context,
         ),
         tableItem(
           "£ ${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].price}",
           width,
+          context,
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: width * 2),

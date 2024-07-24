@@ -1,5 +1,6 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -137,13 +138,25 @@ Widget tableTitle(String text, double width) {
   ));
 }
 
-Widget tableItem(String text, double width) {
+Widget tableItem(String text, double width, BuildContext context) {
   return Center(
       child: Padding(
     padding: const EdgeInsets.symmetric(horizontal: 5),
     child: buildSmallText(
       text,
-      Data.lightGreyTextColor,
+      text == OrderStatus.preparing.name
+          ? Provider.of<InfoProvider>(context, listen: true)
+              .systemInfo
+              .iconsColor
+          : text == OrderStatus.ready.name
+              ? Provider.of<InfoProvider>(context, listen: true)
+                  .systemInfo
+                  .primaryColor
+              : text == OrderStatus.cancelled.name
+                  ? Data.redColor
+                  : text == OrderStatus.served.name
+                      ? Data.greenColor
+                      : Data.lightGreyTextColor,
       width * 1.2,
     ),
   ));

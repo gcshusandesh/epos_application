@@ -250,7 +250,7 @@ class _EditSpecialsState extends State<EditSpecials> {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
-        tableItem((index + 1).toString(), width),
+        tableItem((index + 1).toString(), width, context),
         InkWell(
           onTap: () {
             if (isEditing) {
@@ -276,7 +276,8 @@ class _EditSpecialsState extends State<EditSpecials> {
                     Provider.of<MenuProvider>(context, listen: true)
                         .totalSpecialsList[index]
                         .name,
-                    width),
+                    width,
+                    context),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

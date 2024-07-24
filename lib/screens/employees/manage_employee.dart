@@ -229,7 +229,7 @@ class _ManageEmployeeState extends State<ManageEmployee> {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
-        tableItem((index + 1).toString(), width),
+        tableItem((index + 1).toString(), width, context),
         InkWell(
           onTap: () {
             if (isEditing) {
@@ -253,7 +253,8 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                     Provider.of<UserProvider>(context, listen: true)
                         .userList[index]
                         .name,
-                    width),
+                    width,
+                    context),
                 Row(
                   mainAxisAlignment: isEditing
                       ? MainAxisAlignment.spaceEvenly
@@ -292,17 +293,20 @@ class _ManageEmployeeState extends State<ManageEmployee> {
             Provider.of<UserProvider>(context, listen: true)
                 .userList[index]
                 .email,
-            width),
+            width,
+            context),
         tableItem(
             Provider.of<UserProvider>(context, listen: true)
                 .userList[index]
                 .phone,
-            width),
+            width,
+            context),
         tableItem(
             Provider.of<UserProvider>(context, listen: true)
                 .userList[index]
                 .gender,
-            width),
+            width,
+            context),
         employeeLabel(
             text: Provider.of<UserProvider>(context, listen: true)
                 .userList[index]

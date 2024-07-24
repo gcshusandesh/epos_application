@@ -252,7 +252,7 @@ class _EditCategoryState extends State<EditCategory> {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
-        tableItem((index + 1).toString(), width),
+        tableItem((index + 1).toString(), width, context),
         InkWell(
           onTap: () {
             if (isEditing) {
@@ -278,7 +278,8 @@ class _EditCategoryState extends State<EditCategory> {
                     Provider.of<MenuProvider>(context, listen: true)
                         .categoryList[index]
                         .name,
-                    width),
+                    width,
+                    context),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

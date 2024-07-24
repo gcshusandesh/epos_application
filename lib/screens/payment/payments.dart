@@ -76,7 +76,7 @@ class _PaymentState extends State<Payment> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(6),
           child: Provider.of<OrderProvider>(context, listen: true)
-                  .orderList
+                  .orders
                   .isEmpty
               ? Column(
                   children: [
@@ -164,10 +164,10 @@ class _PaymentState extends State<Payment> {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
-        tableItem((index + 1).toString(), width),
-        tableItem((index + 1).toString(), width),
-        tableItem((index + 1).toString(), width),
-        tableItem((index + 1).toString(), width),
+        tableItem((index + 1).toString(), width, context),
+        tableItem((index + 1).toString(), width, context),
+        tableItem((index + 1).toString(), width, context),
+        tableItem((index + 1).toString(), width, context),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: width * 6),
           child: textButton(

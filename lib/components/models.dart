@@ -226,13 +226,21 @@ class MenuItems {
   });
 }
 
+enum OrderStatus {
+  processing,
+  preparing,
+  ready,
+  served,
+  cancelled,
+}
+
 class Order {
   int id;
   String tableNumber;
   List<OrderItem> items;
   String instructions;
   String timestamp;
-  String status;
+  OrderStatus status;
 
   Order(
       {required this.id,
