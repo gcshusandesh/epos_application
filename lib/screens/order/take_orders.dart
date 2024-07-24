@@ -296,7 +296,7 @@ class _OrderTakerState extends State<OrderTaker> {
       children: [
         tableItem((index + 1).toString(), width),
         tableItem(item.name, width),
-        tableItem(item.quantity.toString(), width),
+        tableItem("x${item.quantity}", width),
         tableItem(item.price.toString(), width),
         Padding(
           padding: EdgeInsets.symmetric(
