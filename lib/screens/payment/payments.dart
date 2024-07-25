@@ -66,6 +66,9 @@ class _PaymentState extends State<Payment> {
     return Stack(
       children: [
         mainBody(context),
+        isLoading
+            ? onLoading(width: width, context: context)
+            : const SizedBox(),
       ],
     );
   }
