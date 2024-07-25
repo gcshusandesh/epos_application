@@ -242,6 +242,9 @@ class _PaymentState extends State<Payment> {
                       priceList:
                           Provider.of<MenuProvider>(context, listen: false)
                               .priceList,
+                      logoUrl: Provider.of<InfoProvider>(context, listen: false)
+                          .restaurantInfo
+                          .logoUrl!,
                     );
                     setState(() {
                       isLoading = false;
