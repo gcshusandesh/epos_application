@@ -30,6 +30,12 @@ class _PaymentState extends State<Payment> {
   bool isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (init) {
@@ -47,7 +53,12 @@ class _PaymentState extends State<Payment> {
     setState(() {
       isLoading = true;
     });
-    if (widget.isSales) {
+    await Provider.of<OrderProvider>(context, listen: false).getOrders(
+      accessToken:
+          Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+      context: context,
+    );
+    if (widget.isSales && mounted) {
       // if sales history get menuItems from API to make fresh pricelist for invoice
       await Provider.of<MenuProvider>(context, listen: false).getMenuList(
           accessToken: Provider.of<AuthProvider>(context, listen: false)

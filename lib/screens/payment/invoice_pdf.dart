@@ -32,6 +32,9 @@ Future<void> generateInvoicePdf({
 
   print("Length of priceList = ${priceList.length}");
 
+  // Parse the items string into a list of rows
+  List<List<String>> itemRows = _parseItems(order.items, currency, priceList);
+
   pdf.addPage(
     pw.Page(
       pageFormat: PdfPageFormat.a4,
@@ -56,8 +59,8 @@ Future<void> generateInvoicePdf({
                 pw.TableHelper.fromTextArray(
                   context: context,
                   data: <List<String>>[
-                    <String>['Description', 'Price'],
-                    <String>[order.items, '$currency${order.price}'],
+                    <String>['Description', 'Quantity', 'Subtotal'],
+                    ...itemRows, // Dynamic item rows
                   ],
                   headerStyle: pw.TextStyle(
                       fontSize: 20, font: ttf, fontWeight: pw.FontWeight.bold),
@@ -68,29 +71,32 @@ Future<void> generateInvoicePdf({
                   columnWidths: const {
                     0: pw.FlexColumnWidth(2),
                     1: pw.FlexColumnWidth(1),
+                    2: pw.FlexColumnWidth(1),
                   },
                 ),
                 pw.SizedBox(height: 20),
                 pw.Align(
                   alignment: pw.Alignment.centerRight,
-                  child: pw.Text('Sub Total: $currency${order.price}',
+                  child: pw.Text(
+                      'Sub Total: $currency${order.price.toStringAsFixed(2)}',
                       style: pw.TextStyle(fontSize: 22, font: ttf)),
                 ),
                 pw.Align(
                   alignment: pw.Alignment.centerRight,
                   child: pw.Text(
-                      'Discount: $currency${order.price - order.adjustedPrice}',
-                      style: pw.TextStyle(fontSize: 22, font: ttf)),
-                ),
-                pw.Align(
-                  alignment: pw.Alignment.centerRight,
-                  child: pw.Text('Total: $currency${order.adjustedPrice}',
+                      'Discount: $currency${(order.price - order.adjustedPrice).toStringAsFixed(2)}',
                       style: pw.TextStyle(fontSize: 22, font: ttf)),
                 ),
                 pw.Align(
                   alignment: pw.Alignment.centerRight,
                   child: pw.Text(
-                      '(Inclusive 20% VAT @$currency${order.adjustedPrice * 0.2})',
+                      'Total: $currency${order.adjustedPrice.toStringAsFixed(2)}',
+                      style: pw.TextStyle(fontSize: 22, font: ttf)),
+                ),
+                pw.Align(
+                  alignment: pw.Alignment.centerRight,
+                  child: pw.Text(
+                      '(Inclusive 20% VAT @$currency${(order.adjustedPrice * 0.2).toStringAsFixed(2)})',
                       style: pw.TextStyle(fontSize: 18, font: ttf)),
                 ),
               ],
@@ -142,4 +148,30 @@ Future<Uint8List?> _fetchImage(String url) async {
     print("Error fetching image: $e");
     return null;
   }
+}
+
+// Function to parse the items string into rows for the table
+List<List<String>> _parseItems(
+    String itemsString, String currency, List<OrderItem> priceList) {
+  // Split the items by commas and trim whitespace
+  final itemsList = itemsString.split(',').map((e) => e.trim()).toList();
+
+  // Create rows for the table
+  List<List<String>> rows = itemsList.map((item) {
+    final parts = item.split(' x');
+    if (parts.length == 2) {
+      final name = parts[0];
+      final quantity = int.tryParse(parts[1]) ?? 0;
+      // Find the item in the priceList to get its price
+      final orderItem = priceList.firstWhere(
+        (p) => p.name == name,
+        orElse: () => OrderItem(name: name, price: 0, quantity: 0),
+      );
+      final subtotal = orderItem.price * quantity;
+      return [name, 'x$quantity', '$currency${subtotal.toStringAsFixed(2)}'];
+    }
+    return [item, '', '']; // Default case if format is not as expected
+  }).toList();
+
+  return rows;
 }

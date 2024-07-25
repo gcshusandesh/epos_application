@@ -41,10 +41,10 @@ class OrderProvider extends ChangeNotifier {
       processedOrders.add(ProcessedOrder(
           id: 1,
           tableNumber: "1A",
-          items: "Burger x1",
+          items: "Sausage x1, Cereal x2",
           instructions: "Less Salt",
-          price: 10.0,
-          adjustedPrice: 10.0,
+          price: 24,
+          adjustedPrice: 24,
           timestamp: "2021-09-01 12:00:00",
           status: OrderStatus.preparing));
       processedOrders.add(ProcessedOrder(
@@ -60,10 +60,10 @@ class OrderProvider extends ChangeNotifier {
         ProcessedOrder(
           id: 1,
           tableNumber: "1A",
-          items: "Burger x1",
+          items: "Sausage x1, Cereal x2",
           instructions: "Less Salt",
-          price: 10.0,
-          adjustedPrice: 10.0,
+          price: 24,
+          adjustedPrice: 24,
           timestamp: "2021-09-01 12:00:00",
           status: OrderStatus.served,
           isPaid: true,
