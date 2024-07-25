@@ -214,7 +214,13 @@ class _PaymentState extends State<Payment> {
                     setState(() {
                       isLoading = true;
                     });
-                    await generateInvoicePdf();
+                    await generateInvoicePdf(
+                        context: context,
+                        order: order,
+                        currency:
+                            Provider.of<InfoProvider>(context, listen: false)
+                                .systemInfo
+                                .currencySymbol!);
                     setState(() {
                       isLoading = false;
                     });
@@ -312,26 +318,26 @@ class _PaymentState extends State<Payment> {
           },
           context: context,
         ),
-        widget.isSales
-            ? Row(
-                children: [
-                  SizedBox(width: width),
-                  textButton(
-                      text: "Export",
-                      height: height,
-                      width: width,
-                      textColor:
-                          Provider.of<InfoProvider>(context, listen: true)
-                              .systemInfo
-                              .primaryColor,
-                      buttonColor:
-                          Provider.of<InfoProvider>(context, listen: true)
-                              .systemInfo
-                              .primaryColor,
-                      onTap: () {}),
-                ],
-              )
-            : const SizedBox(),
+        // widget.isSales
+        //     ? Row(
+        //         children: [
+        //           SizedBox(width: width),
+        //           textButton(
+        //               text: "Export",
+        //               height: height,
+        //               width: width,
+        //               textColor:
+        //                   Provider.of<InfoProvider>(context, listen: true)
+        //                       .systemInfo
+        //                       .primaryColor,
+        //               buttonColor:
+        //                   Provider.of<InfoProvider>(context, listen: true)
+        //                       .systemInfo
+        //                       .primaryColor,
+        //               onTap: () {}),
+        //         ],
+        //       )
+        //     : const SizedBox(),
       ],
     );
   }

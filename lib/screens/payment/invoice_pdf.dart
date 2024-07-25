@@ -1,12 +1,23 @@
 import 'dart:io';
 
+import 'package:epos_application/components/models.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
-Future<void> generateInvoicePdf() async {
+Future<void> generateInvoicePdf(
+    {required BuildContext context,
+    required ProcessedOrder order,
+    required String currency}) async {
+  // Lock orientation to portrait
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   final pdf = pw.Document();
 
   // Load a font from the assets
@@ -26,18 +37,15 @@ Future<void> generateInvoicePdf() async {
                 style: pw.TextStyle(fontSize: 20, font: ttf)),
             pw.SizedBox(height: 20),
             pw.Text('Bill To:', style: pw.TextStyle(fontSize: 20, font: ttf)),
-            pw.Text('John Doe', style: pw.TextStyle(fontSize: 18, font: ttf)),
-            pw.Text('1234 Main St',
-                style: pw.TextStyle(fontSize: 18, font: ttf)),
-            pw.Text('Anytown, USA',
+            pw.Text(order.billedTo ?? "Guest",
                 style: pw.TextStyle(fontSize: 18, font: ttf)),
             pw.SizedBox(height: 20),
             pw.Text('Items:', style: pw.TextStyle(fontSize: 20, font: ttf)),
-            pw.Table.fromTextArray(
+            pw.TableHelper.fromTextArray(
+              context: context,
               data: <List<String>>[
-                <String>['Description', 'Quantity', 'Price', 'Total'],
-                <String>['Item 1', '2', '\$30', '\$60'],
-                <String>['Item 2', '1', '\$50', '\$50'],
+                <String>['Description', 'Price'],
+                <String>[order.items, '$currency${order.price}'],
               ],
               headerStyle: pw.TextStyle(
                   fontSize: 20, font: ttf, fontWeight: pw.FontWeight.bold),
@@ -48,13 +56,31 @@ Future<void> generateInvoicePdf() async {
               columnWidths: const {
                 0: pw.FlexColumnWidth(2),
                 1: pw.FlexColumnWidth(1),
-                2: pw.FlexColumnWidth(1),
-                3: pw.FlexColumnWidth(1),
               },
             ),
             pw.SizedBox(height: 20),
-            pw.Text('Total: \$110',
-                style: pw.TextStyle(fontSize: 20, font: ttf)),
+            pw.Align(
+              alignment: pw.Alignment.centerRight,
+              child: pw.Text('Sub Total: $currency${order.price}',
+                  style: pw.TextStyle(fontSize: 22, font: ttf)),
+            ),
+            pw.Align(
+              alignment: pw.Alignment.centerRight,
+              child: pw.Text(
+                  'Discount: $currency${order.price - order.adjustedPrice}',
+                  style: pw.TextStyle(fontSize: 22, font: ttf)),
+            ),
+            pw.Align(
+              alignment: pw.Alignment.centerRight,
+              child: pw.Text('Total: $currency${order.adjustedPrice}',
+                  style: pw.TextStyle(fontSize: 22, font: ttf)),
+            ),
+            pw.Align(
+              alignment: pw.Alignment.centerRight,
+              child: pw.Text(
+                  '(Inclusive 20% VAT @$currency${order.adjustedPrice * 0.2})',
+                  style: pw.TextStyle(fontSize: 18, font: ttf)),
+            ),
           ],
         );
       },
@@ -69,5 +95,53 @@ Future<void> generateInvoicePdf() async {
   // Optionally, print the PDF
   await Printing.layoutPdf(
     onLayout: (PdfPageFormat format) async => pdf.save(),
+  );
+
+  // Lock orientation to landscape when done
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+}
+
+class PdfPreviewScreen extends StatelessWidget {
+  final pw.Document pdf;
+
+  const PdfPreviewScreen({super.key, required this.pdf});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('PDF Preview'),
+        backgroundColor: Colors.red, // Set the nav bar color to red
+      ),
+      body: PdfPreview(
+        build: (format) => pdf.save(),
+        canDebug: false,
+        canChangeOrientation: false,
+        useActions: false,
+        actions: [
+          PdfPreviewAction(
+            icon: const Icon(Icons.share),
+            onPressed: (context, build, pageFormat) async {
+              final output = await getTemporaryDirectory();
+              final file = File("${output.path}/example.pdf");
+              await file.writeAsBytes(await pdf.save());
+              Printing.sharePdf(
+                  bytes: await pdf.save(), filename: 'example.pdf');
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void navigateToPdfPreview(BuildContext context, pw.Document pdf) {
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (context) => PdfPreviewScreen(pdf: pdf),
+    ),
   );
 }
