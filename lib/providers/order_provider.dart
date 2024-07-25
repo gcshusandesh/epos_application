@@ -257,7 +257,7 @@ class OrderProvider extends ChangeNotifier {
             <div class="content">
               <p>Dear Customer,</p>
               <p>Thank you for visiting $restaurantName. We are pleased to attach your invoice for the recent transaction.</p>
-              <p>Your invoice is attached below. If you have any questions, please do not hesitate to contact us.</p>
+              <p>If you have any questions, please do not hesitate to contact us.</p>
             </div>
             <div class="footer">
               <p>&copy; 2024 $restaurantName. All Rights Reserved.</p>

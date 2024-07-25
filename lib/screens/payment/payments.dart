@@ -218,7 +218,6 @@ class _PaymentState extends State<Payment> {
   TableRow buildPaymentRow(
       {required int index, required ProcessedOrder order}) {
     if (widget.isSales && order.status == OrderStatus.served && order.isPaid) {
-      // Display only served and paid items in Sales History
       return TableRow(
         decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
         children: [
@@ -262,6 +261,7 @@ class _PaymentState extends State<Payment> {
                     setState(() {
                       isLoading = true;
                     });
+
                     String pdfPath = await generateInvoicePdf(
                       context: context,
                       order: order,
@@ -276,42 +276,92 @@ class _PaymentState extends State<Payment> {
                           .restaurantInfo
                           .logoUrl!,
                     );
-                    late bool isSendSuccessful;
+
                     if (mounted) {
-                      isSendSuccessful = await Provider.of<OrderProvider>(
-                              context,
-                              listen: false)
-                          .sendInvoiceEmail(
-                              email: "gcshusandesh@gmail.com",
-                              filePath: pdfPath,
-                              restaurantName: Provider.of<InfoProvider>(context,
-                                      listen: false)
-                                  .restaurantInfo
-                                  .name!,
-                              context: context);
-                    }
-                    setState(() {
-                      isLoading = false;
-                    });
-                    if (isSendSuccessful) {
-                      showTopSnackBar(
-                        overlayContext,
-                        const CustomSnackBar.success(
-                          message:
-                              "Invoice has been successfully send to your email.",
-                        ),
-                      );
-                    } else {
-                      showTopSnackBar(
-                        overlayContext,
-                        const CustomSnackBar.error(
-                          message:
-                              "Invoice send failed. Please try again later.",
-                        ),
+                      // Show the email input dialog
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          final emailController = TextEditingController();
+
+                          return AlertDialog(
+                            title: const Text("Send Invoice"),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                TextField(
+                                  controller: emailController,
+                                  keyboardType: TextInputType.emailAddress,
+                                  decoration: const InputDecoration(
+                                    labelText: "Enter recipient's email",
+                                    hintText: "example@example.com",
+                                  ),
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () async {
+                                  final email = emailController.text;
+                                  if (email.isNotEmpty) {
+                                    bool isSendSuccessful =
+                                        await Provider.of<OrderProvider>(
+                                                context,
+                                                listen: false)
+                                            .sendInvoiceEmail(
+                                      email: email,
+                                      filePath: pdfPath,
+                                      restaurantName: Provider.of<InfoProvider>(
+                                              context,
+                                              listen: false)
+                                          .restaurantInfo
+                                          .name!,
+                                      context: context,
+                                    );
+
+                                    if (mounted) {
+                                      setState(() {
+                                        isLoading = false;
+                                      });
+
+                                      if (isSendSuccessful) {
+                                        showTopSnackBar(
+                                          overlayContext,
+                                          CustomSnackBar.success(
+                                            message:
+                                                "Invoice has been successfully sent to $email.",
+                                          ),
+                                        );
+                                      } else {
+                                        showTopSnackBar(
+                                          overlayContext,
+                                          const CustomSnackBar.error(
+                                            message:
+                                                "Failed to send invoice. Please try again later.",
+                                          ),
+                                        );
+                                      }
+                                      if (context.mounted) {
+                                        Navigator.pop(context);
+                                      }
+                                    }
+                                  }
+                                },
+                                child: const Text("Send"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Cancel"),
+                              ),
+                            ],
+                          );
+                        },
                       );
                     }
                   },
-                )
+                ),
               ],
             ),
           ),
@@ -411,6 +461,30 @@ class _PaymentState extends State<Payment> {
         //         ],
         //       )
         //     : const SizedBox(),
+      ],
+    );
+  }
+
+  // set up the AlertDialog
+  Widget alert() {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text("Initial Setup"),
+      content: const Text(
+          "No Admin Account detected.\nPlease create admin account and complete initial setup to continue"),
+      actions: [
+        SizedBox(height: height * 2),
+        textButton(
+          text: "Okay",
+          height: height,
+          width: width,
+          textColor: const Color(0xff063B9D),
+          buttonColor: const Color(0xff063B9D),
+          onTap: () {
+            // close dialog box
+            Navigator.pop(context);
+          },
+        ),
       ],
     );
   }
