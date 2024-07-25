@@ -3,7 +3,9 @@ import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
+import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
 import 'package:epos_application/screens/payment/invoice_pdf.dart';
 import 'package:flutter/material.dart';
@@ -40,9 +42,25 @@ class _PaymentState extends State<Payment> {
     }
   }
 
-  void _fetchData() {
+  void _fetchData() async {
     //fetch data from api
+    setState(() {
+      isLoading = true;
+    });
+    if (widget.isSales) {
+      // if sales history get menuItems from API to make fresh pricelist for invoice
+      await Provider.of<MenuProvider>(context, listen: false).getMenuList(
+          accessToken: Provider.of<AuthProvider>(context, listen: false)
+              .user
+              .accessToken!,
+          isItem: true,
+          context: context);
+    }
+    setState(() {
+      isLoading = false;
+    });
   }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -215,12 +233,16 @@ class _PaymentState extends State<Payment> {
                       isLoading = true;
                     });
                     await generateInvoicePdf(
-                        context: context,
-                        order: order,
-                        currency:
-                            Provider.of<InfoProvider>(context, listen: false)
-                                .systemInfo
-                                .currencySymbol!);
+                      context: context,
+                      order: order,
+                      currency:
+                          Provider.of<InfoProvider>(context, listen: false)
+                              .systemInfo
+                              .currencySymbol!,
+                      priceList:
+                          Provider.of<MenuProvider>(context, listen: false)
+                              .priceList,
+                    );
                     setState(() {
                       isLoading = false;
                     });

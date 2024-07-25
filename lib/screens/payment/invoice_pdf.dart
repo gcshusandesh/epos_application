@@ -11,7 +11,8 @@ import 'package:printing/printing.dart';
 Future<void> generateInvoicePdf(
     {required BuildContext context,
     required ProcessedOrder order,
-    required String currency}) async {
+    required String currency,
+    required List<OrderItem> priceList}) async {
   // Lock orientation to portrait
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -23,6 +24,8 @@ Future<void> generateInvoicePdf(
   // Load a font from the assets
   final fontData = await rootBundle.load('assets/fonts/OpenSans-Regular.ttf');
   final ttf = pw.Font.ttf(fontData);
+
+  print("Length of priceList = ${priceList.length}");
 
   pdf.addPage(
     pw.Page(

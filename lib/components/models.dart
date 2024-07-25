@@ -253,12 +253,12 @@ class Order {
 
 class OrderItem {
   String name;
-  int quantity;
+  int? quantity;
   double price;
 
   OrderItem({
     required this.name,
-    required this.quantity,
+    this.quantity,
     required this.price,
   });
 }

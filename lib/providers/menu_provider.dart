@@ -112,6 +112,7 @@ class MenuProvider extends ChangeNotifier {
         } else if (isItem) {
           // Empty list before fetching new data
           menuItemsByCategory = [];
+          priceList.clear(); // Clear priceList before populating it
 
           // Group menu items by category
           Map<String, List<MenuItems>> groupedItems = {};
@@ -135,6 +136,8 @@ class MenuProvider extends ChangeNotifier {
               price: attributes['price'].toDouble(),
               status: attributes['isActive'],
             ));
+            addItemToPriceList(attributes['name'],
+                attributes['price'].toDouble()); // Add to priceList
           }
 
           // Populate menuItemsByCategory using categoryList
@@ -288,6 +291,8 @@ class MenuProvider extends ChangeNotifier {
             status: data['attributes']['isActive'],
           );
           addMenuItemLocally(menuItem: newMenuItem);
+          addItemToPriceList(
+              newMenuItem.name, newMenuItem.price); // Add to priceList
         }
         notifyListeners();
         return true;
@@ -388,6 +393,8 @@ class MenuProvider extends ChangeNotifier {
           removeCategoryLocally(index: index);
         } else if (isItem) {
           removeMenuItemLocally(itemIndex: index);
+          deleteItemInPriceList(
+              menuItemsByCategory[selectedCategoryIndex].menuItems[index].name);
         }
         notifyListeners();
         return true;
@@ -516,6 +523,8 @@ class MenuProvider extends ChangeNotifier {
           updateCategoryLocally(editedCategory: editedCategory!, index: index);
         } else if (isItem) {
           updateMenuItemLocally(menuItem: editedMenuItems!, itemIndex: index);
+          updateItemInPriceList(
+              editedMenuItems.name, editedMenuItems.price); // Update priceList
         }
         notifyListeners();
         return true;
@@ -745,6 +754,28 @@ class MenuProvider extends ChangeNotifier {
     totalAmount = total;
     totalCount = count;
     vatAmount = totalAmount * 0.20;
+    notifyListeners();
+  }
+
+  List<OrderItem> priceList = [];
+  void addItemToPriceList(String name, double price) {
+    OrderItem newItem = OrderItem(name: name, price: price);
+    priceList.add(newItem);
+    notifyListeners();
+  }
+
+  void updateItemInPriceList(String name, double newPrice) {
+    for (var item in priceList) {
+      if (item.name == name) {
+        item.price = newPrice;
+        break;
+      }
+    }
+    notifyListeners();
+  }
+
+  void deleteItemInPriceList(String name) {
+    priceList.removeWhere((item) => item.name == name);
     notifyListeners();
   }
 }
