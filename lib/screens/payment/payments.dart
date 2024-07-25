@@ -250,12 +250,8 @@ class _PaymentState extends State<Payment> {
                   text: "Send",
                   height: height,
                   width: width,
-                  textColor: Provider.of<InfoProvider>(context, listen: true)
-                      .systemInfo
-                      .primaryColor,
-                  buttonColor: Provider.of<InfoProvider>(context, listen: true)
-                      .systemInfo
-                      .primaryColor,
+                  textColor: const Color(0xff063B9D),
+                  buttonColor: const Color(0xff063B9D),
                   onTap: () async {
                     final overlayContext = Overlay.of(context);
                     setState(() {
@@ -277,89 +273,100 @@ class _PaymentState extends State<Payment> {
                           .logoUrl!,
                     );
 
-                    if (mounted) {
-                      // Show the email input dialog
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          final emailController = TextEditingController();
+                    // Show the email input dialog
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        final emailController = TextEditingController();
 
-                          return AlertDialog(
-                            title: const Text("Send Invoice"),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                TextField(
-                                  controller: emailController,
-                                  keyboardType: TextInputType.emailAddress,
-                                  decoration: const InputDecoration(
-                                    labelText: "Enter recipient's email",
-                                    hintText: "example@example.com",
-                                  ),
+                        return AlertDialog(
+                          backgroundColor: Colors.white,
+                          title: const Text(
+                            "Send Invoice",
+                            style: TextStyle(color: Color(0xff063B9D)),
+                          ),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(
+                                controller: emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: const InputDecoration(
+                                  labelText: "Enter recipient's email",
+                                  hintText: "example@example.com",
+                                  labelStyle:
+                                      TextStyle(color: Color(0xff063B9D)),
+                                  hintStyle:
+                                      TextStyle(color: Color(0xff063B9D)),
                                 ),
-                              ],
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () async {
-                                  final email = emailController.text;
-                                  if (email.isNotEmpty) {
-                                    bool isSendSuccessful =
-                                        await Provider.of<OrderProvider>(
-                                                context,
-                                                listen: false)
-                                            .sendInvoiceEmail(
-                                      email: email,
-                                      filePath: pdfPath,
-                                      restaurantName: Provider.of<InfoProvider>(
-                                              context,
-                                              listen: false)
-                                          .restaurantInfo
-                                          .name!,
-                                      context: context,
-                                    );
-
-                                    if (mounted) {
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-
-                                      if (isSendSuccessful) {
-                                        showTopSnackBar(
-                                          overlayContext,
-                                          CustomSnackBar.success(
-                                            message:
-                                                "Invoice has been successfully sent to $email.",
-                                          ),
-                                        );
-                                      } else {
-                                        showTopSnackBar(
-                                          overlayContext,
-                                          const CustomSnackBar.error(
-                                            message:
-                                                "Failed to send invoice. Please try again later.",
-                                          ),
-                                        );
-                                      }
-                                      if (context.mounted) {
-                                        Navigator.pop(context);
-                                      }
-                                    }
-                                  }
-                                },
-                                child: const Text("Send"),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text("Cancel"),
                               ),
                             ],
-                          );
-                        },
-                      );
-                    }
+                          ),
+                          actions: [
+                            SizedBox(height: height * 2),
+                            TextButton(
+                              onPressed: () async {
+                                final email = emailController.text;
+                                if (email.isNotEmpty) {
+                                  bool isSendSuccessful =
+                                      await Provider.of<OrderProvider>(context,
+                                              listen: false)
+                                          .sendInvoiceEmail(
+                                    email: email,
+                                    filePath: pdfPath,
+                                    restaurantName: Provider.of<InfoProvider>(
+                                            context,
+                                            listen: false)
+                                        .restaurantInfo
+                                        .name!,
+                                    context: context,
+                                  );
+
+                                  if (mounted) {
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+
+                                    if (isSendSuccessful) {
+                                      showTopSnackBar(
+                                        overlayContext,
+                                        CustomSnackBar.success(
+                                          message:
+                                              "Invoice has been successfully sent to $email.",
+                                        ),
+                                      );
+                                    } else {
+                                      showTopSnackBar(
+                                        overlayContext,
+                                        const CustomSnackBar.error(
+                                          message:
+                                              "Failed to send invoice. Please try again later.",
+                                        ),
+                                      );
+                                    }
+
+                                    Navigator.pop(context);
+                                  }
+                                }
+                              },
+                              child: const Text(
+                                "Send",
+                                style: TextStyle(color: Color(0xff063B9D)),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text(
+                                "Cancel",
+                                style: TextStyle(color: Color(0xff063B9D)),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                 ),
               ],
