@@ -182,15 +182,18 @@ class _PaymentState extends State<Payment> {
       {required int index, required ProcessedOrder order}) {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
-      children: [
-        tableItem((index + 1).toString(), width, context),
-        tableItem("#${order.id}", width, context),
-        tableItem(order.tableNumber, width, context),
-        tableItem(order.items, width, context),
-        tableItem("£${order.price.toStringAsFixed(2)}", width, context),
-        tableItem("£${order.adjustedPrice.toStringAsFixed(2)}", width, context),
-        widget.isSales
-            ? Padding(
+      children: widget.isSales &&
+              (order.status == OrderStatus.served) &&
+              (order.isPaid)
+          ? [
+              tableItem((index + 1).toString(), width, context),
+              tableItem("#${order.id}", width, context),
+              tableItem(order.tableNumber, width, context),
+              tableItem(order.items, width, context),
+              tableItem("£${order.price.toStringAsFixed(2)}", width, context),
+              tableItem(
+                  "£${order.adjustedPrice.toStringAsFixed(2)}", width, context),
+              Padding(
                 padding:
                     EdgeInsets.symmetric(vertical: height, horizontal: width),
                 child: Row(
@@ -228,25 +231,47 @@ class _PaymentState extends State<Payment> {
                   ],
                 ),
               )
-            : Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: width * 3,
-                  vertical: height,
-                ),
-                child: textButton(
-                  text: "Pay",
-                  height: height,
-                  width: width,
-                  textColor: Provider.of<InfoProvider>(context, listen: true)
-                      .systemInfo
-                      .primaryColor,
-                  buttonColor: Provider.of<InfoProvider>(context, listen: true)
-                      .systemInfo
-                      .primaryColor,
-                  onTap: () async {},
-                ),
-              ),
-      ],
+            ]
+          : (order.status == OrderStatus.served)
+              ? [
+                  tableItem((index + 1).toString(), width, context),
+                  tableItem("#${order.id}", width, context),
+                  tableItem(order.tableNumber, width, context),
+                  tableItem(order.items, width, context),
+                  tableItem(
+                      "£${order.price.toStringAsFixed(2)}", width, context),
+                  tableItem("£${order.adjustedPrice.toStringAsFixed(2)}", width,
+                      context),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: width * 3,
+                      vertical: height,
+                    ),
+                    child: textButton(
+                      text: "Pay",
+                      height: height,
+                      width: width,
+                      textColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .primaryColor,
+                      buttonColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .primaryColor,
+                      onTap: () async {},
+                    ),
+                  ),
+                ]
+              : [
+                  const SizedBox(),
+                  const SizedBox(),
+                  const SizedBox(),
+                  const SizedBox(),
+                  const SizedBox(),
+                  const SizedBox(),
+                  const SizedBox()
+                ],
     );
   }
 

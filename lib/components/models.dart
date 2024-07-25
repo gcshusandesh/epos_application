@@ -273,6 +273,7 @@ class ProcessedOrder {
   String timestamp;
   OrderStatus status;
   String? billedTo;
+  bool isPaid;
 
   ProcessedOrder({
     required this.id,
@@ -284,5 +285,6 @@ class ProcessedOrder {
     required this.timestamp,
     required this.status,
     this.billedTo,
+    this.isPaid = false,
   });
 }
