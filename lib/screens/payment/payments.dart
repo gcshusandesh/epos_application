@@ -5,6 +5,7 @@ import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
+import 'package:epos_application/screens/payment/invoice_pdf.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -180,7 +181,8 @@ class _PaymentState extends State<Payment> {
 
   //
 
-  TableRow buildPaymentRow({required int index, required ProcessedOrder order}) {
+  TableRow buildPaymentRow(
+      {required int index, required ProcessedOrder order}) {
     if (widget.isSales && order.status == OrderStatus.served && order.isPaid) {
       // Display only served and paid items in Sales History
       return TableRow(
@@ -191,7 +193,8 @@ class _PaymentState extends State<Payment> {
           tableItem(order.tableNumber, width, context),
           tableItem(order.items, width, context),
           tableItem("£${order.price.toStringAsFixed(2)}", width, context),
-          tableItem("£${order.adjustedPrice.toStringAsFixed(2)}", width, context),
+          tableItem(
+              "£${order.adjustedPrice.toStringAsFixed(2)}", width, context),
           Padding(
             padding: EdgeInsets.symmetric(vertical: height, horizontal: width),
             child: Row(
@@ -207,7 +210,15 @@ class _PaymentState extends State<Payment> {
                   buttonColor: Provider.of<InfoProvider>(context, listen: true)
                       .systemInfo
                       .primaryColor,
-                  onTap: () async {},
+                  onTap: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    await generateInvoicePdf();
+                    setState(() {
+                      isLoading = false;
+                    });
+                  },
                 ),
                 SizedBox(width: width),
                 textButton(
@@ -227,7 +238,9 @@ class _PaymentState extends State<Payment> {
           ),
         ],
       );
-    } else if (!widget.isSales && order.status == OrderStatus.served && !order.isPaid) {
+    } else if (!widget.isSales &&
+        order.status == OrderStatus.served &&
+        !order.isPaid) {
       // Display only served but unpaid items in normal Payment page
       return TableRow(
         decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
@@ -237,9 +250,11 @@ class _PaymentState extends State<Payment> {
           tableItem(order.tableNumber, width, context),
           tableItem(order.items, width, context),
           tableItem("£${order.price.toStringAsFixed(2)}", width, context),
-          tableItem("£${order.adjustedPrice.toStringAsFixed(2)}", width, context),
+          tableItem(
+              "£${order.adjustedPrice.toStringAsFixed(2)}", width, context),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: width * 3, vertical: height),
+            padding:
+                EdgeInsets.symmetric(horizontal: width * 3, vertical: height),
             child: textButton(
               text: "Pay",
               height: height,
@@ -258,7 +273,6 @@ class _PaymentState extends State<Payment> {
     } else {
       // Return an empty TableRow if the order does not meet the conditions
       return const TableRow(children: [
-
         SizedBox(),
         SizedBox(),
         SizedBox(),
@@ -269,7 +283,6 @@ class _PaymentState extends State<Payment> {
       ]);
     }
   }
-
 
   Widget tableTitle(String text, double width) {
     return Center(
