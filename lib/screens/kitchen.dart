@@ -147,18 +147,31 @@ class _KitchenState extends State<Kitchen> {
     );
   }
 
-  TableRow buildOrdersRow({required int index, required ProcessedOrder order}) {
+  TableRow buildOrdersRow({
+    required int index,
+    required ProcessedOrder order,
+  }) {
+    // Only build the row if the order status is neither served nor cancelled
+
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
-      children: [
-        tableItem((index + 1).toString(), width, context),
-        tableItem(order.items, width, context),
-        tableItem(order.instructions ?? "N/A", width, context),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: height),
-          child: tableItem(order.status.name, width, context),
-        ),
-      ],
+      children: (order.status == OrderStatus.served ||
+              order.status == OrderStatus.cancelled)
+          ? [
+              const SizedBox(),
+              const SizedBox(),
+              const SizedBox(),
+              const SizedBox(),
+            ]
+          : [
+              tableItem((index + 1).toString(), width, context),
+              tableItem(order.items, width, context),
+              tableItem(order.instructions ?? "N/A", width, context),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: height),
+                child: tableItem(order.status.name, width, context),
+              ),
+            ],
     );
   }
 
