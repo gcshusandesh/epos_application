@@ -1,6 +1,7 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/order_provider.dart';
 import 'package:flutter/material.dart';
@@ -128,13 +129,17 @@ class _KitchenState extends State<Kitchen> {
                           tableTitle("Instructions", width),
                           tableTitle("Status", width),
                         ]),
-                    // for (int index = 0;
-                    //     index <
-                    //         Provider.of<OrderProvider>(context, listen: true)
-                    //             .orderList
-                    //             .length;
-                    //     index++)
-                    // buildSpecialsRow(index),
+                    for (int index = 0;
+                        index <
+                            Provider.of<OrderProvider>(context, listen: true)
+                                .processedOrders
+                                .length;
+                        index++)
+                      buildOrdersRow(
+                        index: index,
+                        order: Provider.of<OrderProvider>(context, listen: true)
+                            .processedOrders[index],
+                      ),
                   ],
                 ),
         ),
@@ -142,24 +147,16 @@ class _KitchenState extends State<Kitchen> {
     );
   }
 
-  TableRow buildOrdersRow(int index) {
+  TableRow buildOrdersRow({required int index, required ProcessedOrder order}) {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
         tableItem((index + 1).toString(), width, context),
-        tableItem((index + 1).toString(), width, context),
-        tableItem((index + 1).toString(), width, context),
-        tableItem((index + 1).toString(), width, context),
+        tableItem(order.items, width, context),
+        tableItem(order.instructions ?? "N/A", width, context),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: width * 6),
-          child: textButton(
-            text: "Delete",
-            height: height,
-            width: width,
-            textColor: Data.redColor,
-            buttonColor: Data.redColor,
-            onTap: () async {},
-          ),
+          padding: EdgeInsets.symmetric(vertical: height),
+          child: tableItem(order.status.name, width, context),
         ),
       ],
     );

@@ -238,7 +238,7 @@ class Order {
   int id;
   String tableNumber;
   List<OrderItem> items;
-  String instructions;
+  String? instructions;
   String timestamp;
   OrderStatus status;
 
@@ -246,7 +246,7 @@ class Order {
       {required this.id,
       required this.tableNumber,
       required this.items,
-      required this.instructions,
+      this.instructions,
       required this.timestamp,
       required this.status});
 }
@@ -267,7 +267,7 @@ class ProcessedOrder {
   int id;
   String tableNumber;
   String items;
-  String instructions;
+  String? instructions;
   double price;
   double adjustedPrice;
   String timestamp;
@@ -278,7 +278,7 @@ class ProcessedOrder {
     required this.id,
     required this.tableNumber,
     required this.items,
-    required this.instructions,
+    this.instructions,
     required this.adjustedPrice,
     required this.price,
     required this.timestamp,
