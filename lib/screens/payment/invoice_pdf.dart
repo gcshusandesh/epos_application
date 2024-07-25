@@ -7,9 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 
-Future<void> generateInvoicePdf({
+Future<String> generateInvoicePdf({
   required BuildContext context,
   required ProcessedOrder order,
   required String currency,
@@ -119,19 +118,22 @@ Future<void> generateInvoicePdf({
 
   // Save the PDF document
   final output = await getTemporaryDirectory();
-  final file = File("${output.path}/invoice.pdf");
+  final filePath = "${output.path}/invoice_${order.id}.pdf";
+  final file = File(filePath);
   await file.writeAsBytes(await pdf.save());
 
-  // Optionally, print the PDF
-  await Printing.layoutPdf(
-    onLayout: (PdfPageFormat format) async => pdf.save(),
-  );
+  // // Optionally, print the PDF
+  // await Printing.layoutPdf(
+  //   onLayout: (PdfPageFormat format) async => pdf.save(),
+  // );
 
   // Lock orientation to landscape when done
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
+
+  return filePath;
 }
 
 // Function to fetch an image from a URL

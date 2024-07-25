@@ -10,6 +10,8 @@ import 'package:epos_application/providers/order_provider.dart';
 import 'package:epos_application/screens/payment/invoice_pdf.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class Payment extends StatefulWidget {
   const Payment({
@@ -242,11 +244,25 @@ class _PaymentState extends State<Payment> {
                   buttonColor: Provider.of<InfoProvider>(context, listen: true)
                       .systemInfo
                       .primaryColor,
+                  onTap: () async {},
+                ),
+                SizedBox(width: width),
+                textButton(
+                  text: "Send",
+                  height: height,
+                  width: width,
+                  textColor: Provider.of<InfoProvider>(context, listen: true)
+                      .systemInfo
+                      .primaryColor,
+                  buttonColor: Provider.of<InfoProvider>(context, listen: true)
+                      .systemInfo
+                      .primaryColor,
                   onTap: () async {
+                    final overlayContext = Overlay.of(context);
                     setState(() {
                       isLoading = true;
                     });
-                    await generateInvoicePdf(
+                    String pdfPath = await generateInvoicePdf(
                       context: context,
                       order: order,
                       currency:
@@ -260,23 +276,41 @@ class _PaymentState extends State<Payment> {
                           .restaurantInfo
                           .logoUrl!,
                     );
+                    late bool isSendSuccessful;
+                    if (mounted) {
+                      isSendSuccessful = await Provider.of<OrderProvider>(
+                              context,
+                              listen: false)
+                          .sendInvoiceEmail(
+                              email: "gcshusandesh@gmail.com",
+                              filePath: pdfPath,
+                              restaurantName: Provider.of<InfoProvider>(context,
+                                      listen: false)
+                                  .restaurantInfo
+                                  .name!,
+                              context: context);
+                    }
                     setState(() {
                       isLoading = false;
                     });
+                    if (isSendSuccessful) {
+                      showTopSnackBar(
+                        overlayContext,
+                        const CustomSnackBar.success(
+                          message:
+                              "Invoice has been successfully send to your email.",
+                        ),
+                      );
+                    } else {
+                      showTopSnackBar(
+                        overlayContext,
+                        const CustomSnackBar.error(
+                          message:
+                              "Invoice send failed. Please try again later.",
+                        ),
+                      );
+                    }
                   },
-                ),
-                SizedBox(width: width),
-                textButton(
-                  text: "Send",
-                  height: height,
-                  width: width,
-                  textColor: Provider.of<InfoProvider>(context, listen: true)
-                      .systemInfo
-                      .primaryColor,
-                  buttonColor: Provider.of<InfoProvider>(context, listen: true)
-                      .systemInfo
-                      .primaryColor,
-                  onTap: () async {},
                 )
               ],
             ),
