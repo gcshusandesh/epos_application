@@ -12,6 +12,7 @@ import 'package:epos_application/providers/order_provider.dart';
 import 'package:epos_application/screens/payment/invoice_pdf.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
@@ -634,7 +635,7 @@ class _PayState extends State<Pay> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: height * 60,
+      height: height * 55,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: width * 5),
         child: Column(
@@ -663,72 +664,38 @@ class _PayState extends State<Pay> {
             buildCustomText("Payment Details", Data.greyTextColor, width * 3,
                 fontWeight: FontWeight.bold),
             Row(
-              children: [
-                textButton(
-                  text: "Pay by Card",
-                  height: height,
-                  width: width,
-                  textColor: const Color(0xff063B9D),
-                  buttonColor: const Color(0xff063B9D),
-                  isSelected: isPayByCard,
-                  onTap: () async {
-                    setState(() {
-                      isPayByCard = true;
-                    });
-                  },
-                ),
-                SizedBox(
-                  width: width * 2,
-                ),
-                textButton(
-                  text: "Pay by Cash",
-                  height: height,
-                  width: width,
-                  textColor: const Color(0xff063B9D),
-                  buttonColor: const Color(0xff063B9D),
-                  isSelected: !isPayByCard,
-                  onTap: () async {
-                    setState(() {
-                      isPayByCard = false;
-                    });
-                  },
-                ),
-              ],
-            ),
-            SizedBox(height: height * 2),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                buildCustomText("Bill Amount", Data.greyTextColor, width * 1.5,
-                    fontWeight: FontWeight.bold),
-                SizedBox(width: width * 2),
-                buildCustomText("£28.00", Data.lightGreyTextColor, width * 1.5,
-                    fontWeight: FontWeight.bold),
-                SizedBox(width: width * 2),
-                buildCustomText("(Inclusive 20%VAT@5.6)",
-                    Data.lightGreyTextColor, width * 1.5),
-              ],
-            ),
-            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Row(
                   children: [
-                    calculatedBox(
-                        title: "Bill Amount",
-                        hintText: "Bill Amount",
-                        data: "0"),
-                    dataBox(
-                      title: "Discount",
-                      hintText: "Discount",
-                      isRequired: false,
-                      controller: discountController,
+                    textButton(
+                      text: "Pay by Card",
+                      height: height,
+                      width: width,
+                      textColor: const Color(0xff063B9D),
+                      buttonColor: const Color(0xff063B9D),
+                      isSelected: isPayByCard,
+                      onTap: () async {
+                        setState(() {
+                          isPayByCard = true;
+                        });
+                      },
                     ),
-                    calculatedBox(
-                      title: "Change",
-                      hintText: "Change",
-                      data: "0",
+                    SizedBox(
+                      width: width * 2,
+                    ),
+                    textButton(
+                      text: "Pay by Cash",
+                      height: height,
+                      width: width,
+                      textColor: const Color(0xff063B9D),
+                      buttonColor: const Color(0xff063B9D),
+                      isSelected: !isPayByCard,
+                      onTap: () async {
+                        setState(() {
+                          isPayByCard = false;
+                        });
+                      },
                     ),
                   ],
                 ),
@@ -743,6 +710,111 @@ class _PayState extends State<Pay> {
                     }
                     return null;
                   },
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: height * 2),
+                    Row(
+                      children: [
+                        buildCustomText(
+                            "Bill Amount", Data.greyTextColor, width * 1.5,
+                            fontWeight: FontWeight.bold),
+                        SizedBox(width: width * 2),
+                        buildCustomText(
+                            "£28.00", Data.lightGreyTextColor, width * 1.5,
+                            fontWeight: FontWeight.bold),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        calculatedBox(
+                            title: "Bill Amount",
+                            hintText: "Bill Amount",
+                            data: "0"),
+                        dataBox(
+                          title: "Discount",
+                          hintText: "Discount",
+                          isRequired: false,
+                          controller: discountController,
+                        ),
+                        calculatedBox(
+                          title: "Change",
+                          hintText: "Change",
+                          data: "0",
+                          isChange: true,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: height * 2,
+                    ),
+                    Row(
+                      children: [
+                        buildCustomText("Revised Bill Amount",
+                            Data.greyTextColor, width * 2,
+                            fontWeight: FontWeight.bold),
+                        SizedBox(width: width * 2),
+                        buildCustomText(
+                            "£28.00", Data.lightGreyTextColor, width * 2,
+                            fontWeight: FontWeight.bold),
+                        SizedBox(width: width * 2),
+                        buildCustomText("(Inclusive 20%VAT@5.6)",
+                            Data.lightGreyTextColor, width * 1.5),
+                      ],
+                    ),
+                  ],
+                ),
+                InkWell(
+                  onDoubleTap: () {
+                    //TODO: call payment update api
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(
+                      top: height * 2,
+                    ),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5.0),
+                        border: Border.all(
+                          color: Data.darkTextColor, // Outline color
+                          width: 1, // Outline width
+                        )),
+                    height: height * 25,
+                    width: width * 30,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        isPayByCard
+                            ? SizedBox(
+                                height: width * 10,
+                                width: width * 10,
+                                child: SvgPicture.asset(
+                                  "assets/svg/payment.svg",
+                                  colorFilter: ColorFilter.mode(
+                                      Provider.of<InfoProvider>(context,
+                                              listen: true)
+                                          .systemInfo
+                                          .iconsColor,
+                                      BlendMode.srcIn),
+                                ),
+                              )
+                            : const SizedBox(),
+                        buildCustomText(
+                            isPayByCard
+                                ? "Pay by Contactless/Card"
+                                : "Pay by Cash",
+                            Data.lightGreyTextColor,
+                            width * 1.5),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -768,6 +840,9 @@ class _PayState extends State<Pay> {
         children: [
           Row(
             children: [
+              SizedBox(
+                width: width * 1.25,
+              ),
               buildCustomText(title, Data.lightGreyTextColor, width * 1.5,
                   fontFamily: "RobotoMedium"),
               isRequired
@@ -780,11 +855,24 @@ class _PayState extends State<Pay> {
             ],
           ),
           SizedBox(height: height),
-          Container(
-            width: width * 5,
-            color: Colors.white,
-            child: buildInputField("0", height, width, context, controller,
-                validator: validator, isNumber: isNumber),
+          Row(
+            children: [
+              buildCustomText(
+                "£",
+                Data.lightGreyTextColor,
+                width * 1.5,
+                fontFamily: "RobotoMedium",
+              ),
+              SizedBox(
+                width: width,
+              ),
+              Container(
+                width: width * 5,
+                color: Colors.white,
+                child: buildInputField("0", height, width, context, controller,
+                    validator: validator, isNumber: isNumber),
+              ),
+            ],
           ),
         ],
       ),
@@ -795,6 +883,7 @@ class _PayState extends State<Pay> {
     required String title,
     required String hintText,
     required String data,
+    bool isChange = false,
   }) {
     return Container(
       width: width * 10,
@@ -802,27 +891,49 @@ class _PayState extends State<Pay> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          buildCustomText(title, Data.lightGreyTextColor, width * 1.5,
-              fontFamily: "RobotoMedium"),
-          SizedBox(height: height),
-          Container(
-            color: Colors.white,
-            child: Container(
-              width: width * 5,
-              padding: EdgeInsets.symmetric(vertical: height * 0.5),
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(5.0),
-                  border: Border.all(
-                    color: Data.lightGreyBodyColor, // Outline color
-                    width: 0.5, // Outline width
-                  )),
-              child: buildCustomText(
-                data,
-                Data.lightGreyTextColor,
-                20,
+          Row(
+            children: [
+              SizedBox(
+                width: isChange ? width * 1.25 : 0,
               ),
-            ),
+              buildCustomText(title, Data.lightGreyTextColor, width * 1.5,
+                  fontFamily: "RobotoMedium"),
+            ],
+          ),
+          SizedBox(height: height),
+          Row(
+            children: [
+              buildCustomText(
+                "£",
+                Data.lightGreyTextColor,
+                width * 1.5,
+                fontFamily: "RobotoMedium",
+              ),
+              SizedBox(width: width),
+              Container(
+                color: Colors.white,
+                child: Container(
+                  width: width * 5,
+                  padding: EdgeInsets.only(
+                    top: height,
+                    bottom: height,
+                    left: width * 0.5,
+                  ),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5.0),
+                      border: Border.all(
+                        color: Data.darkTextColor, // Outline color
+                        width: 1, // Outline width
+                      )),
+                  child: buildCustomText(
+                    data,
+                    Data.lightGreyTextColor,
+                    16,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -859,6 +970,48 @@ class _PayState extends State<Pay> {
               validator: validator, isNumber: isNumber),
         ),
       ],
+    );
+  }
+
+  Widget buildInputField(String hintText, double height, double width,
+      BuildContext context, TextEditingController controller,
+      {Function? validator, bool isNumber = false}) {
+    return Container(
+      // height: height * 6,
+      width: width * 40,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+      child: TextFormField(
+        cursorColor: Provider.of<InfoProvider>(context, listen: true)
+            .systemInfo
+            .primaryColor,
+        controller: controller,
+        validator: (value) {
+          return validator!(value);
+        },
+        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+        decoration: InputDecoration(
+          isDense: true,
+          contentPadding:
+              EdgeInsets.symmetric(vertical: height * 1.1, horizontal: 5),
+          enabledBorder: const OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Data.darkTextColor, // Custom focused border color
+              width: 1, // Custom focused border width (optional)
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Provider.of<InfoProvider>(context, listen: true)
+                  .systemInfo
+                  .primaryColor, // Custom focused border color
+              width: 2.0, // Custom focused border width (optional)
+            ),
+          ),
+          hintText: hintText,
+        ),
+      ),
     );
   }
 }
