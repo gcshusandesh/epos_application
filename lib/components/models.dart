@@ -239,7 +239,7 @@ class Order {
   String tableNumber;
   List<OrderItem> items;
   String? instructions;
-  String timestamp;
+  String? timestamp;
   OrderStatus status;
 
   Order(
@@ -247,7 +247,7 @@ class Order {
       required this.tableNumber,
       required this.items,
       this.instructions,
-      required this.timestamp,
+      this.timestamp,
       required this.status});
 }
 
@@ -264,25 +264,25 @@ class OrderItem {
 }
 
 class ProcessedOrder {
-  int id;
+  int? id;
   String tableNumber;
   String items;
   String? instructions;
   double price;
   double discount;
-  String timestamp;
+  String? timestamp;
   OrderStatus status;
   String? billedTo;
   bool isPaid;
 
   ProcessedOrder({
-    required this.id,
+    this.id,
     required this.tableNumber,
     required this.items,
     this.instructions,
     required this.price,
     this.discount = 0,
-    required this.timestamp,
+    this.timestamp,
     required this.status,
     this.billedTo,
     this.isPaid = false,

@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -81,7 +79,6 @@ class MenuProvider extends ChangeNotifier {
       var response = await http.get(url, headers: headers);
       var extractedData = json.decode(response.body);
       var data = extractedData['data'];
-      print("data = $data");
 
       if (response.statusCode == 200) {
         if (isSpecials) {
@@ -147,8 +144,6 @@ class MenuProvider extends ChangeNotifier {
               menuItems: groupedItems[category.name] ?? [],
             ));
           }
-
-          print("menuItemsByCategory length: ${menuItemsByCategory.length}");
         }
         notifyListeners();
       } else {
@@ -175,7 +170,6 @@ class MenuProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print("Error: $e");
       if (context.mounted) {
         await Navigator.push(
             context,
@@ -208,7 +202,6 @@ class MenuProvider extends ChangeNotifier {
     required String accessToken,
     required BuildContext context,
   }) async {
-    print("creating menu item");
     late Uri url;
     if (isSpecials) {
       url = Uri.parse("${Data.baseUrl}/api/specials");
@@ -256,8 +249,6 @@ class MenuProvider extends ChangeNotifier {
       );
       var extractedData = json.decode(response.body);
       var data = extractedData['data'];
-      print("status code = ${response.statusCode}");
-      print("data = $data");
       if (response.statusCode == 200) {
         if (isSpecials) {
           Specials newSpecials = Specials(
@@ -325,7 +316,6 @@ class MenuProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
-      print("error $e");
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
@@ -362,7 +352,6 @@ class MenuProvider extends ChangeNotifier {
     required String accessToken,
     required BuildContext context,
   }) async {
-    print("deleting menu item");
     late Uri url;
     if (isSpecials) {
       url = Uri.parse("${Data.baseUrl}/api/specials/$id");
@@ -382,10 +371,7 @@ class MenuProvider extends ChangeNotifier {
         url,
         headers: headers,
       );
-      var extractedData = json.decode(response.body);
-      var data = extractedData['data'];
-      print("delete status code = ${response.statusCode}");
-      print("delete data = $data");
+      json.decode(response.body);
       if (response.statusCode == 200) {
         if (isSpecials) {
           removeSpecialsLocally(index: index);
@@ -463,7 +449,6 @@ class MenuProvider extends ChangeNotifier {
     Category? editedCategory,
     MenuItems? editedMenuItems,
   }) async {
-    print("updating menu item");
     late Uri url;
     if (isSpecials) {
       url = Uri.parse("${Data.baseUrl}/api/specials/${editedSpecials!.id}");
@@ -512,10 +497,7 @@ class MenuProvider extends ChangeNotifier {
         body: jsonEncode(payloadBody),
       );
 
-      var extractedData = json.decode(response.body);
-      var data = extractedData['data'];
-      print("updating status code = ${response.statusCode}");
-      print("updating data = $data");
+      json.decode(response.body);
       if (response.statusCode == 200) {
         if (isSpecials) {
           updateSpecialsLocally(editedSpecials: editedSpecials!, index: index);
@@ -630,8 +612,6 @@ class MenuProvider extends ChangeNotifier {
       }
     }
 
-    print("index to select = $indexToSelect");
-
     for (int i = 0; i < categoryList.length; i++) {
       if (i == indexToSelect) {
         categoryList[i].isSelected = true;
@@ -672,7 +652,6 @@ class MenuProvider extends ChangeNotifier {
         selectedCategory.menuItems.where((item) => item.status).toList();
 
     // Return the count of active items in the selected category
-    print("Active count");
     return activeItems.length;
   }
 
@@ -737,7 +716,6 @@ class MenuProvider extends ChangeNotifier {
     tableNumber: "",
     items: [],
     instructions: "",
-    timestamp: DateTime.now().toString(),
     status: OrderStatus.processing,
   );
   double totalAmount = 0;
@@ -787,7 +765,6 @@ class MenuProvider extends ChangeNotifier {
         }
       }
     }
-    print("order items = ${order.items.length}");
     totalAmount = total;
     totalCount = count;
     vatAmount = totalAmount * 0.20;

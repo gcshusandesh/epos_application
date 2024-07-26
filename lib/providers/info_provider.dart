@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -92,7 +90,6 @@ class InfoProvider extends ChangeNotifier {
     required SystemInfo editedSystemInfo,
     bool isDefault = false,
   }) async {
-    print("setting data");
     var url = Uri.parse("${Data.baseUrl}/api/setting");
     try {
       Map<String, String> headers = {
@@ -147,7 +144,6 @@ class InfoProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
-      print("error = $e");
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
@@ -231,7 +227,6 @@ class InfoProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
-      print("error = $e");
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
@@ -311,7 +306,6 @@ class InfoProvider extends ChangeNotifier {
       }
     } catch (e) {
       if (context.mounted) {
-        print(e);
         // Navigate to Error Page
         await Navigator.push(
           context,

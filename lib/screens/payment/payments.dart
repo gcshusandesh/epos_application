@@ -241,7 +241,7 @@ class _PaymentState extends State<Payment> {
           tableItem(order.items, width, context),
           tableItem("£${(order.price - order.discount).toStringAsFixed(2)}",
               width, context),
-          tableItem(order.timestamp, width, context),
+          tableItem(order.timestamp!, width, context),
           Padding(
             padding: EdgeInsets.symmetric(vertical: height, horizontal: width),
             child: Row(

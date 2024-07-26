@@ -97,7 +97,7 @@ class OrderProvider extends ChangeNotifier {
     return formatter.format(dateTime);
   }
 
-  Future<void> createOrders({
+  Future<bool> createOrders({
     required String accessToken,
     required BuildContext context,
     required ProcessedOrder order,
@@ -129,12 +129,14 @@ class OrderProvider extends ChangeNotifier {
         body: jsonEncode(payloadBody),
       );
       var extractedData = json.decode(response.body);
-      var data = extractedData['data'];
-      print("data = $data");
 
+      print("body = $extractedData");
+      print("response code = ${response.statusCode}");
       if (response.statusCode == 200) {
         notifyListeners();
+        return true;
       }
+      return false;
     } on SocketException {
       if (context.mounted) {
         await Navigator.push(
@@ -154,6 +156,7 @@ class OrderProvider extends ChangeNotifier {
           order: order,
         );
       }
+      return false;
     } catch (e) {
       print("Error: $e");
       if (context.mounted) {
@@ -173,6 +176,7 @@ class OrderProvider extends ChangeNotifier {
           order: order,
         );
       }
+      return false;
     }
   }
 
@@ -214,6 +218,7 @@ class OrderProvider extends ChangeNotifier {
       var extractedData = json.decode(response.body);
       var data = extractedData['data'];
       print("data = $data");
+      print("response code = ${response.statusCode}");
 
       if (response.statusCode == 200) {
         notifyListeners();

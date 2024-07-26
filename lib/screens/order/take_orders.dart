@@ -2,8 +2,10 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
+import 'package:epos_application/providers/order_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -20,6 +22,7 @@ class _OrderTakerState extends State<OrderTaker> {
   // Add any state variables you need here
   int itemCount = 3; // Example state variable
 
+  bool isLoading = false;
   bool init = true;
   late double height;
   late double width;
@@ -44,134 +47,235 @@ class _OrderTakerState extends State<OrderTaker> {
     specialInstructionController.dispose();
   }
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: height * 60,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: width * 5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: height * 0.5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                buildCustomText(
-                    "                  ", Data.greyTextColor, width * 3),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Colors.black, // Outline color
-                      width: 0.5, // Outline width
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: height * 0.5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  buildCustomText(
+                      "                  ", Data.greyTextColor, width * 3),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.black, // Outline color
+                        width: 0.5, // Outline width
+                      ),
+                      borderRadius: BorderRadius.circular(6.0),
                     ),
-                    borderRadius: BorderRadius.circular(6.0),
+                    height: 10,
+                    width: width * 20,
                   ),
-                  height: 10,
-                  width: width * 20,
-                ),
-                buildCustomText("Order ID: #3", Data.greyTextColor, width * 3,
-                    fontWeight: FontWeight.bold),
-              ],
-            ),
-            SizedBox(
-              height: height,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  children: [
-                    buildCustomText(
-                        "Total Items Ordered: ${Provider.of<MenuProvider>(context, listen: true).totalCount}",
-                        Data.greyTextColor,
-                        width * 2.5),
-                    buildCustomText(
-                        "Total Amount:  £ ${Provider.of<MenuProvider>(context, listen: true).totalAmount.toStringAsFixed(2)}",
-                        Data.greyTextColor,
-                        width * 2.5),
-                  ],
-                ),
-                Column(
-                  children: [
-                    dataBox(
-                      title: "Table Number",
-                      hintText: "Table Number",
-                      isRequired: true,
-                      controller: tableNumberController,
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Enter a valid name!';
-                        }
-                        return null;
-                      },
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    textButton(
-                      text: "Discard",
-                      height: height * 0.8,
-                      width: width * 1.5,
-                      textColor: Data.redColor,
-                      buttonColor: Data.redColor,
-                      onTap: () {
-                        showDialog(
-                          barrierDismissible: false,
-                          context: context,
-                          builder: (BuildContext context) {
-                            return alert();
-                          },
-                        );
-                      },
-                    ),
-                    SizedBox(width: width * 2),
-                    textButton(
-                      text: "Confirm",
-                      height: height * 0.8,
-                      width: width * 1.5,
-                      textColor:
-                          Provider.of<InfoProvider>(context, listen: true)
-                              .systemInfo
-                              .primaryColor,
-                      buttonColor:
-                          Provider.of<InfoProvider>(context, listen: true)
-                              .systemInfo
-                              .primaryColor,
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: height * 2),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                specialDataBox(
-                  title: "Special Instructions",
-                  hintText: "Special Instructions",
-                  controller: specialInstructionController,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Enter a valid name!';
-                    }
-                    return null;
-                  },
-                ),
-              ],
-            ),
-            SizedBox(height: height),
-            tableSection(context),
-          ],
+                  buildCustomText("Order ID: #3", Data.greyTextColor, width * 3,
+                      fontWeight: FontWeight.bold),
+                ],
+              ),
+              SizedBox(
+                height: height,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      buildCustomText(
+                          "Total Items Ordered: ${Provider.of<MenuProvider>(context, listen: true).totalCount}",
+                          Data.greyTextColor,
+                          width * 2.5),
+                      buildCustomText(
+                          "Total Amount:  £ ${Provider.of<MenuProvider>(context, listen: true).totalAmount.toStringAsFixed(2)}",
+                          Data.greyTextColor,
+                          width * 2.5),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      dataBox(
+                        title: "Table Number",
+                        hintText: "Table Number",
+                        isRequired: true,
+                        controller: tableNumberController,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Enter a valid name!';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      textButton(
+                        text: "Discard",
+                        height: height * 0.8,
+                        width: width * 1.5,
+                        textColor: Data.redColor,
+                        buttonColor: Data.redColor,
+                        onTap: () {
+                          showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return discardAlert();
+                            },
+                          );
+                        },
+                      ),
+                      SizedBox(width: width * 2),
+                      textButton(
+                        text: "Confirm",
+                        height: height * 0.8,
+                        width: width * 1.5,
+                        textColor:
+                            Provider.of<InfoProvider>(context, listen: true)
+                                .systemInfo
+                                .primaryColor,
+                        buttonColor:
+                            Provider.of<InfoProvider>(context, listen: true)
+                                .systemInfo
+                                .primaryColor,
+                        onTap: () async {
+                          final overlay = Overlay.of(context);
+                          if (Provider.of<MenuProvider>(context, listen: false)
+                                  .totalCount ==
+                              0) {
+                            showTopSnackBar(
+                              overlay,
+                              const CustomSnackBar.error(
+                                message:
+                                    "Please select items to place an order",
+                              ),
+                            );
+                          } else if (_formKey.currentState!.validate()) {
+                            showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return confirmAlert();
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: height * 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  specialDataBox(
+                    title: "Special Instructions",
+                    hintText: "Special Instructions",
+                    controller: specialInstructionController,
+                    validator: (value) {},
+                  ),
+                ],
+              ),
+              SizedBox(height: height),
+              tableSection(context),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget alert() {
+  Widget confirmAlert() {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text("Confirm Order"),
+      content: const Text("Are you sure you want to confirm this order?"),
+      actions: [
+        SizedBox(height: height * 2),
+        alertTextButton(
+          text: "Confirm",
+          height: height,
+          width: width,
+          textColor: Data.greenColor,
+          buttonColor: Data.greenColor,
+          onTap: () async {
+            final overlay = Overlay.of(context);
+            Navigator.pop(context);
+            setState(() {
+              isLoading = true;
+            });
+            bool isSuccessful =
+                await Provider.of<OrderProvider>(context, listen: false)
+                    .createOrders(
+              accessToken: Provider.of<AuthProvider>(context, listen: false)
+                  .user
+                  .accessToken!,
+              context: context,
+              order: ProcessedOrder(
+                tableNumber: tableNumberController.text,
+                items: "",
+                instructions: specialInstructionController.text,
+                price: 0,
+                discount: 0,
+                status: OrderStatus.processing,
+                isPaid: false,
+              ),
+            );
+            setState(() {
+              isLoading = false;
+            });
+            if (isSuccessful) {
+              showTopSnackBar(
+                overlay,
+                const CustomSnackBar.success(
+                  message: "Order placed successfully",
+                ),
+              );
+            } else {
+              showTopSnackBar(
+                overlay,
+                const CustomSnackBar.error(
+                  message: "Failed to place order",
+                ),
+              );
+            }
+            if (mounted) {
+              Provider.of<MenuProvider>(context, listen: false)
+                  .resetAllOrders();
+              // close the order taker
+              Navigator.pop(context);
+            }
+          },
+        ),
+        SizedBox(
+          height: height,
+        ),
+        alertTextButton(
+          text: "Cancel",
+          height: height,
+          width: width,
+          textColor: Data.redColor,
+          buttonColor: Data.redColor,
+          onTap: () {
+            // close dialog box
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget discardAlert() {
     return AlertDialog(
       backgroundColor: Colors.white,
       title: const Text("Discard Order"),
@@ -457,10 +561,10 @@ class _OrderTakerState extends State<OrderTaker> {
     required String title,
     required String hintText,
     required TextEditingController controller,
-    required Function? validator,
     bool isRequired = false,
     bool isNumber = false,
     bool isSpecial = false,
+    Function? validator,
   }) {
     return Row(
       children: [
@@ -479,7 +583,7 @@ class _OrderTakerState extends State<OrderTaker> {
         Container(
           color: Colors.white,
           child: buildInputField(hintText, height, width, context, controller,
-              validator: validator, isNumber: isNumber),
+              isNumber: isNumber, validator: validator),
         ),
       ],
     );

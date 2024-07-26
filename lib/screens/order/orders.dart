@@ -180,7 +180,7 @@ class _OrdersState extends State<Orders> {
         tableItem(order.items, width, context),
         tableItem(order.instructions ?? "N/A", width, context),
         tableItem("£${order.price.toStringAsFixed(2)}", width, context),
-        tableItem(order.timestamp, width, context),
+        tableItem(order.timestamp!, width, context),
         tableItem(order.status.name, width, context),
       ],
     );
