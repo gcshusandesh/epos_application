@@ -12,6 +12,7 @@ import 'package:epos_application/providers/order_provider.dart';
 import 'package:epos_application/screens/payment/invoice_pdf.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -336,7 +337,19 @@ class _PaymentState extends State<Payment> {
               buttonColor: Provider.of<InfoProvider>(context, listen: true)
                   .systemInfo
                   .primaryColor,
-              onTap: () async {},
+              onTap: () async {
+                showMaterialModalBottomSheet(
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12.0),
+                      topRight: Radius.circular(12.0),
+                    ),
+                  ),
+                  backgroundColor: Data.lightGreyBodyColor,
+                  context: context,
+                  builder: (context) => const Pay(),
+                );
+              },
             ),
           ),
         ],
@@ -579,6 +592,273 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
         build: (format) => File(widget.pdfPath).readAsBytesSync(),
         canDebug: false,
       ),
+    );
+  }
+}
+
+class Pay extends StatefulWidget {
+  const Pay({super.key});
+
+  @override
+  State<Pay> createState() => _PayState();
+}
+
+class _PayState extends State<Pay> {
+  bool init = true;
+  late double height;
+  late double width;
+  TextEditingController billedToController = TextEditingController();
+  TextEditingController discountController = TextEditingController();
+
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    if (init) {
+      //initialize size config at the very beginning
+      SizeConfig().init(context);
+      height = SizeConfig.safeBlockVertical;
+      width = SizeConfig.safeBlockHorizontal;
+      init = false;
+    }
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+    billedToController.dispose();
+    discountController.dispose();
+  }
+
+  bool isPayByCard = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: height * 60,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: width * 5),
+        child: Column(
+          children: [
+            SizedBox(height: height * 0.5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                buildCustomText("             ", Data.greyTextColor, width * 3),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.black, // Outline color
+                      width: 0.5, // Outline width
+                    ),
+                    borderRadius: BorderRadius.circular(6.0),
+                  ),
+                  height: 10,
+                  width: width * 20,
+                ),
+                buildCustomText("Order ID: #3", Data.greyTextColor, width * 2,
+                    fontWeight: FontWeight.bold),
+              ],
+            ),
+            buildCustomText("Payment Details", Data.greyTextColor, width * 3,
+                fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                textButton(
+                  text: "Pay by Card",
+                  height: height,
+                  width: width,
+                  textColor: const Color(0xff063B9D),
+                  buttonColor: const Color(0xff063B9D),
+                  isSelected: isPayByCard,
+                  onTap: () async {
+                    setState(() {
+                      isPayByCard = true;
+                    });
+                  },
+                ),
+                SizedBox(
+                  width: width * 2,
+                ),
+                textButton(
+                  text: "Pay by Cash",
+                  height: height,
+                  width: width,
+                  textColor: const Color(0xff063B9D),
+                  buttonColor: const Color(0xff063B9D),
+                  isSelected: !isPayByCard,
+                  onTap: () async {
+                    setState(() {
+                      isPayByCard = false;
+                    });
+                  },
+                ),
+              ],
+            ),
+            SizedBox(height: height * 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                buildCustomText("Bill Amount", Data.greyTextColor, width * 1.5,
+                    fontWeight: FontWeight.bold),
+                SizedBox(width: width * 2),
+                buildCustomText("£28.00", Data.lightGreyTextColor, width * 1.5,
+                    fontWeight: FontWeight.bold),
+                SizedBox(width: width * 2),
+                buildCustomText("(Inclusive 20%VAT@5.6)",
+                    Data.lightGreyTextColor, width * 1.5),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Row(
+                  children: [
+                    calculatedBox(
+                        title: "Bill Amount",
+                        hintText: "Bill Amount",
+                        data: "0"),
+                    dataBox(
+                      title: "Discount",
+                      hintText: "Discount",
+                      isRequired: false,
+                      controller: discountController,
+                    ),
+                    calculatedBox(
+                      title: "Change",
+                      hintText: "Change",
+                      data: "0",
+                    ),
+                  ],
+                ),
+                billedToBox(
+                  title: "Billed To",
+                  hintText: "Billed To",
+                  isRequired: true,
+                  controller: billedToController,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Enter a valid name!';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Container dataBox({
+    required String title,
+    required String hintText,
+    required TextEditingController controller,
+    Function? validator,
+    bool isRequired = false,
+    bool isNumber = false,
+  }) {
+    return Container(
+      width: width * 10,
+      padding: EdgeInsets.symmetric(vertical: height),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              buildCustomText(title, Data.lightGreyTextColor, width * 1.5,
+                  fontFamily: "RobotoMedium"),
+              isRequired
+                  ? buildSmallText(
+                      "*",
+                      Data.redColor,
+                      width,
+                    )
+                  : const SizedBox(),
+            ],
+          ),
+          SizedBox(height: height),
+          Container(
+            width: width * 5,
+            color: Colors.white,
+            child: buildInputField("0", height, width, context, controller,
+                validator: validator, isNumber: isNumber),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container calculatedBox({
+    required String title,
+    required String hintText,
+    required String data,
+  }) {
+    return Container(
+      width: width * 10,
+      padding: EdgeInsets.symmetric(vertical: height),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildCustomText(title, Data.lightGreyTextColor, width * 1.5,
+              fontFamily: "RobotoMedium"),
+          SizedBox(height: height),
+          Container(
+            color: Colors.white,
+            child: Container(
+              width: width * 5,
+              padding: EdgeInsets.symmetric(vertical: height * 0.5),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(5.0),
+                  border: Border.all(
+                    color: Data.lightGreyBodyColor, // Outline color
+                    width: 0.5, // Outline width
+                  )),
+              child: buildCustomText(
+                data,
+                Data.lightGreyTextColor,
+                20,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget billedToBox({
+    required String title,
+    required String hintText,
+    required TextEditingController controller,
+    required Function? validator,
+    bool isRequired = false,
+    bool isNumber = false,
+    bool isSpecial = false,
+  }) {
+    return Row(
+      children: [
+        buildCustomText(title, Data.lightGreyTextColor, width * 2,
+            fontFamily: "RobotoMedium"),
+        isRequired
+            ? buildSmallText(
+                "*",
+                Data.redColor,
+                width,
+              )
+            : const SizedBox(),
+        SizedBox(
+          width: width,
+        ),
+        Container(
+          color: Colors.white,
+          width: width * 20,
+          child: buildInputField(hintText, height, width, context, controller,
+              validator: validator, isNumber: isNumber),
+        ),
+      ],
     );
   }
 }
