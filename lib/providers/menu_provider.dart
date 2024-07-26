@@ -723,6 +723,15 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void resetAllOrders() {
+    for (var category in menuItemsByCategory) {
+      for (var menuItem in category.menuItems) {
+        menuItem.quantity = 0;
+      }
+    }
+    notifyListeners();
+  }
+
   Order order = Order(
     id: 0,
     tableNumber: "",
@@ -735,7 +744,15 @@ class MenuProvider extends ChangeNotifier {
   int totalCount = 0;
   double vatAmount = 0;
 
-  void calculateTotal() {
+  void deleteItemFromOrderLocally({required int itemIndex}) {
+    print("remove item at index $itemIndex");
+    order.items.removeAt(itemIndex);
+    //recalculate total
+    calculateTotal(isRecalculate: true);
+    notifyListeners();
+  }
+
+  void calculateTotal({bool isRecalculate = false}) {
     double total = 0;
     int count = 0;
     //clear list before generating new one
@@ -744,7 +761,7 @@ class MenuProvider extends ChangeNotifier {
       for (var item in category.menuItems) {
         total += item.price * item.quantity;
         count += item.quantity;
-        if (item.quantity > 0) {
+        if (!isRecalculate && item.quantity > 0) {
           order.items.add(OrderItem(
               name: item.name, quantity: item.quantity, price: item.price));
         }
@@ -757,6 +774,7 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// This section is needed for invoice generation
   List<OrderItem> priceList = [];
   void addItemToPriceList(String name, double price) {
     OrderItem newItem = OrderItem(name: name, price: price);

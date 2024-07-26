@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -23,7 +25,6 @@ class OrderProvider extends ChangeNotifier {
       var response = await http.get(url, headers: headers);
       var extractedData = json.decode(response.body);
       var data = extractedData['data'];
-      print("data = $data");
 
       if (response.statusCode == 200) {
         ///empty list before populating
