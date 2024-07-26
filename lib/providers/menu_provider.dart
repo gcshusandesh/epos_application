@@ -744,17 +744,39 @@ class MenuProvider extends ChangeNotifier {
   int totalCount = 0;
   double vatAmount = 0;
 
-  void deleteItemFromOrderLocally({required int itemIndex}) {
+  void deleteItemFromOrderLocally(
+      {required int itemIndex, required String itemName}) {
     order.items.removeAt(itemIndex);
+    resetQuantityByName(itemName: itemName);
+    calculateTotal(isRecalculate: true);
+  }
+
+  void resetQuantityByName({required String itemName}) {
+    // Iterate through each category
+    for (var category in menuItemsByCategory) {
+      // Get the list of menu items for the current category
+      var menuItems = category.menuItems;
+
+      // Iterate over the menu items to find the one with the matching name
+      for (var item in menuItems) {
+        if (item.name == itemName) {
+          // Reset the quantity of the matching item to 0
+          item.quantity = 0;
+        }
+      }
+    }
+
+    // Notify listeners to update the UI
     notifyListeners();
-    // calculateTotal(isRecalculate: true);
   }
 
   void calculateTotal({bool isRecalculate = false}) {
     double total = 0;
     int count = 0;
     //clear list before generating new one
-    order.items.clear();
+    if (!isRecalculate) {
+      order.items.clear();
+    }
     for (var category in menuItemsByCategory) {
       for (var item in category.menuItems) {
         total += item.price * item.quantity;

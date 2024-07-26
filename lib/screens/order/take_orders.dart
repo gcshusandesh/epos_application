@@ -406,7 +406,8 @@ class _OrderTakerState extends State<OrderTaker> {
             buttonColor: Data.redColor,
             onTap: () async {
               Provider.of<MenuProvider>(context, listen: false)
-                  .deleteItemFromOrderLocally(itemIndex: index);
+                  .deleteItemFromOrderLocally(
+                      itemIndex: index, itemName: item.name);
             },
           ),
         ),
