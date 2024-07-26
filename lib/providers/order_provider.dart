@@ -6,6 +6,7 @@ import 'package:epos_application/components/models.dart';
 import 'package:epos_application/screens/error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class OrderProvider extends ChangeNotifier {
   List<ProcessedOrder> processedOrders = [];
@@ -36,7 +37,7 @@ class OrderProvider extends ChangeNotifier {
             instructions: attributes['instruction'],
             price: attributes['price'].toDouble(),
             discount: attributes['discount'].toDouble(),
-            timestamp: attributes['createdAt'],
+            timestamp: convertTimestamp(attributes['createdAt'].toString()),
             status: OrderStatus.values.firstWhere((status) =>
                 status.toString() ==
                 'OrderStatus.${attributes['orderStatus']}'),
@@ -84,6 +85,15 @@ class OrderProvider extends ChangeNotifier {
         );
       }
     }
+  }
+
+  String convertTimestamp(String isoTimestamp) {
+    // Parse the ISO 8601 timestamp
+    DateTime dateTime = DateTime.parse(isoTimestamp);
+
+    // Format the DateTime to the desired format with AM/PM
+    DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm:ss a');
+    return formatter.format(dateTime);
   }
 
   Future<void> createOrders({
