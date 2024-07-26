@@ -35,7 +35,9 @@ class OrderProvider extends ChangeNotifier {
             id: orderData['id'],
             tableNumber: attributes['tableNumber'],
             items: attributes['items'],
-            instructions: attributes['instruction'],
+            instructions: attributes['instruction'] == ""
+                ? "N/A"
+                : attributes['instruction'],
             price: attributes['price'].toDouble(),
             discount: attributes['discount'].toDouble(),
             timestamp: convertTimestamp(attributes['createdAt'].toString()),
@@ -46,6 +48,15 @@ class OrderProvider extends ChangeNotifier {
             isPaid: attributes['isPaid'],
           );
         }).toList();
+
+        // Sort processedOrders by id in descending order
+        processedOrders.sort((a, b) {
+          if (a.id == null && b.id == null) return 0;
+          if (a.id == null) return 1; // Consider null as smallest
+          if (b.id == null) return -1; // Consider null as smallest
+          return b.id!
+              .compareTo(a.id!); // Safe to use ! since null is already handled
+        });
 
         notifyListeners();
       }
