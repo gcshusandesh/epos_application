@@ -733,14 +733,16 @@ class _PayState extends State<Pay> {
                     ),
                     Row(
                       children: [
-                        calculatedBox(
-                            title: "Bill Amount",
-                            hintText: "Bill Amount",
-                            data: "0"),
                         dataBox(
                           title: "Discount",
                           hintText: "Discount",
                           isRequired: false,
+                          controller: discountController,
+                        ),
+                        dataBox(
+                          title: "Paid Amount",
+                          hintText: "Paid Amount",
+                          isRequired: true,
                           controller: discountController,
                         ),
                         calculatedBox(
@@ -833,7 +835,7 @@ class _PayState extends State<Pay> {
     bool isNumber = false,
   }) {
     return Container(
-      width: width * 10,
+      width: width * 12,
       padding: EdgeInsets.symmetric(vertical: height),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -867,7 +869,7 @@ class _PayState extends State<Pay> {
                 width: width,
               ),
               Container(
-                width: width * 5,
+                width: width * 6,
                 color: Colors.white,
                 child: buildInputField("0", height, width, context, controller,
                     validator: validator, isNumber: isNumber),
@@ -886,7 +888,7 @@ class _PayState extends State<Pay> {
     bool isChange = false,
   }) {
     return Container(
-      width: width * 10,
+      width: width * 12,
       padding: EdgeInsets.symmetric(vertical: height),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -913,14 +915,14 @@ class _PayState extends State<Pay> {
               Container(
                 color: Colors.white,
                 child: Container(
-                  width: width * 5,
+                  width: width * 6,
                   padding: EdgeInsets.only(
                     top: height,
                     bottom: height,
                     left: width * 0.5,
                   ),
                   decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.grey[400],
                       borderRadius: BorderRadius.circular(5.0),
                       border: Border.all(
                         color: Data.darkTextColor, // Outline color
