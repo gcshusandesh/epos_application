@@ -745,11 +745,9 @@ class MenuProvider extends ChangeNotifier {
   double vatAmount = 0;
 
   void deleteItemFromOrderLocally({required int itemIndex}) {
-    print("remove item at index $itemIndex");
     order.items.removeAt(itemIndex);
-    //recalculate total
-    calculateTotal(isRecalculate: true);
     notifyListeners();
+    // calculateTotal(isRecalculate: true);
   }
 
   void calculateTotal({bool isRecalculate = false}) {
