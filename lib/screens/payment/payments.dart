@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
@@ -9,6 +11,8 @@ import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
 import 'package:epos_application/screens/payment/invoice_pdf.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -251,7 +255,37 @@ class _PaymentState extends State<Payment> {
                   buttonColor: Provider.of<InfoProvider>(context, listen: true)
                       .systemInfo
                       .primaryColor,
-                  onTap: () async {},
+                  onTap: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    String pdfPath = await generateInvoicePdf(
+                      context: context,
+                      order: order,
+                      currency:
+                          Provider.of<InfoProvider>(context, listen: false)
+                              .systemInfo
+                              .currencySymbol!,
+                      priceList:
+                          Provider.of<MenuProvider>(context, listen: false)
+                              .priceList,
+                      logoUrl: Provider.of<InfoProvider>(context, listen: false)
+                          .restaurantInfo
+                          .logoUrl!,
+                    );
+                    setState(() {
+                      isLoading = false;
+                    });
+                    if (mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              PdfViewerScreen(pdfPath: pdfPath),
+                        ),
+                      );
+                    }
+                  },
                 ),
                 SizedBox(width: width),
                 textButton(
@@ -500,6 +534,50 @@ class _PaymentState extends State<Payment> {
         buildInputField(title, height, width, context, controller,
             validator: validator),
       ],
+    );
+  }
+}
+
+// Add a new screen for viewing the PDF
+class PdfViewerScreen extends StatefulWidget {
+  final String pdfPath;
+  const PdfViewerScreen({super.key, required this.pdfPath});
+
+  @override
+  State<PdfViewerScreen> createState() => _PdfViewerScreenState();
+}
+
+class _PdfViewerScreenState extends State<PdfViewerScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Lock the orientation to portrait
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+  @override
+  void dispose() {
+    // Reset the orientation to the default when leaving the screen
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('PDF Viewer'),
+      ),
+      body: PdfPreview(
+        canChangeOrientation: false,
+        build: (format) => File(widget.pdfPath).readAsBytesSync(),
+      ),
     );
   }
 }
