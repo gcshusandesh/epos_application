@@ -15,11 +15,11 @@ Future<String> generateInvoicePdf({
   required List<OrderItem> priceList,
   required String logoUrl,
 }) async {
-  // Lock orientation to portrait
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  // // Lock orientation to portrait
+  // await SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  //   DeviceOrientation.portraitDown,
+  // ]);
   final pdf = pw.Document();
 
   // Load a font from the assets
@@ -128,10 +128,10 @@ Future<String> generateInvoicePdf({
   // );
 
   // Lock orientation to landscape when done
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
-  ]);
+  // await SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.landscapeLeft,
+  //   DeviceOrientation.landscapeRight,
+  // ]);
 
   return filePath;
 }
