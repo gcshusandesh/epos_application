@@ -577,6 +577,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
       body: PdfPreview(
         canChangeOrientation: false,
         build: (format) => File(widget.pdfPath).readAsBytesSync(),
+        canDebug: false,
       ),
     );
   }
