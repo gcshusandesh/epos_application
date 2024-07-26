@@ -1,4 +1,5 @@
 import 'package:epos_application/components/buttons.dart';
+import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
@@ -53,143 +54,153 @@ class _OrderTakerState extends State<OrderTaker> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: height * 60,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: width * 5),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: height * 0.5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  buildCustomText(
-                      "                  ", Data.greyTextColor, width * 3),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Colors.black, // Outline color
-                        width: 0.5, // Outline width
-                      ),
-                      borderRadius: BorderRadius.circular(6.0),
+      child: Stack(
+        children: [
+          mainBody(context),
+          isLoading
+              ? onLoading(width: width, context: context)
+              : const SizedBox(),
+        ],
+      ),
+    );
+  }
+
+  Padding mainBody(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: width * 5),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: height * 0.5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                buildCustomText(
+                    "                  ", Data.greyTextColor, width * 3),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.black, // Outline color
+                      width: 0.5, // Outline width
                     ),
-                    height: 10,
-                    width: width * 20,
+                    borderRadius: BorderRadius.circular(6.0),
                   ),
-                  buildCustomText("Order ID: #3", Data.greyTextColor, width * 3,
-                      fontWeight: FontWeight.bold),
-                ],
-              ),
-              SizedBox(
-                height: height,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      buildCustomText(
-                          "Total Items Ordered: ${Provider.of<MenuProvider>(context, listen: true).totalCount}",
-                          Data.greyTextColor,
-                          width * 2.5),
-                      buildCustomText(
-                          "Total Amount:  £ ${Provider.of<MenuProvider>(context, listen: true).totalAmount.toStringAsFixed(2)}",
-                          Data.greyTextColor,
-                          width * 2.5),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      dataBox(
-                        title: "Table Number",
-                        hintText: "Table Number",
-                        isRequired: true,
-                        controller: tableNumberController,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Enter a valid name!';
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      textButton(
-                        text: "Discard",
-                        height: height * 0.8,
-                        width: width * 1.5,
-                        textColor: Data.redColor,
-                        buttonColor: Data.redColor,
-                        onTap: () {
+                  height: 10,
+                  width: width * 20,
+                ),
+                buildCustomText("Order ID: #3", Data.greyTextColor, width * 3,
+                    fontWeight: FontWeight.bold),
+              ],
+            ),
+            SizedBox(
+              height: height,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    buildCustomText(
+                        "Total Items Ordered: ${Provider.of<MenuProvider>(context, listen: true).totalCount}",
+                        Data.greyTextColor,
+                        width * 2.5),
+                    buildCustomText(
+                        "Total Amount:  £ ${Provider.of<MenuProvider>(context, listen: true).totalAmount.toStringAsFixed(2)}",
+                        Data.greyTextColor,
+                        width * 2.5),
+                  ],
+                ),
+                Column(
+                  children: [
+                    dataBox(
+                      title: "Table Number",
+                      hintText: "Table Number",
+                      isRequired: true,
+                      controller: tableNumberController,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Enter a valid name!';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    textButton(
+                      text: "Discard",
+                      height: height * 0.8,
+                      width: width * 1.5,
+                      textColor: Data.redColor,
+                      buttonColor: Data.redColor,
+                      onTap: () {
+                        showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (BuildContext context) {
+                            return discardAlert();
+                          },
+                        );
+                      },
+                    ),
+                    SizedBox(width: width * 2),
+                    textButton(
+                      text: "Confirm",
+                      height: height * 0.8,
+                      width: width * 1.5,
+                      textColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .primaryColor,
+                      buttonColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .primaryColor,
+                      onTap: () async {
+                        final overlay = Overlay.of(context);
+                        if (Provider.of<MenuProvider>(context, listen: false)
+                                .totalCount ==
+                            0) {
+                          showTopSnackBar(
+                            overlay,
+                            const CustomSnackBar.error(
+                              message: "Please select items to place an order",
+                            ),
+                          );
+                        } else if (_formKey.currentState!.validate()) {
                           showDialog(
                             barrierDismissible: false,
                             context: context,
                             builder: (BuildContext context) {
-                              return discardAlert();
+                              return confirmAlert();
                             },
                           );
-                        },
-                      ),
-                      SizedBox(width: width * 2),
-                      textButton(
-                        text: "Confirm",
-                        height: height * 0.8,
-                        width: width * 1.5,
-                        textColor:
-                            Provider.of<InfoProvider>(context, listen: true)
-                                .systemInfo
-                                .primaryColor,
-                        buttonColor:
-                            Provider.of<InfoProvider>(context, listen: true)
-                                .systemInfo
-                                .primaryColor,
-                        onTap: () async {
-                          final overlay = Overlay.of(context);
-                          if (Provider.of<MenuProvider>(context, listen: false)
-                                  .totalCount ==
-                              0) {
-                            showTopSnackBar(
-                              overlay,
-                              const CustomSnackBar.error(
-                                message:
-                                    "Please select items to place an order",
-                              ),
-                            );
-                          } else if (_formKey.currentState!.validate()) {
-                            showDialog(
-                              barrierDismissible: false,
-                              context: context,
-                              builder: (BuildContext context) {
-                                return confirmAlert();
-                              },
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: height * 2),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  specialDataBox(
-                    title: "Special Instructions",
-                    hintText: "Special Instructions",
-                    controller: specialInstructionController,
-                    validator: (value) {},
-                  ),
-                ],
-              ),
-              SizedBox(height: height),
-              tableSection(context),
-            ],
-          ),
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: height * 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                specialDataBox(
+                  title: "Special Instructions",
+                  hintText: "Special Instructions",
+                  controller: specialInstructionController,
+                  validator: (value) {},
+                ),
+              ],
+            ),
+            SizedBox(height: height),
+            tableSection(context),
+          ],
         ),
       ),
     );
@@ -223,9 +234,16 @@ class _OrderTakerState extends State<OrderTaker> {
               context: context,
               order: ProcessedOrder(
                 tableNumber: tableNumberController.text,
-                items: "",
+                items: Provider.of<OrderProvider>(context, listen: false)
+                    .formatOrderItems(
+                        Provider.of<MenuProvider>(context, listen: false)
+                            .order
+                            .items),
                 instructions: specialInstructionController.text,
-                price: 0,
+                price: Provider.of<MenuProvider>(context, listen: false)
+                    .totalAmount,
+
+                /// while placing the order, the discount is not applied, status is processing and isPaid is false
                 discount: 0,
                 status: OrderStatus.processing,
                 isPaid: false,

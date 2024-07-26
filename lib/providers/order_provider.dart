@@ -97,6 +97,16 @@ class OrderProvider extends ChangeNotifier {
     return formatter.format(dateTime);
   }
 
+  String formatOrderItems(List<OrderItem> items) {
+    // Convert each OrderItem to a string in the format "name xquantity"
+    List<String> formattedItems = items.map((item) {
+      return '${item.name} x${item.quantity}';
+    }).toList();
+
+    // Join all formatted strings with a comma and space
+    return formattedItems.join(', ');
+  }
+
   Future<bool> createOrders({
     required String accessToken,
     required BuildContext context,
@@ -107,22 +117,25 @@ class OrderProvider extends ChangeNotifier {
     try {
       var headers = {
         "Accept": "application/json",
+        "Content-Type": "application/json",
         'Authorization': 'Bearer $accessToken',
       };
 
+      // Corrected payload structure
       Map<String, dynamic> payloadBody = {
         "data": {
           "tableNumber": order.tableNumber,
           "items": order.items,
-          "instruction": order.items,
+          "instruction": order
+              .instructions, // Make sure to match the field name with API requirements
           "price": order.price,
           "discount": order.discount,
           "orderStatus": order.status.name,
-          "billedTo": order.billedTo,
-          "isPaid": order.isPaid
+          "billedTo":
+              order.billedTo ?? "", // Add default value or handle null case
+          "isPaid": order.isPaid,
         }
       };
-
       var response = await http.post(
         url,
         headers: headers,
@@ -132,6 +145,7 @@ class OrderProvider extends ChangeNotifier {
 
       print("body = $extractedData");
       print("response code = ${response.statusCode}");
+
       if (response.statusCode == 200) {
         notifyListeners();
         return true;
@@ -140,13 +154,14 @@ class OrderProvider extends ChangeNotifier {
     } on SocketException {
       if (context.mounted) {
         await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ErrorScreen(
-                isConnectedToInternet: false,
-                trace: "createOrders",
-              ),
-            ));
+          context,
+          MaterialPageRoute(
+            builder: (context) => ErrorScreen(
+              isConnectedToInternet: false,
+              trace: "createOrders",
+            ),
+          ),
+        );
       }
       if (context.mounted) {
         // retry API
@@ -161,12 +176,13 @@ class OrderProvider extends ChangeNotifier {
       print("Error: $e");
       if (context.mounted) {
         await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ErrorScreen(
-                trace: "createOrders",
-              ),
-            ));
+          context,
+          MaterialPageRoute(
+            builder: (context) => ErrorScreen(
+              trace: "createOrders",
+            ),
+          ),
+        );
       }
       if (context.mounted) {
         // retry API
