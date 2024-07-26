@@ -181,8 +181,37 @@ class _OrdersState extends State<Orders> {
         tableItem(order.instructions ?? "N/A", width, context),
         tableItem("£${order.price.toStringAsFixed(2)}", width, context),
         tableItem(order.timestamp!, width, context),
-        tableItem(order.status.name, width, context),
+        isEditing
+            ? buildStatusDropdown(index: index)
+            : tableItem(order.status.name, width, context),
       ],
+    );
+  }
+
+  Widget buildStatusDropdown({required int index}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+      child: DropdownButton<OrderStatus>(
+        value: Provider.of<OrderProvider>(context, listen: true)
+            .processedOrders[index]
+            .status,
+        items: OrderStatus.values.map((OrderStatus status) {
+          return DropdownMenuItem<OrderStatus>(
+            value: status,
+            child: Text(status.name),
+          );
+        }).toList(),
+        onChanged: (OrderStatus? newStatus) {
+          if (newStatus != null) {
+            // Example function to update the order status in the provider
+            Provider.of<OrderProvider>(context, listen: false)
+                .updateItemOrderStatusLocally(
+              index: index,
+              status: newStatus,
+            );
+          }
+        },
+      ),
     );
   }
 

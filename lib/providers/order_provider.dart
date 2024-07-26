@@ -99,6 +99,12 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
+  void updateItemOrderStatusLocally(
+      {required int index, required OrderStatus status}) {
+    processedOrders[index].status = OrderStatus.served;
+    notifyListeners();
+  }
+
   String convertTimestamp(String isoTimestamp) {
     // Parse the ISO 8601 timestamp
     DateTime dateTime = DateTime.parse(isoTimestamp);
