@@ -145,7 +145,7 @@ class _PaymentState extends State<Payment> {
                                     tableTitle("Order ID", width),
                                     tableTitle("Table Number", width),
                                     tableTitle("Items", width),
-                                    tableTitle("Price", width),
+                                    tableTitle("Paid Price", width),
                                     tableTitle("Timestamp", width),
                                     tableTitle("Action", width),
                                   ]
@@ -196,7 +196,7 @@ class _PaymentState extends State<Payment> {
                                 tableTitle("Order ID", width),
                                 tableTitle("Table Number", width),
                                 tableTitle("Items", width),
-                                tableTitle("Price", width),
+                                tableTitle("Paid Price", width),
                                 tableTitle("Timestamp", width),
                                 tableTitle("Action", width),
                               ]
@@ -239,9 +239,9 @@ class _PaymentState extends State<Payment> {
           tableItem("#${order.id}", width, context),
           tableItem(order.tableNumber, width, context),
           tableItem(order.items, width, context),
-          tableItem("£${order.price.toStringAsFixed(2)}", width, context),
-          tableItem(
-              "£${order.adjustedPrice.toStringAsFixed(2)}", width, context),
+          tableItem("£${(order.price - order.discount).toStringAsFixed(2)}",
+              width, context),
+          tableItem(order.timestamp, width, context),
           Padding(
             padding: EdgeInsets.symmetric(vertical: height, horizontal: width),
             child: Row(
@@ -323,8 +323,8 @@ class _PaymentState extends State<Payment> {
           tableItem(order.tableNumber, width, context),
           tableItem(order.items, width, context),
           tableItem("£${order.price.toStringAsFixed(2)}", width, context),
-          tableItem(
-              "£${order.adjustedPrice.toStringAsFixed(2)}", width, context),
+          tableItem("£${(order.price - order.discount).toStringAsFixed(2)}",
+              width, context),
           Padding(
             padding:
                 EdgeInsets.symmetric(horizontal: width * 3, vertical: height),

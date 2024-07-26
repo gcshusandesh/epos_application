@@ -269,8 +269,7 @@ class ProcessedOrder {
   String items;
   String? instructions;
   double price;
-  double adjustedPrice;
-  double? discount;
+  double discount;
   String timestamp;
   OrderStatus status;
   String? billedTo;
@@ -282,8 +281,7 @@ class ProcessedOrder {
     required this.items,
     this.instructions,
     required this.price,
-    required this.adjustedPrice,
-    this.discount,
+    this.discount = 0,
     required this.timestamp,
     required this.status,
     this.billedTo,

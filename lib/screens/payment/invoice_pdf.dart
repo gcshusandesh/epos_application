@@ -83,19 +83,19 @@ Future<String> generateInvoicePdf({
                 pw.Align(
                   alignment: pw.Alignment.centerRight,
                   child: pw.Text(
-                      'Discount: $currency${(order.price - order.adjustedPrice).toStringAsFixed(2)}',
+                      'Discount: $currency${order.discount.toStringAsFixed(2)}',
                       style: pw.TextStyle(fontSize: 22, font: ttf)),
                 ),
                 pw.Align(
                   alignment: pw.Alignment.centerRight,
                   child: pw.Text(
-                      'Total: $currency${order.adjustedPrice.toStringAsFixed(2)}',
+                      'Total: $currency${(order.price - order.discount).toStringAsFixed(2)}',
                       style: pw.TextStyle(fontSize: 22, font: ttf)),
                 ),
                 pw.Align(
                   alignment: pw.Alignment.centerRight,
                   child: pw.Text(
-                      '(Inclusive 20% VAT @$currency${(order.adjustedPrice * 0.2).toStringAsFixed(2)})',
+                      '(Inclusive 20% VAT @$currency${((order.price - order.discount) * 0.2).toStringAsFixed(2)})',
                       style: pw.TextStyle(fontSize: 18, font: ttf)),
                 ),
               ],
