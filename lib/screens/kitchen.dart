@@ -3,6 +3,7 @@ import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,12 @@ class _KitchenState extends State<Kitchen> {
   bool isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (init) {
@@ -34,9 +41,20 @@ class _KitchenState extends State<Kitchen> {
     }
   }
 
-  void _fetchData() {
-    //fetch data from api
+  Future<void> _fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await Provider.of<OrderProvider>(context, listen: false).getOrders(
+      accessToken:
+          Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+      context: context,
+    );
+    setState(() {
+      isLoading = false;
+    });
   }
+
   @override
   Widget build(BuildContext context) {
     return Stack(

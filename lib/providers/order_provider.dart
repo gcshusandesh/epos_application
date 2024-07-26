@@ -12,84 +12,41 @@ class OrderProvider extends ChangeNotifier {
 
   Future<void> getOrders(
       {required String accessToken, required BuildContext context}) async {
-    // Uri url = Uri.parse("${Data.baseUrl}/api/specials?populate=image");
+    Uri url = Uri.parse("${Data.baseUrl}/api/processed-orders");
 
     try {
-      // var headers = {
-      //   "Accept": "application/json",
-      //   'Authorization': 'Bearer $accessToken',
-      // };
-      // var response = await http.get(url, headers: headers);
-      // var extractedData = json.decode(response.body);
-      // var data = extractedData['data'];
-      // print("data = $data");
-      //
-      // if (response.statusCode == 200) {
-      //   notifyListeners();
-      // }
-      ///empty list before populating
-      processedOrders = [];
-      processedOrders.add(ProcessedOrder(
-          id: 1,
-          tableNumber: "1A",
-          items: "Burger x1",
-          instructions: "Less Salt",
-          price: 10.0,
-          discount: 0,
-          timestamp: "2021-09-01 12:00:00",
-          status: OrderStatus.processing));
-      processedOrders.add(ProcessedOrder(
-          id: 1,
-          tableNumber: "1A",
-          items: "Sausage x1, Cereal x2",
-          instructions: "Less Salt",
-          price: 24,
-          discount: 2,
-          timestamp: "2021-09-01 12:00:00",
-          status: OrderStatus.preparing));
-      processedOrders.add(ProcessedOrder(
-          id: 1,
-          tableNumber: "1A",
-          items: "Burger x1",
-          instructions: "Less Salt",
-          price: 10.0,
-          discount: 0,
-          timestamp: "2021-09-01 12:00:00",
-          status: OrderStatus.ready));
-      processedOrders.add(
-        ProcessedOrder(
-            id: 1,
-            tableNumber: "1A",
-            items: "Sausage x1, Cereal x2",
-            instructions: "Less Salt",
-            price: 24,
-            discount: 0,
-            timestamp: "2021-09-01 12:00:00",
-            status: OrderStatus.served,
-            isPaid: true,
-            billedTo: "Shusandesh"),
-      );
-      processedOrders.add(
-        ProcessedOrder(
-          id: 1,
-          tableNumber: "1A",
-          items: "Burger x1",
-          instructions: "Less Salt",
-          price: 10.0,
-          discount: 0,
-          timestamp: "2021-09-01 12:00:00",
-          status: OrderStatus.served,
-        ),
-      );
-      processedOrders.add(ProcessedOrder(
-          id: 1,
-          tableNumber: "1A",
-          items: "Burger x1",
-          instructions: "Less Salt",
-          price: 10.0,
-          discount: 0,
-          timestamp: "2021-09-01 12:00:00",
-          status: OrderStatus.cancelled));
+      var headers = {
+        "Accept": "application/json",
+        'Authorization': 'Bearer $accessToken',
+      };
+      var response = await http.get(url, headers: headers);
+      var extractedData = json.decode(response.body);
+      var data = extractedData['data'];
+      print("data = $data");
+
+      if (response.statusCode == 200) {
+        ///empty list before populating
+        processedOrders = [];
+        processedOrders = data.map<ProcessedOrder>((orderData) {
+          var attributes = orderData['attributes'];
+          return ProcessedOrder(
+            id: orderData['id'],
+            tableNumber: attributes['tableNumber'],
+            items: attributes['items'],
+            instructions: attributes['instruction'],
+            price: attributes['price'].toDouble(),
+            discount: attributes['discount'].toDouble(),
+            timestamp: attributes['createdAt'],
+            status: OrderStatus.values.firstWhere((status) =>
+                status.toString() ==
+                'OrderStatus.${attributes['orderStatus']}'),
+            billedTo: attributes['billedTo'],
+            isPaid: attributes['isPaid'],
+          );
+        }).toList();
+
+        notifyListeners();
+      }
     } on SocketException {
       if (context.mounted) {
         await Navigator.push(
@@ -129,16 +86,120 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateOrders(
-      {required String accessToken, required BuildContext context}) async {
-    Uri url = Uri.parse("${Data.baseUrl}/api/specials?populate=image");
+  Future<void> createOrders({
+    required String accessToken,
+    required BuildContext context,
+    required ProcessedOrder order,
+  }) async {
+    Uri url = Uri.parse("${Data.baseUrl}/api/processed-orders");
 
     try {
       var headers = {
         "Accept": "application/json",
         'Authorization': 'Bearer $accessToken',
       };
-      var response = await http.get(url, headers: headers);
+
+      Map<String, dynamic> payloadBody = {
+        "data": {
+          "tableNumber": order.tableNumber,
+          "items": order.items,
+          "instruction": order.items,
+          "price": order.price,
+          "discount": order.discount,
+          "orderStatus": order.status.name,
+          "billedTo": order.billedTo,
+          "isPaid": order.isPaid
+        }
+      };
+
+      var response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(payloadBody),
+      );
+      var extractedData = json.decode(response.body);
+      var data = extractedData['data'];
+      print("data = $data");
+
+      if (response.statusCode == 200) {
+        notifyListeners();
+      }
+    } on SocketException {
+      if (context.mounted) {
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+                trace: "createOrders",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        // retry API
+        await createOrders(
+          accessToken: accessToken,
+          context: context,
+          order: order,
+        );
+      }
+    } catch (e) {
+      print("Error: $e");
+      if (context.mounted) {
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                trace: "createOrders",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        // retry API
+        await createOrders(
+          accessToken: accessToken,
+          context: context,
+          order: order,
+        );
+      }
+    }
+  }
+
+  Future<void> updateOrders({
+    required String accessToken,
+    required BuildContext context,
+    bool isPaid = false,
+    bool isChangeStatus = false,
+    bool isDiscount = false,
+    String? orderStatus,
+    double? discount,
+  }) async {
+    Uri url = Uri.parse("${Data.baseUrl}/api/processed-orders");
+
+    try {
+      var headers = {
+        "Accept": "application/json",
+        'Authorization': 'Bearer $accessToken',
+      };
+
+      late Map<String, dynamic> payloadBody;
+
+      if (isPaid) {
+        payloadBody = {
+          "data": {"isPaid": true}
+        };
+      } else if (isChangeStatus) {
+        payloadBody = {
+          "data": {"orderStatus": orderStatus!}
+        };
+      } else if (isDiscount) {
+        payloadBody = {
+          "data": {"discount": discount!}
+        };
+      }
+
+      final response = await http.put(Uri.parse(url.toString()),
+          headers: headers, body: jsonEncode(payloadBody));
       var extractedData = json.decode(response.body);
       var data = extractedData['data'];
       print("data = $data");
@@ -162,6 +223,11 @@ class OrderProvider extends ChangeNotifier {
         await updateOrders(
           accessToken: accessToken,
           context: context,
+          isPaid: isPaid,
+          isChangeStatus: isChangeStatus,
+          isDiscount: isDiscount,
+          orderStatus: orderStatus,
+          discount: discount,
         );
       }
     } catch (e) {
@@ -180,6 +246,11 @@ class OrderProvider extends ChangeNotifier {
         await updateOrders(
           accessToken: accessToken,
           context: context,
+          isPaid: isPaid,
+          isChangeStatus: isChangeStatus,
+          isDiscount: isDiscount,
+          orderStatus: orderStatus,
+          discount: discount,
         );
       }
     }
