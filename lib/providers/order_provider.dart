@@ -109,6 +109,18 @@ class OrderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateItemOrderPaymentLocally({
+    required int index,
+    required bool isPaid,
+    String? paymentMode,
+    double? discount,
+  }) {
+    processedOrders[index].isPaid = isPaid;
+    processedOrders[index].paymentMode = paymentMode;
+    processedOrders[index].discount = discount ?? 0;
+    notifyListeners();
+  }
+
   String convertTimestamp(String isoTimestamp) {
     // Parse the ISO 8601 timestamp
     DateTime dateTime = DateTime.parse(isoTimestamp);
@@ -269,6 +281,12 @@ class OrderProvider extends ChangeNotifier {
             index: itemIndex!,
             status: newOrderStatus!,
           );
+        } else if (isPaid) {
+          updateItemOrderPaymentLocally(
+              index: itemIndex!,
+              isPaid: true,
+              paymentMode: paymentMode,
+              discount: discount);
         }
         notifyListeners();
         return true;

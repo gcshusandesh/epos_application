@@ -48,16 +48,30 @@ Future<String> generateInvoicePdf({
                 pw.Text('INVOICE',
                     style: pw.TextStyle(fontSize: 40, font: ttf)),
                 pw.SizedBox(height: 20),
-                pw.Text('Date: ${DateTime.now().toString()}',
+                pw.Text('Date: ${order.paymentTime}',
                     style: pw.TextStyle(fontSize: 20, font: ttf)),
                 pw.SizedBox(height: 20),
-                pw.Text('Bill To:',
-                    style: pw.TextStyle(fontSize: 20, font: ttf)),
-                pw.Text(
-                    (order.billedTo == null || order.billedTo == "")
-                        ? "Guest"
-                        : order.billedTo!,
-                    style: pw.TextStyle(fontSize: 18, font: ttf)),
+                pw.Row(
+                  children: [
+                    pw.Text('Bill To: ',
+                        style: pw.TextStyle(fontSize: 20, font: ttf)),
+                    pw.Text(
+                        (order.billedTo == null || order.billedTo == "")
+                            ? "Guest"
+                            : order.billedTo!,
+                        style: pw.TextStyle(fontSize: 18, font: ttf)),
+                  ],
+                ),
+                pw.SizedBox(height: 20),
+                pw.Row(
+                  children: [
+                    pw.Text('Payment Mode:',
+                        style: pw.TextStyle(fontSize: 20, font: ttf)),
+                    pw.SizedBox(width: 10),
+                    pw.Text(order.paymentMode ?? "Card",
+                        style: pw.TextStyle(fontSize: 20, font: ttf)),
+                  ],
+                ),
                 pw.SizedBox(height: 20),
                 pw.Text('Items:', style: pw.TextStyle(fontSize: 20, font: ttf)),
                 pw.TableHelper.fromTextArray(
@@ -101,6 +115,12 @@ Future<String> generateInvoicePdf({
                   alignment: pw.Alignment.centerRight,
                   child: pw.Text(
                       '(Inclusive 20% VAT @$currency${((order.price - order.discount) * 0.2).toStringAsFixed(2)})',
+                      style: pw.TextStyle(fontSize: 18, font: ttf)),
+                ),
+                pw.SizedBox(height: 20),
+                pw.Align(
+                  alignment: pw.Alignment.center,
+                  child: pw.Text('********** END OF INVOICE **********',
                       style: pw.TextStyle(fontSize: 18, font: ttf)),
                 ),
               ],

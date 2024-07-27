@@ -146,7 +146,7 @@ class _PaymentState extends State<Payment> {
                                     tableTitle("Items", width),
                                     tableTitle("Paid Price", width),
                                     tableTitle("Payment Mode", width),
-                                    tableTitle("Timestamp", width),
+                                    tableTitle("Payment Time", width),
                                     tableTitle("Action", width),
                                   ]
                                 : [
@@ -196,7 +196,7 @@ class _PaymentState extends State<Payment> {
                                 tableTitle("Items", width),
                                 tableTitle("Paid Price", width),
                                 tableTitle("Payment Mode", width),
-                                tableTitle("Timestamp", width),
+                                tableTitle("Payment Time", width),
                                 tableTitle("Action", width),
                               ]
                             : [
@@ -241,7 +241,7 @@ class _PaymentState extends State<Payment> {
               width,
               context),
           tableItem(order.paymentMode!, width, context),
-          tableItem(order.orderTime!, width, context),
+          tableItem(order.paymentTime!, width, context),
           Padding(
             padding: EdgeInsets.symmetric(vertical: height, horizontal: width),
             child: Row(
