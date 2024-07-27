@@ -511,7 +511,7 @@ class _EditMenuState extends State<EditMenu> {
           context,
         ),
         tableItem(
-          "£ ${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].price}",
+          "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!} ${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].price}",
           width,
           context,
         ),

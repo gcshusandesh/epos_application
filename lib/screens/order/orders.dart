@@ -4,6 +4,7 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -181,7 +182,10 @@ class _OrdersState extends State<Orders> {
         tableItem(order.tableNumber, width, context),
         tableItem(order.items, width, context),
         tableItem(order.instructions ?? "N/A", width, context),
-        tableItem("£${order.price.toStringAsFixed(2)}", width, context),
+        tableItem(
+            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!}${order.price.toStringAsFixed(2)}",
+            width,
+            context),
         tableItem(order.timestamp!, width, context),
         isEditing
             ? buildStatusDropdown(index: index)

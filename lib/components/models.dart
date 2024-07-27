@@ -274,6 +274,7 @@ class ProcessedOrder {
   OrderStatus status;
   String? billedTo;
   bool isPaid;
+  String? paymentMode;
 
   ProcessedOrder({
     this.id,
@@ -286,5 +287,6 @@ class ProcessedOrder {
     required this.status,
     this.billedTo,
     this.isPaid = false,
+    this.paymentMode,
   });
 }

@@ -220,6 +220,7 @@ class OrderProvider extends ChangeNotifier {
     bool isPaid = false,
     bool isChangeStatus = false,
     OrderStatus? newOrderStatus,
+    String? paymentMode,
     int? itemIndex,
     double? discount,
   }) async {
@@ -236,7 +237,11 @@ class OrderProvider extends ChangeNotifier {
 
       if (isPaid) {
         payloadBody = {
-          "data": {"isPaid": true, "discount": discount!}
+          "data": {
+            "isPaid": true,
+            "discount": discount!,
+            "paymentMode": paymentMode,
+          }
         };
       } else if (isChangeStatus) {
         payloadBody = {

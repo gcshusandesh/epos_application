@@ -234,8 +234,10 @@ class _PaymentState extends State<Payment> {
           tableItem("#${order.id}", width, context),
           tableItem(order.tableNumber, width, context),
           tableItem(order.items, width, context),
-          tableItem("£${(order.price - order.discount).toStringAsFixed(2)}",
-              width, context),
+          tableItem(
+              "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!}${(order.price - order.discount).toStringAsFixed(2)}",
+              width,
+              context),
           tableItem(order.timestamp!, width, context),
           Padding(
             padding: EdgeInsets.symmetric(vertical: height, horizontal: width),
@@ -316,9 +318,14 @@ class _PaymentState extends State<Payment> {
           tableItem("#${order.id}", width, context),
           tableItem(order.tableNumber, width, context),
           tableItem(order.items, width, context),
-          tableItem("£${order.price.toStringAsFixed(2)}", width, context),
-          tableItem("£${(order.price - order.discount).toStringAsFixed(2)}",
-              width, context),
+          tableItem(
+              "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!}${order.price.toStringAsFixed(2)}",
+              width,
+              context),
+          tableItem(
+              "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!}${(order.price - order.discount).toStringAsFixed(2)}",
+              width,
+              context),
           Padding(
             padding:
                 EdgeInsets.symmetric(horizontal: width * 3, vertical: height),
@@ -342,7 +349,10 @@ class _PaymentState extends State<Payment> {
                   ),
                   backgroundColor: Data.lightGreyBodyColor,
                   context: context,
-                  builder: (context) => const Pay(),
+                  builder: (context) => Pay(
+                    index: index,
+                    order: order,
+                  ),
                 );
               },
             ),
@@ -591,18 +601,22 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
 }
 
 class Pay extends StatefulWidget {
-  const Pay({super.key});
+  const Pay({super.key, required this.index, required this.order});
+  final int index;
+  final ProcessedOrder order;
 
   @override
   State<Pay> createState() => _PayState();
 }
 
 class _PayState extends State<Pay> {
+  bool isLoading = false;
   bool init = true;
   late double height;
   late double width;
   TextEditingController billedToController = TextEditingController();
   TextEditingController discountController = TextEditingController();
+  TextEditingController paidAmountController = TextEditingController();
 
   @override
   void didChangeDependencies() async {
@@ -612,6 +626,10 @@ class _PayState extends State<Pay> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
+      discountController.text = "0";
+      paidAmountController.text = "0";
+      billAmount = widget.order.price;
+      revisedBillAmount = billAmount;
       init = false;
     }
   }
@@ -621,200 +639,304 @@ class _PayState extends State<Pay> {
     super.dispose();
     billedToController.dispose();
     discountController.dispose();
+    paidAmountController.dispose();
   }
 
   bool isPayByCard = true;
+  late double billAmount;
+  late double revisedBillAmount;
+  double change = 0;
+
+  void calculateDiscount() {
+    setState(() {
+      double discount = double.parse(discountController.text);
+      revisedBillAmount = billAmount - discount;
+    });
+  }
+
+  void calculateChange() {
+    setState(() {
+      double paidAmount = double.parse(paidAmountController.text);
+      if (revisedBillAmount > paidAmount) {
+        change = 0;
+      } else {
+        change = paidAmount - revisedBillAmount;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: height * 55,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: width * 5),
-        child: Column(
-          children: [
-            SizedBox(height: height * 0.5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                buildCustomText("             ", Data.greyTextColor, width * 3),
-                Container(
+      child: Stack(
+        children: [
+          mainBody(context),
+          isLoading
+              ? onLoading(width: width, context: context)
+              : const SizedBox(),
+        ],
+      ),
+    );
+  }
+
+  Padding mainBody(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: width * 5),
+      child: Column(
+        children: [
+          SizedBox(height: height * 0.5),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              buildCustomText("             ", Data.greyTextColor, width * 3),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Colors.black, // Outline color
+                    width: 0.5, // Outline width
+                  ),
+                  borderRadius: BorderRadius.circular(6.0),
+                ),
+                height: 10,
+                width: width * 20,
+              ),
+              buildCustomText("Order ID: #${widget.order.id}",
+                  Data.greyTextColor, width * 2,
+                  fontWeight: FontWeight.bold),
+            ],
+          ),
+          buildCustomText("Payment Details", Data.greyTextColor, width * 3,
+              fontWeight: FontWeight.bold),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  textButton(
+                    text: "Pay by Card",
+                    height: height,
+                    width: width,
+                    textColor: const Color(0xff063B9D),
+                    buttonColor: const Color(0xff063B9D),
+                    isSelected: isPayByCard,
+                    onTap: () async {
+                      setState(() {
+                        isPayByCard = true;
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    width: width * 2,
+                  ),
+                  textButton(
+                    text: "Pay by Cash",
+                    height: height,
+                    width: width,
+                    textColor: const Color(0xff063B9D),
+                    buttonColor: const Color(0xff063B9D),
+                    isSelected: !isPayByCard,
+                    onTap: () async {
+                      setState(() {
+                        isPayByCard = false;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              billedToBox(
+                title: "Billed To:",
+                hintText: "Billed To",
+                isRequired: false,
+                controller: billedToController,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Enter a valid name!';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: height * 2),
+                  Row(
+                    children: [
+                      buildCustomText(
+                          "Bill Amount", Data.greyTextColor, width * 1.5,
+                          fontWeight: FontWeight.bold),
+                      SizedBox(width: width * 2),
+                      buildCustomText(
+                          "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!}${billAmount.toStringAsFixed(2)}",
+                          Data.lightGreyTextColor,
+                          width * 1.5,
+                          fontWeight: FontWeight.bold),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      dataBox(
+                        title: "Discount",
+                        hintText: "Discount",
+                        isNumber: true,
+                        isRequired: false,
+                        controller: discountController,
+                        isDiscount: true,
+                      ),
+                      isPayByCard
+                          ? const SizedBox()
+                          : dataBox(
+                              title: "Paid Amount",
+                              hintText: "Paid Amount",
+                              isNumber: true,
+                              isRequired: true,
+                              controller: paidAmountController,
+                              isPaidAmount: true,
+                            ),
+                      isPayByCard
+                          ? const SizedBox()
+                          : calculatedBox(
+                              title: "Change",
+                              hintText: "Change",
+                              data: change.toStringAsFixed(2),
+                              isChange: true,
+                            ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: height * 2,
+                  ),
+                  Row(
+                    children: [
+                      buildCustomText(
+                          "Revised Bill Amount", Data.greyTextColor, width * 2,
+                          fontWeight: FontWeight.bold),
+                      SizedBox(width: width * 2),
+                      buildCustomText(
+                          "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!}${revisedBillAmount.toStringAsFixed(2)}",
+                          Data.lightGreyTextColor,
+                          width * 2,
+                          fontWeight: FontWeight.bold),
+                      SizedBox(width: width * 2),
+                      buildCustomText(
+                          "(Inclusive 20%VAT@${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!}${(revisedBillAmount * 0.2).toStringAsFixed(2)})",
+                          Data.lightGreyTextColor,
+                          width * 1.5),
+                    ],
+                  ),
+                ],
+              ),
+              InkWell(
+                onDoubleTap: () async {
+                  var overlay = Overlay.of(context);
+                  if (!isPayByCard &&
+                      (double.parse(discountController.text) > billAmount)) {
+                    showTopSnackBar(
+                      overlay,
+                      const CustomSnackBar.error(
+                        message:
+                            "Discount Amount cannot be greater than Bill Amount",
+                      ),
+                    );
+                  } else if (!isPayByCard &&
+                      (double.parse(paidAmountController.text) <
+                          revisedBillAmount)) {
+                    showTopSnackBar(
+                      overlay,
+                      const CustomSnackBar.error(
+                        message:
+                            "Paid Amount cannot be smaller than Bill Amount",
+                      ),
+                    );
+                  } else {
+                    setState(() {
+                      isLoading = true;
+                    });
+
+                    bool isPaymentSuccessful =
+                        await Provider.of<OrderProvider>(context, listen: false)
+                            .updateOrders(
+                      accessToken:
+                          Provider.of<AuthProvider>(context, listen: false)
+                              .user
+                              .accessToken!,
+                      context: context,
+                      orderID:
+                          Provider.of<OrderProvider>(context, listen: false)
+                              .processedOrders[widget.index]
+                              .id!,
+                      itemIndex: widget.index,
+                      isPaid: true,
+                      discount: discountController.text == ""
+                          ? 0
+                          : double.parse(discountController.text),
+                      paymentMode: isPayByCard ? "Card" : "Cash",
+                    );
+                    setState(() {
+                      isLoading = false;
+                    });
+                    if (isPaymentSuccessful && context.mounted) {
+                      showTopSnackBar(
+                        overlay,
+                        const CustomSnackBar.success(
+                          message: "Order Status Updated Successfully",
+                        ),
+                      );
+                      Navigator.pop(context);
+                    } else {}
+                  }
+                },
+                child: Container(
+                  margin: EdgeInsets.only(
+                    top: height * 2,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Colors.black, // Outline color
-                      width: 0.5, // Outline width
-                    ),
-                    borderRadius: BorderRadius.circular(6.0),
-                  ),
-                  height: 10,
-                  width: width * 20,
-                ),
-                buildCustomText("Order ID: #3", Data.greyTextColor, width * 2,
-                    fontWeight: FontWeight.bold),
-              ],
-            ),
-            buildCustomText("Payment Details", Data.greyTextColor, width * 3,
-                fontWeight: FontWeight.bold),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    textButton(
-                      text: "Pay by Card",
-                      height: height,
-                      width: width,
-                      textColor: const Color(0xff063B9D),
-                      buttonColor: const Color(0xff063B9D),
-                      isSelected: isPayByCard,
-                      onTap: () async {
-                        setState(() {
-                          isPayByCard = true;
-                        });
-                      },
-                    ),
-                    SizedBox(
-                      width: width * 2,
-                    ),
-                    textButton(
-                      text: "Pay by Cash",
-                      height: height,
-                      width: width,
-                      textColor: const Color(0xff063B9D),
-                      buttonColor: const Color(0xff063B9D),
-                      isSelected: !isPayByCard,
-                      onTap: () async {
-                        setState(() {
-                          isPayByCard = false;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                billedToBox(
-                  title: "Billed To",
-                  hintText: "Billed To",
-                  isRequired: true,
-                  controller: billedToController,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Enter a valid name!';
-                    }
-                    return null;
-                  },
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: height * 2),
-                    Row(
-                      children: [
-                        buildCustomText(
-                            "Bill Amount", Data.greyTextColor, width * 1.5,
-                            fontWeight: FontWeight.bold),
-                        SizedBox(width: width * 2),
-                        buildCustomText(
-                            "£28.00", Data.lightGreyTextColor, width * 1.5,
-                            fontWeight: FontWeight.bold),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        dataBox(
-                          title: "Discount",
-                          hintText: "Discount",
-                          isRequired: false,
-                          controller: discountController,
-                        ),
-                        dataBox(
-                          title: "Paid Amount",
-                          hintText: "Paid Amount",
-                          isRequired: true,
-                          controller: discountController,
-                        ),
-                        calculatedBox(
-                          title: "Change",
-                          hintText: "Change",
-                          data: "0",
-                          isChange: true,
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: height * 2,
-                    ),
-                    Row(
-                      children: [
-                        buildCustomText("Revised Bill Amount",
-                            Data.greyTextColor, width * 2,
-                            fontWeight: FontWeight.bold),
-                        SizedBox(width: width * 2),
-                        buildCustomText(
-                            "£28.00", Data.lightGreyTextColor, width * 2,
-                            fontWeight: FontWeight.bold),
-                        SizedBox(width: width * 2),
-                        buildCustomText("(Inclusive 20%VAT@5.6)",
-                            Data.lightGreyTextColor, width * 1.5),
-                      ],
-                    ),
-                  ],
-                ),
-                InkWell(
-                  onDoubleTap: () {
-                    //TODO: call payment update api
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(
-                      top: height * 2,
-                    ),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5.0),
-                        border: Border.all(
-                          color: Data.darkTextColor, // Outline color
-                          width: 1, // Outline width
-                        )),
-                    height: height * 25,
-                    width: width * 30,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        isPayByCard
-                            ? SizedBox(
-                                height: width * 10,
-                                width: width * 10,
-                                child: SvgPicture.asset(
-                                  "assets/svg/payment.svg",
-                                  colorFilter: ColorFilter.mode(
-                                      Provider.of<InfoProvider>(context,
-                                              listen: true)
-                                          .systemInfo
-                                          .iconsColor,
-                                      BlendMode.srcIn),
-                                ),
-                              )
-                            : const SizedBox(),
-                        buildCustomText(
-                            isPayByCard
-                                ? "Pay by Contactless/Card"
-                                : "Pay by Cash",
-                            Data.lightGreyTextColor,
-                            width * 1.5),
-                      ],
-                    ),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5.0),
+                      border: Border.all(
+                        color: Data.darkTextColor, // Outline color
+                        width: 1, // Outline width
+                      )),
+                  height: height * 25,
+                  width: width * 30,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      isPayByCard
+                          ? SizedBox(
+                              height: width * 10,
+                              width: width * 10,
+                              child: SvgPicture.asset(
+                                "assets/svg/payment.svg",
+                                colorFilter: ColorFilter.mode(
+                                    Provider.of<InfoProvider>(context,
+                                            listen: true)
+                                        .systemInfo
+                                        .iconsColor,
+                                    BlendMode.srcIn),
+                              ),
+                            )
+                          : const SizedBox(),
+                      buildCustomText(
+                          isPayByCard
+                              ? "Pay by Contactless/Card"
+                              : "Pay by Cash",
+                          Data.lightGreyTextColor,
+                          width * 1.5),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -826,6 +948,8 @@ class _PayState extends State<Pay> {
     Function? validator,
     bool isRequired = false,
     bool isNumber = false,
+    bool isDiscount = false,
+    bool isPaidAmount = false,
   }) {
     return Container(
       width: width * 12,
@@ -853,7 +977,9 @@ class _PayState extends State<Pay> {
           Row(
             children: [
               buildCustomText(
-                "£",
+                Provider.of<InfoProvider>(context, listen: true)
+                    .systemInfo
+                    .currencySymbol!,
                 Data.lightGreyTextColor,
                 width * 1.5,
                 fontFamily: "RobotoMedium",
@@ -864,8 +990,17 @@ class _PayState extends State<Pay> {
               Container(
                 width: width * 6,
                 color: Colors.white,
-                child: buildInputField("0", height, width, context, controller,
-                    validator: validator, isNumber: isNumber),
+                child: buildInputField(
+                  "0",
+                  height,
+                  width,
+                  context,
+                  controller,
+                  validator: validator,
+                  isNumber: isNumber,
+                  isDiscount: isDiscount,
+                  isPaidAmount: isPaidAmount,
+                ),
               ),
             ],
           ),
@@ -899,7 +1034,9 @@ class _PayState extends State<Pay> {
           Row(
             children: [
               buildCustomText(
-                "£",
+                Provider.of<InfoProvider>(context, listen: true)
+                    .systemInfo
+                    .currencySymbol!,
                 Data.lightGreyTextColor,
                 width * 1.5,
                 fontFamily: "RobotoMedium",
@@ -968,9 +1105,17 @@ class _PayState extends State<Pay> {
     );
   }
 
-  Widget buildInputField(String hintText, double height, double width,
-      BuildContext context, TextEditingController controller,
-      {Function? validator, bool isNumber = false}) {
+  Widget buildInputField(
+    String hintText,
+    double height,
+    double width,
+    BuildContext context,
+    TextEditingController controller, {
+    Function? validator,
+    bool isNumber = false,
+    bool isDiscount = false,
+    bool isPaidAmount = false,
+  }) {
     return Container(
       // height: height * 6,
       width: width * 40,
@@ -982,6 +1127,14 @@ class _PayState extends State<Pay> {
             .systemInfo
             .primaryColor,
         controller: controller,
+        onChanged: (value) {
+          if (isDiscount) {
+            calculateDiscount();
+          }
+          if (isPaidAmount) {
+            calculateChange();
+          }
+        },
         validator: (value) {
           return validator!(value);
         },

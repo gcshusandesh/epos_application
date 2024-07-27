@@ -108,7 +108,7 @@ class _OrderTakerState extends State<OrderTaker> {
                         Data.greyTextColor,
                         width * 2.5),
                     buildCustomText(
-                        "Total Amount:  £ ${Provider.of<MenuProvider>(context, listen: true).totalAmount.toStringAsFixed(2)}",
+                        "Total Amount:  ${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!} ${Provider.of<MenuProvider>(context, listen: true).totalAmount.toStringAsFixed(2)}",
                         Data.greyTextColor,
                         width * 2.5),
                   ],
@@ -487,11 +487,11 @@ class _OrderTakerState extends State<OrderTaker> {
                               Column(
                                 children: [
                                   buildCustomText(
-                                      "Bill Amount: £ ${Provider.of<MenuProvider>(context, listen: true).totalAmount.toStringAsFixed(2)}",
+                                      "Bill Amount: ${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!} ${Provider.of<MenuProvider>(context, listen: true).totalAmount.toStringAsFixed(2)}",
                                       Data.greyTextColor,
                                       width * 2.5),
                                   buildCustomText(
-                                      "(Inclusive 20% VAT @£${Provider.of<MenuProvider>(context, listen: true).vatAmount.toStringAsFixed(2)})",
+                                      "(Inclusive 20% VAT @${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!}${Provider.of<MenuProvider>(context, listen: true).vatAmount.toStringAsFixed(2)})",
                                       Data.greyTextColor,
                                       width * 2),
                                 ],
