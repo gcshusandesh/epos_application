@@ -106,7 +106,6 @@ class _OrdersState extends State<Orders> {
                             decoration: const BoxDecoration(
                                 color: Data.lightGreyBodyColor),
                             children: [
-                              tableTitle("S.N.", width),
                               tableTitle("Order ID", width),
                               tableTitle("Table Number", width),
                               tableTitle("Items", width),
@@ -148,7 +147,6 @@ class _OrdersState extends State<Orders> {
                         decoration:
                             const BoxDecoration(color: Data.lightGreyBodyColor),
                         children: [
-                          tableTitle("S.N.", width),
                           tableTitle("Order ID", width),
                           tableTitle("Table Number", width),
                           tableTitle("Items", width),
@@ -179,7 +177,6 @@ class _OrdersState extends State<Orders> {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
-        tableItem((index + 1).toString(), width, context),
         tableItem("#${order.id.toString()}", width, context),
         tableItem(order.tableNumber, width, context),
         tableItem(order.items, width, context),

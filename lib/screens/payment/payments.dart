@@ -141,7 +141,6 @@ class _PaymentState extends State<Payment> {
                                 color: Data.lightGreyBodyColor),
                             children: widget.isSales
                                 ? [
-                                    tableTitle("S.N.", width),
                                     tableTitle("Order ID", width),
                                     tableTitle("Table Number", width),
                                     tableTitle("Items", width),
@@ -150,7 +149,6 @@ class _PaymentState extends State<Payment> {
                                     tableTitle("Action", width),
                                   ]
                                 : [
-                                    tableTitle("S.N.", width),
                                     tableTitle("Order ID", width),
                                     tableTitle("Table Number", width),
                                     tableTitle("Items", width),
@@ -192,7 +190,6 @@ class _PaymentState extends State<Payment> {
                             const BoxDecoration(color: Data.lightGreyBodyColor),
                         children: widget.isSales
                             ? [
-                                tableTitle("S.N.", width),
                                 tableTitle("Order ID", width),
                                 tableTitle("Table Number", width),
                                 tableTitle("Items", width),
@@ -201,7 +198,6 @@ class _PaymentState extends State<Payment> {
                                 tableTitle("Action", width),
                               ]
                             : [
-                                tableTitle("S.N.", width),
                                 tableTitle("Order ID", width),
                                 tableTitle("Table Number", width),
                                 tableTitle("Items", width),
@@ -235,7 +231,6 @@ class _PaymentState extends State<Payment> {
       return TableRow(
         decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
         children: [
-          tableItem((index + 1).toString(), width, context),
           tableItem("#${order.id}", width, context),
           tableItem(order.tableNumber, width, context),
           tableItem(order.items, width, context),
@@ -318,7 +313,6 @@ class _PaymentState extends State<Payment> {
       return TableRow(
         decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
         children: [
-          tableItem((index + 1).toString(), width, context),
           tableItem("#${order.id}", width, context),
           tableItem(order.tableNumber, width, context),
           tableItem(order.items, width, context),
@@ -358,7 +352,6 @@ class _PaymentState extends State<Payment> {
     } else {
       // Return an empty TableRow if the order does not meet the conditions
       return const TableRow(children: [
-        SizedBox(),
         SizedBox(),
         SizedBox(),
         SizedBox(),

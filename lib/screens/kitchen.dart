@@ -7,6 +7,8 @@ import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class Kitchen extends StatefulWidget {
   const Kitchen({super.key});
@@ -60,6 +62,9 @@ class _KitchenState extends State<Kitchen> {
     return Stack(
       children: [
         mainBody(context),
+        isLoading
+            ? onLoading(width: width, context: context)
+            : const SizedBox(),
       ],
     );
   }
@@ -104,7 +109,7 @@ class _KitchenState extends State<Kitchen> {
                             decoration: const BoxDecoration(
                                 color: Data.lightGreyBodyColor),
                             children: [
-                              tableTitle("S.N.", width),
+                              tableTitle("Order ID", width),
                               tableTitle("Items", width),
                               tableTitle("Instructions", width),
                               tableTitle("Status", width),
@@ -142,7 +147,7 @@ class _KitchenState extends State<Kitchen> {
                         decoration:
                             const BoxDecoration(color: Data.lightGreyBodyColor),
                         children: [
-                          tableTitle("S.N.", width),
+                          tableTitle("Order ID", width),
                           tableTitle("Items", width),
                           tableTitle("Instructions", width),
                           tableTitle("Status", width),
@@ -182,14 +187,73 @@ class _KitchenState extends State<Kitchen> {
               const SizedBox(),
             ]
           : [
-              tableItem((index + 1).toString(), width, context),
+              tableItem("#${order.id}", width, context),
               tableItem(order.items, width, context),
               tableItem(order.instructions ?? "N/A", width, context),
               Padding(
-                padding: EdgeInsets.symmetric(vertical: height),
-                child: tableItem(order.status.name, width, context),
+                padding: EdgeInsets.symmetric(vertical: isEditing ? 0 : height),
+                child: isEditing
+                    ? buildStatusDropdown(index: index)
+                    : tableItem(order.status.name, width, context),
               ),
             ],
+    );
+  }
+
+  Widget buildStatusDropdown({required int index}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+      child: DropdownButton<OrderStatus>(
+        value: Provider.of<OrderProvider>(context, listen: true)
+            .processedOrders[index]
+            .status,
+        items: OrderStatus.values.map((OrderStatus status) {
+          return DropdownMenuItem<OrderStatus>(
+            value: status,
+            child: Text(status.name),
+          );
+        }).toList(),
+        onChanged: (OrderStatus? newOrderStatus) async {
+          if (newOrderStatus != null) {
+            var overlay = Overlay.of(context);
+            setState(() {
+              isLoading = true;
+            });
+            bool isStatusChanged =
+                await Provider.of<OrderProvider>(context, listen: false)
+                    .updateOrders(
+              isChangeStatus: true,
+              orderID: Provider.of<OrderProvider>(context, listen: false)
+                  .processedOrders[index]
+                  .id!,
+              accessToken: Provider.of<AuthProvider>(context, listen: false)
+                  .user
+                  .accessToken!,
+              context: context,
+              itemIndex: index,
+              newOrderStatus: newOrderStatus,
+            );
+            setState(() {
+              isLoading = false;
+            });
+            if (isStatusChanged) {
+              showTopSnackBar(
+                overlay,
+                const CustomSnackBar.success(
+                  message: "Order Status Updated Successfully",
+                ),
+              );
+            } else {
+              showTopSnackBar(
+                overlay,
+                const CustomSnackBar.success(
+                  message: "Order Status update failed",
+                ),
+              );
+            }
+          }
+        },
+      ),
     );
   }
 
