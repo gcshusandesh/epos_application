@@ -23,8 +23,10 @@ class Payment extends StatefulWidget {
   const Payment({
     super.key,
     this.isSales = false,
+    this.divertedFromPayment = false,
   });
   final bool isSales;
+  final bool divertedFromPayment;
 
   @override
   State<Payment> createState() => _PaymentState();
@@ -90,12 +92,56 @@ class _PaymentState extends State<Payment> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool value) async {
+        Navigator.pop(context);
+        if (widget.divertedFromPayment) {
+          // if this is a diverted page, go back to the payment page
+          Navigator.pop(context);
+        }
+      },
+      child: Stack(
+        children: [
+          mainBody(context),
+          isLoading
+              ? onLoading(width: width, context: context)
+              : const SizedBox(),
+        ],
+      ),
+    );
+  }
+
+  Row topSection(
+      {required BuildContext context,
+      required double height,
+      required String text,
+      required double width,
+      bool initialSetup = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        mainBody(context),
-        isLoading
-            ? onLoading(width: width, context: context)
-            : const SizedBox(),
+        !initialSetup
+            ? iconButton(
+                "assets/svg/arrow_back.svg",
+                height,
+                width,
+                () {
+                  Navigator.pop(context);
+                  if (widget.divertedFromPayment) {
+                    // if this is a diverted page, go back to the payment page
+                    Navigator.pop(context);
+                  }
+                },
+                context: context,
+              )
+            : SizedBox(
+                width: width * 5,
+              ),
+        buildTitleText(text, Data.darkTextColor, width),
+        SizedBox(
+          width: width * 5,
+        ),
       ],
     );
   }
@@ -986,7 +1032,10 @@ class _PayState extends State<Pay> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const Payment(isSales: true)),
+                      builder: (context) => const Payment(
+                            isSales: true,
+                            divertedFromPayment: true,
+                          )),
                 );
               }
             } else {

@@ -18,7 +18,7 @@ class ErrorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: true,
+      canPop: false,
       onPopInvoked: (bool value) async {
         // do nothing-just disable back button
       },
