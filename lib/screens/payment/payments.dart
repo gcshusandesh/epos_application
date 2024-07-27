@@ -879,7 +879,7 @@ class _PayState extends State<Pay> {
                 ],
               ),
               InkWell(
-                onDoubleTap: () async {
+                onTap: () async {
                   var overlay = Overlay.of(context);
                   if (!isPayByCard &&
                       (double.parse(discountController.text) > billAmount)) {
@@ -901,48 +901,13 @@ class _PayState extends State<Pay> {
                       ),
                     );
                   } else {
-                    setState(() {
-                      isLoading = true;
-                    });
-
-                    bool isPaymentSuccessful =
-                        await Provider.of<OrderProvider>(context, listen: false)
-                            .updateOrders(
-                      accessToken:
-                          Provider.of<AuthProvider>(context, listen: false)
-                              .user
-                              .accessToken!,
+                    showDialog(
+                      barrierDismissible: false,
                       context: context,
-                      orderID:
-                          Provider.of<OrderProvider>(context, listen: false)
-                              .processedOrders[widget.index]
-                              .id!,
-                      itemIndex: widget.index,
-                      isPaid: true,
-                      discount: discountController.text == ""
-                          ? 0
-                          : double.parse(discountController.text),
-                      paymentMode: isPayByCard ? "Card" : "Cash",
+                      builder: (BuildContext context) {
+                        return confirmAlert();
+                      },
                     );
-                    setState(() {
-                      isLoading = false;
-                    });
-                    if (isPaymentSuccessful && context.mounted) {
-                      showTopSnackBar(
-                        overlay,
-                        const CustomSnackBar.success(
-                          message: "Payment Successful",
-                        ),
-                      );
-                      Navigator.pop(context);
-                    } else {
-                      showTopSnackBar(
-                        overlay,
-                        const CustomSnackBar.success(
-                          message: "Payment Not Successful. Please try again.",
-                        ),
-                      );
-                    }
                   }
                 },
                 child: Container(
@@ -991,6 +956,82 @@ class _PayState extends State<Pay> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget confirmAlert() {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text("Confirm Payment"),
+      content: const Text("Proceed with Payment?"),
+      actions: [
+        SizedBox(height: height * 2),
+        textButton(
+          text: "Confirm",
+          height: height,
+          width: width,
+          textColor: Data.greenColor,
+          buttonColor: Data.greenColor,
+          onTap: () async {
+            Navigator.pop(context);
+            var overlay = Overlay.of(context);
+            setState(() {
+              isLoading = true;
+            });
+
+            bool isPaymentSuccessful =
+                await Provider.of<OrderProvider>(context, listen: false)
+                    .updateOrders(
+              accessToken: Provider.of<AuthProvider>(context, listen: false)
+                  .user
+                  .accessToken!,
+              context: context,
+              orderID: Provider.of<OrderProvider>(context, listen: false)
+                  .processedOrders[widget.index]
+                  .id!,
+              itemIndex: widget.index,
+              isPaid: true,
+              discount: discountController.text == ""
+                  ? 0
+                  : double.parse(discountController.text),
+              paymentMode: isPayByCard ? "Card" : "Cash",
+            );
+            setState(() {
+              isLoading = false;
+            });
+            if (isPaymentSuccessful && mounted) {
+              showTopSnackBar(
+                overlay,
+                const CustomSnackBar.success(
+                  message: "Payment Successful",
+                ),
+              );
+              Navigator.pop(context);
+            } else {
+              showTopSnackBar(
+                overlay,
+                const CustomSnackBar.success(
+                  message: "Payment Not Successful. Please try again.",
+                ),
+              );
+            }
+          },
+        ),
+        SizedBox(
+          height: height,
+        ),
+        textButton(
+          text: "Cancel",
+          height: height,
+          width: width,
+          textColor: Data.redColor,
+          buttonColor: Data.redColor,
+          onTap: () {
+            // close dialog box
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 
