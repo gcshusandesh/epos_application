@@ -225,7 +225,33 @@ class _PaymentState extends State<Payment> {
     );
   }
 
-  //
+  void viewPDF({required ProcessedOrder order}) async {
+    setState(() {
+      isLoading = true;
+    });
+    String pdfPath = await generateInvoicePdf(
+      context: context,
+      order: order,
+      currency: Provider.of<InfoProvider>(context, listen: false)
+          .systemInfo
+          .currencySymbol!,
+      priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
+      logoUrl: Provider.of<InfoProvider>(context, listen: false)
+          .restaurantInfo
+          .logoUrl!,
+    );
+    setState(() {
+      isLoading = false;
+    });
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PdfViewerScreen(pdfPath: pdfPath),
+        ),
+      );
+    }
+  }
 
   TableRow buildPaymentRow(
       {required int index, required ProcessedOrder order}) {
@@ -258,35 +284,7 @@ class _PaymentState extends State<Payment> {
                       .systemInfo
                       .primaryColor,
                   onTap: () async {
-                    setState(() {
-                      isLoading = true;
-                    });
-                    String pdfPath = await generateInvoicePdf(
-                      context: context,
-                      order: order,
-                      currency:
-                          Provider.of<InfoProvider>(context, listen: false)
-                              .systemInfo
-                              .currencySymbol!,
-                      priceList:
-                          Provider.of<MenuProvider>(context, listen: false)
-                              .priceList,
-                      logoUrl: Provider.of<InfoProvider>(context, listen: false)
-                          .restaurantInfo
-                          .logoUrl!,
-                    );
-                    setState(() {
-                      isLoading = false;
-                    });
-                    if (mounted) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              PdfViewerScreen(pdfPath: pdfPath),
-                        ),
-                      );
-                    }
+                    return viewPDF(order: order);
                   },
                 ),
                 SizedBox(width: width),
@@ -693,6 +691,35 @@ class _PayState extends State<Pay> {
     );
   }
 
+  void viewPDF({required ProcessedOrder order}) async {
+    setState(() {
+      isLoading = true;
+    });
+    String pdfPath = await generateInvoicePdf(
+      context: context,
+      order: order,
+      currency: Provider.of<InfoProvider>(context, listen: false)
+          .systemInfo
+          .currencySymbol!,
+      priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
+      logoUrl: Provider.of<InfoProvider>(context, listen: false)
+          .restaurantInfo
+          .logoUrl!,
+    );
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PdfViewerScreen(pdfPath: pdfPath),
+        ),
+      );
+    }
+  }
+
   Padding mainBody(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: width * 5),
@@ -898,11 +925,18 @@ class _PayState extends State<Pay> {
                       showTopSnackBar(
                         overlay,
                         const CustomSnackBar.success(
-                          message: "Order Status Updated Successfully",
+                          message: "Payment Successful",
                         ),
                       );
                       Navigator.pop(context);
-                    } else {}
+                    } else {
+                      showTopSnackBar(
+                        overlay,
+                        const CustomSnackBar.success(
+                          message: "Payment Not Successful. Please try again.",
+                        ),
+                      );
+                    }
                   }
                 },
                 child: Container(
