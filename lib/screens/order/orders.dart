@@ -195,13 +195,29 @@ class _OrdersState extends State<Orders> {
   }
 
   Widget buildStatusDropdown({required int index}) {
+    // Define the allowed statuses
+    List<OrderStatus> allowedStatuses = [
+      OrderStatus.served,
+      OrderStatus.cancelled,
+    ];
+
+    // Get the current status of the order
+    OrderStatus currentStatus =
+        Provider.of<OrderProvider>(context, listen: true)
+            .processedOrders[index]
+            .status;
+
+    // Add the current status to the allowed statuses if not already present
+    if (!allowedStatuses.contains(currentStatus)) {
+      allowedStatuses.add(currentStatus);
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
       child: DropdownButton<OrderStatus>(
         value: Provider.of<OrderProvider>(context, listen: true)
             .processedOrders[index]
             .status,
-        items: OrderStatus.values.map((OrderStatus status) {
+        items: allowedStatuses.map((OrderStatus status) {
           return DropdownMenuItem<OrderStatus>(
             value: status,
             child: Text(status.name),
