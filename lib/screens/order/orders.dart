@@ -186,7 +186,7 @@ class _OrdersState extends State<Orders> {
             "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!}${order.price.toStringAsFixed(2)}",
             width,
             context),
-        tableItem(order.timestamp!, width, context),
+        tableItem(order.orderTime!, width, context),
         isEditing
             ? buildStatusDropdown(index: index)
             : tableItem(order.status.name, width, context),

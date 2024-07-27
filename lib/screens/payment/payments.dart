@@ -145,6 +145,7 @@ class _PaymentState extends State<Payment> {
                                     tableTitle("Table Number", width),
                                     tableTitle("Items", width),
                                     tableTitle("Paid Price", width),
+                                    tableTitle("Payment Mode", width),
                                     tableTitle("Timestamp", width),
                                     tableTitle("Action", width),
                                   ]
@@ -194,6 +195,7 @@ class _PaymentState extends State<Payment> {
                                 tableTitle("Table Number", width),
                                 tableTitle("Items", width),
                                 tableTitle("Paid Price", width),
+                                tableTitle("Payment Mode", width),
                                 tableTitle("Timestamp", width),
                                 tableTitle("Action", width),
                               ]
@@ -238,7 +240,8 @@ class _PaymentState extends State<Payment> {
               "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!}${(order.price - order.discount).toStringAsFixed(2)}",
               width,
               context),
-          tableItem(order.timestamp!, width, context),
+          tableItem(order.paymentMode!, width, context),
+          tableItem(order.orderTime!, width, context),
           Padding(
             padding: EdgeInsets.symmetric(vertical: height, horizontal: width),
             child: Row(
@@ -359,8 +362,18 @@ class _PaymentState extends State<Payment> {
           ),
         ],
       );
-    } else {
+    } else if (widget.isSales) {
       // Return an empty TableRow if the order does not meet the conditions
+      return const TableRow(children: [
+        SizedBox(),
+        SizedBox(),
+        SizedBox(),
+        SizedBox(),
+        SizedBox(),
+        SizedBox(),
+        SizedBox(),
+      ]);
+    } else {
       return const TableRow(children: [
         SizedBox(),
         SizedBox(),

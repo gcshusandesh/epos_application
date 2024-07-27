@@ -40,12 +40,16 @@ class OrderProvider extends ChangeNotifier {
                 : attributes['instruction'],
             price: attributes['price'].toDouble(),
             discount: attributes['discount'].toDouble(),
-            timestamp: convertTimestamp(attributes['createdAt'].toString()),
+            orderTime: convertTimestamp(attributes['createdAt'].toString()),
+            paymentTime: attributes['updatedAt'] == null
+                ? null
+                : convertTimestamp(attributes['updatedAt'].toString()),
             status: OrderStatus.values.firstWhere((status) =>
                 status.toString() ==
                 'OrderStatus.${attributes['orderStatus']}'),
             billedTo: attributes['billedTo'],
             isPaid: attributes['isPaid'],
+            paymentMode: attributes['paymentMode'],
           );
         }).toList();
 

@@ -53,7 +53,10 @@ Future<String> generateInvoicePdf({
                 pw.SizedBox(height: 20),
                 pw.Text('Bill To:',
                     style: pw.TextStyle(fontSize: 20, font: ttf)),
-                pw.Text(order.billedTo ?? "Guest",
+                pw.Text(
+                    (order.billedTo == null || order.billedTo == "")
+                        ? "Guest"
+                        : order.billedTo!,
                     style: pw.TextStyle(fontSize: 18, font: ttf)),
                 pw.SizedBox(height: 20),
                 pw.Text('Items:', style: pw.TextStyle(fontSize: 20, font: ttf)),

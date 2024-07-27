@@ -270,7 +270,8 @@ class ProcessedOrder {
   String? instructions;
   double price;
   double discount;
-  String? timestamp;
+  String? orderTime;
+  String? paymentTime;
   OrderStatus status;
   String? billedTo;
   bool isPaid;
@@ -283,7 +284,8 @@ class ProcessedOrder {
     this.instructions,
     required this.price,
     this.discount = 0,
-    this.timestamp,
+    this.orderTime,
+    this.paymentTime,
     required this.status,
     this.billedTo,
     this.isPaid = false,
