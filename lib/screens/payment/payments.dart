@@ -129,12 +129,14 @@ class _PaymentState extends State<Payment> {
           child: Provider.of<OrderProvider>(context, listen: true)
                       .processedOrders
                       .isEmpty ||
-                  Provider.of<OrderProvider>(context, listen: true)
-                          .getPaymentListCount() ==
-                      0 ||
-                  Provider.of<OrderProvider>(context, listen: true)
-                          .getSalesListCount() ==
-                      0
+                  (!widget.isSales &&
+                      Provider.of<OrderProvider>(context, listen: true)
+                              .getPaymentListCount() ==
+                          0) ||
+                  (widget.isSales &&
+                      Provider.of<OrderProvider>(context, listen: true)
+                              .getSalesListCount() ==
+                          0)
               ? Column(
                   children: [
                     Table(
@@ -261,7 +263,9 @@ class _PaymentState extends State<Payment> {
 
   TableRow buildPaymentRow(
       {required int index, required ProcessedOrder order}) {
-    if (widget.isSales && order.status == OrderStatus.served && order.isPaid) {
+    if (widget.isSales &&
+        (order.status == OrderStatus.served) &&
+        order.isPaid) {
       return TableRow(
         decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
         children: [
@@ -316,7 +320,7 @@ class _PaymentState extends State<Payment> {
         ],
       );
     } else if (!widget.isSales &&
-        order.status == OrderStatus.served &&
+        (order.status == OrderStatus.served) &&
         !order.isPaid) {
       // Display only served but unpaid items in normal Payment page
       return TableRow(
@@ -697,35 +701,6 @@ class _PayState extends State<Pay> {
     );
   }
 
-  void viewPDF({required ProcessedOrder order}) async {
-    setState(() {
-      isLoading = true;
-    });
-    String pdfPath = await generateInvoicePdf(
-      context: context,
-      order: order,
-      currency: Provider.of<InfoProvider>(context, listen: false)
-          .systemInfo
-          .currencySymbol!,
-      priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
-      logoUrl: Provider.of<InfoProvider>(context, listen: false)
-          .restaurantInfo
-          .logoUrl!,
-    );
-
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-      });
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PdfViewerScreen(pdfPath: pdfPath),
-        ),
-      );
-    }
-  }
-
   Padding mainBody(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: width * 5),
@@ -1006,7 +981,9 @@ class _PayState extends State<Pay> {
                   message: "Payment Successful",
                 ),
               );
-              Navigator.pop(context);
+              if (mounted) {
+                Navigator.pop(context);
+              }
             } else {
               showTopSnackBar(
                 overlay,
