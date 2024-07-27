@@ -7,6 +7,8 @@ import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class Orders extends StatefulWidget {
   const Orders({super.key});
@@ -60,6 +62,9 @@ class _OrdersState extends State<Orders> {
     return Stack(
       children: [
         mainBody(context),
+        isLoading
+            ? onLoading(width: width, context: context)
+            : const SizedBox(),
       ],
     );
   }
@@ -201,14 +206,44 @@ class _OrdersState extends State<Orders> {
             child: Text(status.name),
           );
         }).toList(),
-        onChanged: (OrderStatus? newStatus) {
-          if (newStatus != null) {
-            // Example function to update the order status in the provider
-            Provider.of<OrderProvider>(context, listen: false)
-                .updateItemOrderStatusLocally(
-              index: index,
-              status: newStatus,
+        onChanged: (OrderStatus? newOrderStatus) async {
+          if (newOrderStatus != null) {
+            var overlay = Overlay.of(context);
+            setState(() {
+              isLoading = true;
+            });
+            bool isStatusChanged =
+                await Provider.of<OrderProvider>(context, listen: false)
+                    .updateOrders(
+              isChangeStatus: true,
+              orderID: Provider.of<OrderProvider>(context, listen: false)
+                  .processedOrders[index]
+                  .id!,
+              accessToken: Provider.of<AuthProvider>(context, listen: false)
+                  .user
+                  .accessToken!,
+              context: context,
+              itemIndex: index,
+              newOrderStatus: newOrderStatus,
             );
+            setState(() {
+              isLoading = false;
+            });
+            if (isStatusChanged) {
+              showTopSnackBar(
+                overlay,
+                const CustomSnackBar.success(
+                  message: "Order Status Updated Successfully",
+                ),
+              );
+            } else {
+              showTopSnackBar(
+                overlay,
+                const CustomSnackBar.success(
+                  message: "Order Status update failed",
+                ),
+              );
+            }
           }
         },
       ),

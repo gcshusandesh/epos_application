@@ -101,7 +101,7 @@ class OrderProvider extends ChangeNotifier {
 
   void updateItemOrderStatusLocally(
       {required int index, required OrderStatus status}) {
-    processedOrders[index].status = OrderStatus.served;
+    processedOrders[index].status = status;
     notifyListeners();
   }
 
@@ -213,20 +213,22 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateOrders({
+  Future<bool> updateOrders({
     required String accessToken,
     required BuildContext context,
+    required int orderID,
     bool isPaid = false,
     bool isChangeStatus = false,
-    bool isDiscount = false,
-    String? orderStatus,
+    OrderStatus? newOrderStatus,
+    int? itemIndex,
     double? discount,
   }) async {
-    Uri url = Uri.parse("${Data.baseUrl}/api/processed-orders");
+    Uri url = Uri.parse("${Data.baseUrl}/api/processed-orders/$orderID");
 
     try {
-      var headers = {
-        "Accept": "application/json",
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer $accessToken',
       };
 
@@ -234,28 +236,35 @@ class OrderProvider extends ChangeNotifier {
 
       if (isPaid) {
         payloadBody = {
-          "data": {"isPaid": true}
+          "data": {"isPaid": true, "discount": discount!}
         };
       } else if (isChangeStatus) {
         payloadBody = {
-          "data": {"orderStatus": orderStatus!}
-        };
-      } else if (isDiscount) {
-        payloadBody = {
-          "data": {"discount": discount!}
+          "data": {"orderStatus": newOrderStatus!.name}
         };
       }
 
-      final response = await http.put(Uri.parse(url.toString()),
-          headers: headers, body: jsonEncode(payloadBody));
+      var response = await http.put(
+        url,
+        headers: headers,
+        body: jsonEncode(payloadBody),
+      );
       var extractedData = json.decode(response.body);
       var data = extractedData['data'];
       print("data = $data");
       print("response code = ${response.statusCode}");
 
       if (response.statusCode == 200) {
+        if (isChangeStatus) {
+          updateItemOrderStatusLocally(
+            index: itemIndex!,
+            status: newOrderStatus!,
+          );
+        }
         notifyListeners();
+        return true;
       }
+      return false;
     } on SocketException {
       if (context.mounted) {
         await Navigator.push(
@@ -272,13 +281,14 @@ class OrderProvider extends ChangeNotifier {
         await updateOrders(
           accessToken: accessToken,
           context: context,
+          orderID: orderID,
           isPaid: isPaid,
           isChangeStatus: isChangeStatus,
-          isDiscount: isDiscount,
-          orderStatus: orderStatus,
+          newOrderStatus: newOrderStatus,
           discount: discount,
         );
       }
+      return false;
     } catch (e) {
       print("Error: $e");
       if (context.mounted) {
@@ -295,13 +305,14 @@ class OrderProvider extends ChangeNotifier {
         await updateOrders(
           accessToken: accessToken,
           context: context,
+          orderID: orderID,
           isPaid: isPaid,
           isChangeStatus: isChangeStatus,
-          isDiscount: isDiscount,
-          orderStatus: orderStatus,
+          newOrderStatus: newOrderStatus,
           discount: discount,
         );
       }
+      return false;
     }
   }
 
