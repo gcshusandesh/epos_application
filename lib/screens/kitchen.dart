@@ -96,8 +96,11 @@ class _KitchenState extends State<Kitchen> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(6),
           child: Provider.of<OrderProvider>(context, listen: true)
-                  .processedOrders
-                  .isEmpty
+                      .processedOrders
+                      .isEmpty ||
+                  Provider.of<OrderProvider>(context, listen: true)
+                          .getKitchenListCount() ==
+                      0
               ? Column(
                   children: [
                     Table(

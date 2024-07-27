@@ -214,6 +214,7 @@ class _OrdersState extends State<Orders> {
     } else {
       allowedStatuses = [
         OrderStatus.ready,
+        OrderStatus.served,
         OrderStatus.cancelled,
       ];
     }

@@ -91,7 +91,10 @@ class _OrderTakerState extends State<OrderTaker> {
                   height: 10,
                   width: width * 20,
                 ),
-                buildCustomText("Order ID: #3", Data.greyTextColor, width * 3,
+                buildCustomText(
+                    "Order ID: #${Provider.of<OrderProvider>(context, listen: true).processedOrders.length + 1}",
+                    Data.greyTextColor,
+                    width * 3,
                     fontWeight: FontWeight.bold),
               ],
             ),

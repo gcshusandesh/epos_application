@@ -140,6 +140,29 @@ class OrderProvider extends ChangeNotifier {
     return formattedItems.join(', ');
   }
 
+  int getKitchenListCount() {
+    return processedOrders
+        .where((order) =>
+            order.status == OrderStatus.processing ||
+            order.status == OrderStatus.preparing ||
+            order.status == OrderStatus.ready)
+        .length;
+  }
+
+  int getPaymentListCount() {
+    return processedOrders
+        .where((order) =>
+            order.status == OrderStatus.served && order.isPaid == false)
+        .length;
+  }
+
+  int getSalesListCount() {
+    return processedOrders
+        .where((order) =>
+            order.status == OrderStatus.served && order.isPaid == true)
+        .length;
+  }
+
   Future<bool> createOrders({
     required String accessToken,
     required BuildContext context,
