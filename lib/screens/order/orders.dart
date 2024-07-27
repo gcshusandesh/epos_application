@@ -187,7 +187,9 @@ class _OrdersState extends State<Orders> {
             width,
             context),
         tableItem(order.orderTime!, width, context),
-        isEditing
+        isEditing &&
+                (order.status != OrderStatus.served) &&
+                (order.status != OrderStatus.cancelled)
             ? buildStatusDropdown(index: index)
             : tableItem(order.status.name, width, context),
       ],
@@ -196,10 +198,25 @@ class _OrdersState extends State<Orders> {
 
   Widget buildStatusDropdown({required int index}) {
     // Define the allowed statuses
-    List<OrderStatus> allowedStatuses = [
-      OrderStatus.served,
-      OrderStatus.cancelled,
-    ];
+    late List<OrderStatus> allowedStatuses;
+
+    if (Provider.of<OrderProvider>(context, listen: true)
+                .processedOrders[index]
+                .status ==
+            OrderStatus.processing ||
+        Provider.of<OrderProvider>(context, listen: true)
+                .processedOrders[index]
+                .status ==
+            OrderStatus.preparing) {
+      allowedStatuses = [
+        OrderStatus.cancelled,
+      ];
+    } else {
+      allowedStatuses = [
+        OrderStatus.ready,
+        OrderStatus.cancelled,
+      ];
+    }
 
     // Get the current status of the order
     OrderStatus currentStatus =
