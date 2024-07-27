@@ -983,6 +983,11 @@ class _PayState extends State<Pay> {
               );
               if (mounted) {
                 Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const Payment(isSales: true)),
+                );
               }
             } else {
               showTopSnackBar(
