@@ -191,8 +191,11 @@ class _KitchenState extends State<Kitchen> {
               tableItem(order.items, width, context),
               tableItem(order.instructions ?? "N/A", width, context),
               Padding(
-                padding: EdgeInsets.symmetric(vertical: isEditing ? 0 : height),
-                child: isEditing
+                padding: EdgeInsets.symmetric(
+                    vertical: isEditing && (order.status != OrderStatus.ready)
+                        ? 0
+                        : height),
+                child: isEditing && (order.status != OrderStatus.ready)
                     ? buildStatusDropdown(index: index)
                     : tableItem(order.status.name, width, context),
               ),
@@ -201,58 +204,85 @@ class _KitchenState extends State<Kitchen> {
   }
 
   Widget buildStatusDropdown({required int index}) {
+    // Define the allowed statuses
+    late List<OrderStatus> allowedStatuses;
+
+    if (Provider.of<OrderProvider>(context, listen: true)
+            .processedOrders[index]
+            .status ==
+        OrderStatus.processing) {
+      allowedStatuses = [
+        OrderStatus.preparing,
+      ];
+    } else {
+      allowedStatuses = [
+        OrderStatus.ready,
+      ];
+    }
+    // Get the current status of the order
+    OrderStatus currentStatus =
+        Provider.of<OrderProvider>(context, listen: true)
+            .processedOrders[index]
+            .status;
+    // Add the current status to the allowed statuses if not already present
+    if (!allowedStatuses.contains(currentStatus)) {
+      allowedStatuses.add(currentStatus);
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-      child: DropdownButton<OrderStatus>(
-        value: Provider.of<OrderProvider>(context, listen: true)
-            .processedOrders[index]
-            .status,
-        items: OrderStatus.values.map((OrderStatus status) {
-          return DropdownMenuItem<OrderStatus>(
-            value: status,
-            child: Text(status.name),
-          );
-        }).toList(),
-        onChanged: (OrderStatus? newOrderStatus) async {
-          if (newOrderStatus != null) {
-            var overlay = Overlay.of(context);
-            setState(() {
-              isLoading = true;
-            });
-            bool isStatusChanged =
-                await Provider.of<OrderProvider>(context, listen: false)
-                    .updateOrders(
-              isChangeStatus: true,
-              orderID: Provider.of<OrderProvider>(context, listen: false)
-                  .processedOrders[index]
-                  .id!,
-              accessToken: Provider.of<AuthProvider>(context, listen: false)
-                  .user
-                  .accessToken!,
-              context: context,
-              itemIndex: index,
-              newOrderStatus: newOrderStatus,
+      child: Center(
+        child: DropdownButton<OrderStatus>(
+          value: Provider.of<OrderProvider>(context, listen: true)
+              .processedOrders[index]
+              .status,
+          items: allowedStatuses.map((OrderStatus status) {
+            return DropdownMenuItem<OrderStatus>(
+              value: status,
+              child: Text(status.name),
             );
-            setState(() {
-              isLoading = false;
-            });
-            if (isStatusChanged) {
-              showTopSnackBar(
-                overlay,
-                const CustomSnackBar.success(
-                  message: "Order Status Updated Successfully",
-                ),
+          }).toList(),
+          onChanged: (OrderStatus? newOrderStatus) async {
+            if (newOrderStatus != null) {
+              var overlay = Overlay.of(context);
+              setState(() {
+                isLoading = true;
+              });
+              bool isStatusChanged =
+                  await Provider.of<OrderProvider>(context, listen: false)
+                      .updateOrders(
+                isChangeStatus: true,
+                orderID: Provider.of<OrderProvider>(context, listen: false)
+                    .processedOrders[index]
+                    .id!,
+                accessToken: Provider.of<AuthProvider>(context, listen: false)
+                    .user
+                    .accessToken!,
+                context: context,
+                itemIndex: index,
+                newOrderStatus: newOrderStatus,
               );
-            } else {
-              showTopSnackBar(
-                overlay,
-                const CustomSnackBar.success(
-                  message: "Order Status update failed",
-                ),
-              );
+              setState(() {
+                isLoading = false;
+              });
+              if (isStatusChanged) {
+                showTopSnackBar(
+                  overlay,
+                  const CustomSnackBar.success(
+                    message: "Order Status Updated Successfully",
+                  ),
+                );
+              } else {
+                showTopSnackBar(
+                  overlay,
+                  const CustomSnackBar.success(
+                    message: "Order Status update failed",
+                  ),
+                );
+              }
             }
-          }
-        },
+          },
+        ),
       ),
     );
   }

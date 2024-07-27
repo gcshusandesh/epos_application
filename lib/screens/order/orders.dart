@@ -228,58 +228,60 @@ class _OrdersState extends State<Orders> {
     if (!allowedStatuses.contains(currentStatus)) {
       allowedStatuses.add(currentStatus);
     }
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-      child: DropdownButton<OrderStatus>(
-        value: Provider.of<OrderProvider>(context, listen: true)
-            .processedOrders[index]
-            .status,
-        items: allowedStatuses.map((OrderStatus status) {
-          return DropdownMenuItem<OrderStatus>(
-            value: status,
-            child: Text(status.name),
-          );
-        }).toList(),
-        onChanged: (OrderStatus? newOrderStatus) async {
-          if (newOrderStatus != null) {
-            var overlay = Overlay.of(context);
-            setState(() {
-              isLoading = true;
-            });
-            bool isStatusChanged =
-                await Provider.of<OrderProvider>(context, listen: false)
-                    .updateOrders(
-              isChangeStatus: true,
-              orderID: Provider.of<OrderProvider>(context, listen: false)
-                  .processedOrders[index]
-                  .id!,
-              accessToken: Provider.of<AuthProvider>(context, listen: false)
-                  .user
-                  .accessToken!,
-              context: context,
-              itemIndex: index,
-              newOrderStatus: newOrderStatus,
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+        child: DropdownButton<OrderStatus>(
+          value: Provider.of<OrderProvider>(context, listen: true)
+              .processedOrders[index]
+              .status,
+          items: allowedStatuses.map((OrderStatus status) {
+            return DropdownMenuItem<OrderStatus>(
+              value: status,
+              child: Text(status.name),
             );
-            setState(() {
-              isLoading = false;
-            });
-            if (isStatusChanged) {
-              showTopSnackBar(
-                overlay,
-                const CustomSnackBar.success(
-                  message: "Order Status Updated Successfully",
-                ),
+          }).toList(),
+          onChanged: (OrderStatus? newOrderStatus) async {
+            if (newOrderStatus != null) {
+              var overlay = Overlay.of(context);
+              setState(() {
+                isLoading = true;
+              });
+              bool isStatusChanged =
+                  await Provider.of<OrderProvider>(context, listen: false)
+                      .updateOrders(
+                isChangeStatus: true,
+                orderID: Provider.of<OrderProvider>(context, listen: false)
+                    .processedOrders[index]
+                    .id!,
+                accessToken: Provider.of<AuthProvider>(context, listen: false)
+                    .user
+                    .accessToken!,
+                context: context,
+                itemIndex: index,
+                newOrderStatus: newOrderStatus,
               );
-            } else {
-              showTopSnackBar(
-                overlay,
-                const CustomSnackBar.success(
-                  message: "Order Status update failed",
-                ),
-              );
+              setState(() {
+                isLoading = false;
+              });
+              if (isStatusChanged) {
+                showTopSnackBar(
+                  overlay,
+                  const CustomSnackBar.success(
+                    message: "Order Status Updated Successfully",
+                  ),
+                );
+              } else {
+                showTopSnackBar(
+                  overlay,
+                  const CustomSnackBar.success(
+                    message: "Order Status update failed",
+                  ),
+                );
+              }
             }
-          }
-        },
+          },
+        ),
       ),
     );
   }
