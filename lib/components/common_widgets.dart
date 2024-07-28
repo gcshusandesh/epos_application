@@ -69,6 +69,38 @@ Row topSection(
   );
 }
 
+Row customTopSection(
+    {required BuildContext context,
+    required double height,
+    required String text,
+    required double width,
+    required Function() onTap}) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      iconButton(
+        "assets/svg/arrow_back.svg",
+        height,
+        width,
+        () {
+          Navigator.pop(context);
+        },
+        context: context,
+      ),
+      buildTitleText(text, Data.darkTextColor, width),
+      iconButton(
+        "",
+        height,
+        width,
+        onTap,
+        isSvg: false,
+        icon: Icons.refresh,
+        context: context,
+      ),
+    ],
+  );
+}
+
 Widget onLoading({required double width, required BuildContext context}) {
   return Stack(
     children: [

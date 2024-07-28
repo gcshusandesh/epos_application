@@ -31,15 +31,23 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     _fetchData();
   }
 
-  _fetchData() async {
+  _fetchData({bool reload = false}) async {
     setState(() {
       isLoading = true;
     });
-    await Provider.of<OrderProvider>(context, listen: false).getOrders(
-      context: context,
-      accessToken:
-          Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
-    );
+    if (reload) {
+      await Provider.of<UserProvider>(context, listen: false).getUserList(
+        context: context,
+        user: Provider.of<AuthProvider>(context, listen: false).user,
+      );
+    }
+    if (mounted) {
+      await Provider.of<OrderProvider>(context, listen: false).getOrders(
+        context: context,
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+      );
+    }
     if (mounted) {
       await Provider.of<MenuProvider>(context, listen: false).getMenuList(
         context: context,
@@ -317,12 +325,14 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-              child: topSection(
-                context: context,
-                height: height,
-                text: "Analytics",
-                width: width,
-              ),
+              child: customTopSection(
+                  context: context,
+                  height: height,
+                  text: "Analytics",
+                  width: width,
+                  onTap: () {
+                    _fetchData(reload: true);
+                  }),
             ),
             employeeAnalytics(context),
             salesAnalytics(context),
