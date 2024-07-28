@@ -40,6 +40,23 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       accessToken:
           Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
     );
+    if (mounted) {
+      await Provider.of<MenuProvider>(context, listen: false).getMenuList(
+        context: context,
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+        isCategory: true,
+      );
+    }
+    if (mounted) {
+      await Provider.of<MenuProvider>(context, listen: false).getMenuList(
+        context: context,
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+        isItem: true,
+      );
+    }
+    calculateData();
     setState(() {
       isLoading = false;
     });
@@ -53,13 +70,12 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-      calculateData();
 
       init = false;
     }
   }
 
-  String filterDropDownValue = "Weekly";
+  String filterDropDownValue = "Daily";
   List<String> filterDropDownList = ["Daily", "Weekly", "Monthly", "Yearly"];
 
   // Example data sets for the graph
@@ -109,6 +125,9 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     required List<ProcessedOrder> processedOrders,
     required List<OrderItem> priceList,
   }) {
+    print("MenuItemsByCategory: ${menuItemsByCategory.length}");
+    print("ProcessedOrders: ${processedOrders.length}");
+    print("PriceList: ${priceList.length}");
     // Create a map for item sales by category
     Map<String, double> categorySalesMap = {};
 
@@ -169,22 +188,24 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
   }
 
   void calculateData() {
-    // Get date range based on filter
-    DateTimeRange dateRange = getDateRange(filterDropDownValue);
+    setState(() {
+      // Get date range based on filter
+      DateTimeRange dateRange = getDateRange(filterDropDownValue);
 
-    // Extract top selling items based on the selected date range
-    topSellingItems = extractTopSellingItems(
-        Provider.of<OrderProvider>(context, listen: false).processedOrders,
-        dateRange.start,
-        dateRange.end);
-
-    salesByCategory = calculateSalesByCategory(
-      menuItemsByCategory:
-          Provider.of<MenuProvider>(context, listen: false).menuItemsByCategory,
-      processedOrders:
+      // Extract top selling items based on the selected date range
+      topSellingItems = extractTopSellingItems(
           Provider.of<OrderProvider>(context, listen: false).processedOrders,
-      priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
-    );
+          dateRange.start,
+          dateRange.end);
+
+      salesByCategory = calculateSalesByCategory(
+        menuItemsByCategory: Provider.of<MenuProvider>(context, listen: false)
+            .menuItemsByCategory,
+        processedOrders:
+            Provider.of<OrderProvider>(context, listen: false).processedOrders,
+        priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
+      );
+    });
   }
 
   List<ItemSales> extractTopSellingItems(
