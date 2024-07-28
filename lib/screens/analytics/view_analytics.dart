@@ -86,6 +86,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
   List<String> filterDropDownList = ["Daily", "Weekly", "Monthly", "Yearly"];
 
   double filteredRevenue = 0;
+
   double calculateFilteredRevenue({
     required List<ProcessedOrder> processedOrders,
     required List<OrderItem> priceList,
@@ -104,27 +105,13 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     // Initialize total revenue
     double filteredRevenue = 0.0;
 
-    // Aggregate revenue data within the specified date range
+    // Aggregate revenue data within the specified date range and for paid orders
     for (var order in processedOrders) {
-      if (order.orderDateTime != null) {
+      if (order.orderDateTime != null && order.isPaid) {
         DateTime orderDate = order.orderDateTime!;
 
         if (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) {
-          var itemsInOrder = order.items.split(', ');
-          for (var item in itemsInOrder) {
-            var parts = item.split(' x');
-            if (parts.length == 2) {
-              var itemName = parts[0].trim();
-              var quantity = int.tryParse(parts[1].trim()) ?? 0;
-
-              // Ensure the item name exists in the itemPriceMap
-              if (itemPriceMap.containsKey(itemName)) {
-                var itemPrice = itemPriceMap[itemName]!;
-                var totalAmount = itemPrice * quantity;
-                filteredRevenue += totalAmount;
-              }
-            }
-          }
+          filteredRevenue += order.price;
         }
       }
     }
@@ -152,9 +139,9 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     // Initialize total revenue
     double totalRevenue = 0.0;
 
-    // Aggregate revenue data for all orders
+    // Aggregate revenue data for all paid orders
     for (var order in processedOrders) {
-      if (order.orderDateTime != null) {
+      if (order.orderDateTime != null && order.isPaid) {
         var itemsInOrder = order.items.split(', ');
         for (var item in itemsInOrder) {
           var parts = item.split(' x');
@@ -209,9 +196,9 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       itemPriceMap[orderItem.name] = orderItem.price;
     }
 
-    // Aggregate sales data within the specified date range
+    // Aggregate sales data within the specified date range and which are paid
     for (var order in processedOrders) {
-      if (order.orderDateTime != null) {
+      if (order.orderDateTime != null && order.isPaid) {
         DateTime orderDate = order.orderDateTime!;
 
         if (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) {
@@ -309,10 +296,12 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
 
     // Aggregate sales data
     for (var order in orders) {
-      // Check if the order date falls within the specified range
+      // Check if the order date falls within the specified range and is paid
       DateTime orderDate = order.orderDateTime!;
 
-      if (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) {
+      if (orderDate.isAfter(startDate) &&
+          orderDate.isBefore(endDate) &&
+          order.isPaid) {
         // Split items string and process each item
         var items = order.items.split(', ');
         for (var item in items) {
