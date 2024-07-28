@@ -89,29 +89,19 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
 
   double calculateFilteredRevenue({
     required List<ProcessedOrder> processedOrders,
-    required List<OrderItem> priceList,
     required DateTime startDate,
     required DateTime endDate,
   }) {
-    print("ProcessedOrders: ${processedOrders.length}");
-    print("PriceList: ${priceList.length}");
-
-    // Create a lookup map for item names to prices
-    Map<String, double> itemPriceMap = {};
-    for (var orderItem in priceList) {
-      itemPriceMap[orderItem.name] = orderItem.price;
-    }
-
     // Initialize total revenue
     double filteredRevenue = 0.0;
 
     // Aggregate revenue data within the specified date range and for paid orders
     for (var order in processedOrders) {
-      if (order.orderDateTime != null && order.isPaid) {
+      if (order.isPaid) {
         DateTime orderDate = order.orderDateTime!;
 
         if (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) {
-          filteredRevenue += order.price;
+          filteredRevenue += (order.price - order.discount);
         }
       }
     }
@@ -125,41 +115,16 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
   double totalRevenue = 0;
   double calculateTotalRevenue({
     required List<ProcessedOrder> processedOrders,
-    required List<OrderItem> priceList,
   }) {
-    print("ProcessedOrders: ${processedOrders.length}");
-    print("PriceList: ${priceList.length}");
-
-    // Create a lookup map for item names to prices
-    Map<String, double> itemPriceMap = {};
-    for (var orderItem in priceList) {
-      itemPriceMap[orderItem.name] = orderItem.price;
-    }
-
     // Initialize total revenue
     double totalRevenue = 0.0;
 
-    // Aggregate revenue data for all paid orders
+    // Aggregate revenue data within the specified date range and for paid orders
     for (var order in processedOrders) {
-      if (order.orderDateTime != null && order.isPaid) {
-        var itemsInOrder = order.items.split(', ');
-        for (var item in itemsInOrder) {
-          var parts = item.split(' x');
-          if (parts.length == 2) {
-            var itemName = parts[0].trim();
-            var quantity = int.tryParse(parts[1].trim()) ?? 0;
-
-            // Ensure the item name exists in the itemPriceMap
-            if (itemPriceMap.containsKey(itemName)) {
-              var itemPrice = itemPriceMap[itemName]!;
-              var totalAmount = itemPrice * quantity;
-              totalRevenue += totalAmount;
-            }
-          }
-        }
+      if (order.isPaid) {
+        totalRevenue += (order.price - order.discount);
       }
     }
-
     // Print or return the total revenue
     print("Total Revenue: \$${totalRevenue.toStringAsFixed(2)}");
 
@@ -248,13 +213,11 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       totalRevenue = calculateTotalRevenue(
         processedOrders:
             Provider.of<OrderProvider>(context, listen: false).processedOrders,
-        priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
       );
 
       filteredRevenue = calculateFilteredRevenue(
         processedOrders:
             Provider.of<OrderProvider>(context, listen: false).processedOrders,
-        priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
         startDate: dateRange.start,
         endDate: dateRange.end,
       );
