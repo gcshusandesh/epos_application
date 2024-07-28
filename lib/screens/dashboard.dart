@@ -6,6 +6,7 @@ import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/user_provider.dart';
+import 'package:epos_application/screens/analytics/view_analytics.dart';
 import 'package:epos_application/screens/kitchen.dart';
 import 'package:epos_application/screens/menu/menu_page.dart';
 import 'package:epos_application/screens/order/orders.dart';
@@ -310,7 +311,13 @@ class _DashboardState extends State<Dashboard> {
               "Analytics",
               height,
               width,
-              () {},
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ViewAnalytics()),
+                );
+              },
               context,
               isVisible: dashboardVisibility[7],
             ),

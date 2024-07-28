@@ -96,7 +96,7 @@ class _PaymentState extends State<Payment> {
       canPop: false,
       onPopInvoked: (bool value) async {
         Navigator.pop(context);
-        if (widget.divertedFromPayment) {
+        if (widget.divertedFromPayment && mounted) {
           // if this is a diverted page, go back to the payment page
           Navigator.pop(context);
         }
