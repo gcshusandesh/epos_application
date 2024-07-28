@@ -50,6 +50,7 @@ class OrderProvider extends ChangeNotifier {
             billedTo: attributes['billedTo'],
             isPaid: attributes['isPaid'],
             paymentMode: attributes['paymentMode'],
+            orderDateTime: DateTime.parse(attributes['updatedAt']),
           );
         }).toList();
 

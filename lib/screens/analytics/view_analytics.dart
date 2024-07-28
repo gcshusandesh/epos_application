@@ -46,6 +46,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       _ChartData('12h', 7),
       _ChartData('16h', 9),
       _ChartData('20h', 11),
+      _ChartData('24h', 1),
     ],
     "Weekly": [
       _ChartData('Mon', 2),
