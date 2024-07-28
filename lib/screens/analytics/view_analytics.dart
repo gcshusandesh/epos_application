@@ -490,7 +490,8 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          buildCustomText("Top Employee(Month)", Colors.white, width * 1.7,
+          buildCustomText(
+              "Top Employee($filterDropDownValue)", Colors.white, width * 1.7,
               fontWeight: FontWeight.bold),
           SizedBox(
             height: height,
