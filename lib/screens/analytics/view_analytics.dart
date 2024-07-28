@@ -10,7 +10,6 @@ import 'package:epos_application/providers/user_provider.dart';
 import 'package:epos_application/screens/employees/manage_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ViewAnalytics extends StatefulWidget {
   const ViewAnalytics({super.key});
@@ -85,48 +84,6 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
 
   String filterDropDownValue = "Daily";
   List<String> filterDropDownList = ["Daily", "Weekly", "Monthly", "Yearly"];
-
-  // Example data sets for the graph
-  final Map<String, List<_ChartData>> graphData = {
-    "Daily": [
-      _ChartData('0h', 1),
-      _ChartData('4h', 3),
-      _ChartData('8h', 5),
-      _ChartData('12h', 7),
-      _ChartData('16h', 9),
-      _ChartData('20h', 11),
-      _ChartData('24h', 1),
-    ],
-    "Weekly": [
-      _ChartData('Mon', 2),
-      _ChartData('Tue', 4),
-      _ChartData('Wed', 6),
-      _ChartData('Thu', 8),
-      _ChartData('Fri', 10),
-      _ChartData('Sat', 12),
-      _ChartData('Sun', 14),
-    ],
-    "Monthly": [
-      _ChartData('Week 1', 1.5),
-      _ChartData('Week 2', 3.5),
-      _ChartData('Week 3', 5.5),
-      _ChartData('Week 4', 7.5),
-    ],
-    "Yearly": [
-      _ChartData('Jan', 2.5),
-      _ChartData('Feb', 4.5),
-      _ChartData('Mar', 6.5),
-      _ChartData('Apr', 8.5),
-      _ChartData('May', 10.5),
-      _ChartData('Jun', 12.5),
-      _ChartData('Jul', 14.5),
-      _ChartData('Aug', 16.5),
-      _ChartData('Sep', 18.5),
-      _ChartData('Oct', 20.5),
-      _ChartData('Nov', 22.5),
-      _ChartData('Dec', 24.5),
-    ],
-  };
 
   double filteredRevenue = 0;
   double calculateFilteredRevenue({
@@ -484,98 +441,6 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Container(
-                  height: height * 70,
-                  width: width * 50,
-                  padding: EdgeInsets.symmetric(
-                      horizontal: width * 2, vertical: height),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6.0),
-                    border: Border.all(
-                      color: Colors.black,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        children: [
-                          buildCustomText("Revenue Overview",
-                              Data.darkTextColor, width * 2.2,
-                              fontWeight: FontWeight.bold),
-                          SizedBox(height: height),
-                        ],
-                      ),
-                      Expanded(
-                        child: SfCartesianChart(
-                          primaryXAxis: const CategoryAxis(),
-                          primaryYAxis: NumericAxis(
-                            axisLabelFormatter:
-                                (AxisLabelRenderDetails details) {
-                              return ChartAxisLabel(
-                                  '£${details.value}', const TextStyle());
-                            },
-                          ),
-                          title: const ChartTitle(text: 'Sales Analysis'),
-                          legend: const Legend(isVisible: true),
-                          tooltipBehavior: TooltipBehavior(enable: true),
-                          series: <CartesianSeries<dynamic, dynamic>>[
-                            LineSeries<_ChartData, String>(
-                              dataSource: graphData[filterDropDownValue]!,
-                              xValueMapper: (_ChartData data, _) => data.x,
-                              yValueMapper: (_ChartData data, _) => data.y,
-                              name: 'Sales',
-                              dataLabelSettings: const DataLabelSettings(
-                                isVisible: true,
-                                labelAlignment: ChartDataLabelAlignment
-                                    .top, // Adjust label position
-                                textStyle: TextStyle(
-                                    fontSize: 10, color: Colors.black),
-                              ),
-                              markerSettings:
-                                  const MarkerSettings(isVisible: true),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: width * 18,
-                                child: buildCustomText("Total Revenue",
-                                    Data.darkTextColor, width * 2,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              buildCustomText(
-                                  "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${totalRevenue.toStringAsFixed(2)}",
-                                  Data.lightGreyTextColor,
-                                  width * 2),
-                            ],
-                          ),
-                          SizedBox(height: height),
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: width * 18,
-                                child: buildCustomText(
-                                    "Revenue ($filterDropDownValue)",
-                                    Data.darkTextColor,
-                                    width * 2,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              buildCustomText(
-                                  "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${filteredRevenue.toStringAsFixed(2)}",
-                                  Data.lightGreyTextColor,
-                                  width * 2),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  )),
               Column(
                 children: [
                   Container(
@@ -667,6 +532,67 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                   ),
                   SizedBox(height: height),
                   Container(
+                      height: height * 22,
+                      width: width * 40,
+                      padding: EdgeInsets.symmetric(
+                          horizontal: width * 2, vertical: height),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6.0),
+                        border: Border.all(
+                          color: Colors.black,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              buildCustomText("Revenue Overview",
+                                  Data.darkTextColor, width * 2.2,
+                                  fontWeight: FontWeight.bold),
+                              SizedBox(height: height),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: width * 18,
+                                    child: buildCustomText("Total Revenue",
+                                        Data.darkTextColor, width * 2,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  buildCustomText(
+                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${totalRevenue.toStringAsFixed(2)}",
+                                      Data.lightGreyTextColor,
+                                      width * 2),
+                                ],
+                              ),
+                              SizedBox(height: height),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: width * 18,
+                                    child: buildCustomText(
+                                        "Revenue ($filterDropDownValue)",
+                                        Data.darkTextColor,
+                                        width * 2,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  buildCustomText(
+                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${filteredRevenue.toStringAsFixed(2)}",
+                                      Data.lightGreyTextColor,
+                                      width * 2),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      )),
+                  SizedBox(height: height),
+                  Container(
                     height: height * 20,
                     width: width * 40,
                     decoration: BoxDecoration(
@@ -725,13 +651,12 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                       ],
                     ),
                   ),
-                  SizedBox(height: height),
-                  SalesByCategoryContainer(
-                    categorySalesMap: salesByCategory,
-                    height: height,
-                    width: width,
-                  ),
                 ],
+              ),
+              SalesByCategoryContainer(
+                categorySalesMap: salesByCategory,
+                height: height,
+                width: width,
               )
             ],
           ),
@@ -961,13 +886,6 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
   }
 }
 
-class _ChartData {
-  _ChartData(this.x, this.y);
-
-  final String x;
-  final double y;
-}
-
 class ItemSales {
   String itemName;
   int quantity;
@@ -1021,7 +939,7 @@ class SalesByCategoryContainer extends StatelessWidget {
     }).toList();
 
     return Container(
-      height: height * 38,
+      height: height * 54,
       width: width * 40,
       padding: EdgeInsets.symmetric(horizontal: width * 2),
       decoration: BoxDecoration(
