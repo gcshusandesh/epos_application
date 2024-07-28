@@ -132,10 +132,13 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     required List<MenuItemsByCategory> menuItemsByCategory,
     required List<ProcessedOrder> processedOrders,
     required List<OrderItem> priceList,
+    required DateTime startDate,
+    required DateTime endDate,
   }) {
     print("MenuItemsByCategory: ${menuItemsByCategory.length}");
     print("ProcessedOrders: ${processedOrders.length}");
     print("PriceList: ${priceList.length}");
+
     // Create a map for item sales by category
     Map<String, double> categorySalesMap = {};
 
@@ -155,28 +158,32 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       itemPriceMap[orderItem.name] = orderItem.price;
     }
 
-    // Aggregate sales data
+    // Aggregate sales data within the specified date range
     for (var order in processedOrders) {
       if (order.orderDateTime != null) {
-        var itemsInOrder = order.items.split(', ');
-        for (var item in itemsInOrder) {
-          var parts = item.split(' x');
-          if (parts.length == 2) {
-            var itemName = parts[0].trim();
-            var quantity = int.tryParse(parts[1].trim()) ?? 0;
+        DateTime orderDate = order.orderDateTime!;
 
-            // Ensure the item name exists in the itemPriceMap
-            if (itemPriceMap.containsKey(itemName)) {
-              var itemPrice = itemPriceMap[itemName]!;
-              var totalAmount = itemPrice * quantity;
-              var category = itemCategoryMap[itemName];
+        if (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) {
+          var itemsInOrder = order.items.split(', ');
+          for (var item in itemsInOrder) {
+            var parts = item.split(' x');
+            if (parts.length == 2) {
+              var itemName = parts[0].trim();
+              var quantity = int.tryParse(parts[1].trim()) ?? 0;
 
-              if (category != null) {
-                if (categorySalesMap.containsKey(category)) {
-                  categorySalesMap[category] =
-                      categorySalesMap[category]! + totalAmount;
-                } else {
-                  categorySalesMap[category] = totalAmount;
+              // Ensure the item name exists in the itemPriceMap
+              if (itemPriceMap.containsKey(itemName)) {
+                var itemPrice = itemPriceMap[itemName]!;
+                var totalAmount = itemPrice * quantity;
+                var category = itemCategoryMap[itemName];
+
+                if (category != null) {
+                  if (categorySalesMap.containsKey(category)) {
+                    categorySalesMap[category] =
+                        categorySalesMap[category]! + totalAmount;
+                  } else {
+                    categorySalesMap[category] = totalAmount;
+                  }
                 }
               }
             }
@@ -214,6 +221,8 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
         processedOrders:
             Provider.of<OrderProvider>(context, listen: false).processedOrders,
         priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
+        startDate: dateRange.start,
+        endDate: dateRange.end,
       );
     });
   }
