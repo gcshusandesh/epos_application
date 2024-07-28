@@ -106,9 +106,6 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       }
     }
 
-    // Print or return the total revenue
-    print("Total Revenue: \$${filteredRevenue.toStringAsFixed(2)}");
-
     return filteredRevenue;
   }
 
@@ -125,8 +122,6 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
         totalRevenue += (order.price - order.discount);
       }
     }
-    // Print or return the total revenue
-    print("Total Revenue: \$${totalRevenue.toStringAsFixed(2)}");
 
     return totalRevenue;
   }
@@ -138,10 +133,6 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     required DateTime startDate,
     required DateTime endDate,
   }) {
-    print("MenuItemsByCategory: ${menuItemsByCategory.length}");
-    print("ProcessedOrders: ${processedOrders.length}");
-    print("PriceList: ${priceList.length}");
-
     // Create a map for item sales by category
     Map<String, double> categorySalesMap = {};
 
@@ -260,33 +251,43 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     // Aggregate sales data
     for (var order in orders) {
       // Check if the order date falls within the specified range and is paid
-      DateTime orderDate = order.orderDateTime!;
+      if (order.orderDateTime != null) {
+        DateTime orderDate = order.orderDateTime!;
+        print(
+            "Processing order: $orderDate, Is Paid: ${order.isPaid}"); // Debugging
 
-      if (orderDate.isAfter(startDate) &&
-          orderDate.isBefore(endDate) &&
-          order.isPaid) {
-        // Split items string and process each item
-        var items = order.items.split(', ');
-        for (var item in items) {
-          var parts = item.split(' x');
-          var itemName = parts[0];
-          var quantity = int.parse(parts[1]);
+        if (orderDate.isAfter(startDate) &&
+            orderDate.isBefore(endDate) &&
+            order.isPaid) {
+          // Split items string and process each item
+          var items = order.items.split(', ');
+          for (var item in items) {
+            var parts = item.split(' x');
+            if (parts.length == 2) {
+              var itemName = parts[0].trim();
+              var quantity = int.tryParse(parts[1].trim()) ?? 0;
 
-          // Look up the price for the item
-          var itemPrice =
-              itemPriceMap[itemName] ?? 0.0; // Default to 0.0 if not found
-          var totalAmount = itemPrice * quantity;
+              // Look up the price for the item
+              var itemPrice =
+                  itemPriceMap[itemName] ?? 0.0; // Default to 0.0 if not found
+              var totalAmount = itemPrice * quantity;
 
-          if (itemSalesMap.containsKey(itemName)) {
-            itemSalesMap[itemName]!.addSale(quantity, totalAmount);
-          } else {
-            itemSalesMap[itemName] = ItemSales(
-              itemName: itemName,
-              quantity: quantity,
-              totalSalesAmount: totalAmount,
-            );
+              if (itemSalesMap.containsKey(itemName)) {
+                itemSalesMap[itemName]!.addSale(quantity, totalAmount);
+              } else {
+                itemSalesMap[itemName] = ItemSales(
+                  itemName: itemName,
+                  quantity: quantity,
+                  totalSalesAmount: totalAmount,
+                );
+              }
+            } else {
+              print("Incorrect item format: $item"); // Debugging
+            }
           }
         }
+      } else {
+        print("Order with null date: ${order.items}"); // Debugging
       }
     }
 
@@ -295,6 +296,9 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       ..sort((a, b) => b.totalSalesAmount.compareTo(a.totalSalesAmount));
 
     print("sortedItems: ${sortedItems.length}");
+    for (int i = 0; i < sortedItems.length; i++) {
+      print("Sorted Item = ${sortedItems[i].itemName}");
+    }
     // Get the top 3 selling items
     return sortedItems.take(3).toList();
   }
