@@ -4,6 +4,7 @@ import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
+import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
 import 'package:epos_application/providers/user_provider.dart';
 import 'package:epos_application/screens/employees/manage_employee.dart';
@@ -103,6 +104,70 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     ],
   };
 
+  Map<String, double> calculateSalesByCategory({
+    required List<MenuItemsByCategory> menuItemsByCategory,
+    required List<ProcessedOrder> processedOrders,
+    required List<OrderItem> priceList,
+  }) {
+    // Create a map for item sales by category
+    Map<String, double> categorySalesMap = {};
+
+    // Create a lookup map for item names to categories
+    Map<String, String> itemCategoryMap = {};
+
+    // Populate the itemCategoryMap from menuItemsByCategory
+    for (var categoryGroup in menuItemsByCategory) {
+      for (var item in categoryGroup.menuItems) {
+        itemCategoryMap[item.name] = categoryGroup.category.name;
+      }
+    }
+
+    // Create a lookup map for item names to prices
+    Map<String, double> itemPriceMap = {};
+    for (var orderItem in priceList) {
+      itemPriceMap[orderItem.name] = orderItem.price;
+    }
+
+    // Aggregate sales data
+    for (var order in processedOrders) {
+      if (order.orderDateTime != null) {
+        var itemsInOrder = order.items.split(', ');
+        for (var item in itemsInOrder) {
+          var parts = item.split(' x');
+          if (parts.length == 2) {
+            var itemName = parts[0].trim();
+            var quantity = int.tryParse(parts[1].trim()) ?? 0;
+
+            // Ensure the item name exists in the itemPriceMap
+            if (itemPriceMap.containsKey(itemName)) {
+              var itemPrice = itemPriceMap[itemName]!;
+              var totalAmount = itemPrice * quantity;
+              var category = itemCategoryMap[itemName];
+
+              if (category != null) {
+                if (categorySalesMap.containsKey(category)) {
+                  categorySalesMap[category] =
+                      categorySalesMap[category]! + totalAmount;
+                } else {
+                  categorySalesMap[category] = totalAmount;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Print or return the sales amount by category
+    print("Sales by Category:");
+    categorySalesMap.forEach((category, totalAmount) {
+      print('$category: \$${totalAmount.toStringAsFixed(2)}');
+    });
+
+    // Return the sales amount by category if needed
+    return categorySalesMap;
+  }
+
   void calculateData() {
     // Get date range based on filter
     DateTimeRange dateRange = getDateRange(filterDropDownValue);
@@ -112,6 +177,14 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
         Provider.of<OrderProvider>(context, listen: false).processedOrders,
         dateRange.start,
         dateRange.end);
+
+    salesByCategory = calculateSalesByCategory(
+      menuItemsByCategory:
+          Provider.of<MenuProvider>(context, listen: false).menuItemsByCategory,
+      processedOrders:
+          Provider.of<OrderProvider>(context, listen: false).processedOrders,
+      priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
+    );
   }
 
   List<ItemSales> extractTopSellingItems(
@@ -201,6 +274,8 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
   }
 
   List<ItemSales> topSellingItems = [];
+
+  Map<String, double> salesByCategory = {};
 
   @override
   Widget build(BuildContext context) {
@@ -495,53 +570,11 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                         ],
                       )),
                   SizedBox(height: height),
-                  Container(
-                      height: height * 38,
-                      width: width * 40,
-                      padding: EdgeInsets.symmetric(horizontal: width * 2),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6.0),
-                        border: Border.all(
-                          color: Colors.black,
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(height: height),
-                          buildCustomText("Sales By Category",
-                              Data.darkTextColor, width * 2.2,
-                              fontWeight: FontWeight.bold),
-                          SizedBox(height: height),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              buildCustomText(
-                                  "1. Food", Data.darkTextColor, width * 2),
-                              buildCustomText("Rs 1000",
-                                  Data.lightGreyTextColor, width * 2),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              buildCustomText(
-                                  "2. Drinks", Data.darkTextColor, width * 2),
-                              buildCustomText("Rs 1000",
-                                  Data.lightGreyTextColor, width * 2),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              buildCustomText(
-                                  "3. Food", Data.darkTextColor, width * 2),
-                              buildCustomText("Rs 1000",
-                                  Data.lightGreyTextColor, width * 2),
-                            ],
-                          ),
-                        ],
-                      )),
+                  SalesByCategoryContainer(
+                    categorySalesMap: salesByCategory,
+                    height: height,
+                    width: width,
+                  ),
                 ],
               )
             ],
@@ -793,5 +826,67 @@ class ItemSales {
   void addSale(int qty, double amount) {
     quantity += qty;
     totalSalesAmount += amount;
+  }
+}
+
+class SalesByCategoryContainer extends StatelessWidget {
+  final Map<String, double> categorySalesMap;
+  final double height;
+  final double width;
+
+  const SalesByCategoryContainer({
+    super.key,
+    required this.categorySalesMap,
+    required this.height,
+    required this.width,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Create a list of rows for each category and its sales amount
+    List<Widget> salesRows =
+        categorySalesMap.entries.toList().asMap().entries.map((entry) {
+      int index = entry.key;
+      var categoryEntry = entry.value;
+      String category = categoryEntry.key;
+      double totalAmount = categoryEntry.value;
+
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          buildCustomText(
+              "${index + 1}. $category", Data.darkTextColor, width * 2),
+          buildCustomText(
+              "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${totalAmount.toStringAsFixed(2)}",
+              Data.lightGreyTextColor,
+              width * 2),
+        ],
+      );
+    }).toList();
+
+    return Container(
+      height: height * 38,
+      width: width * 40,
+      padding: EdgeInsets.symmetric(horizontal: width * 2),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(6.0),
+        border: Border.all(
+          color: Colors.black,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SizedBox(height: height),
+          buildCustomText(
+              "Sales By Category",
+              Colors.black, // Assuming Data.darkTextColor
+              width * 2.2,
+              fontWeight: FontWeight.bold),
+          SizedBox(height: height),
+          ...salesRows, // Spread the list of rows here
+        ],
+      ),
+    );
   }
 }
