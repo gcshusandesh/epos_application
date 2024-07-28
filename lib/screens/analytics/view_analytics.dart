@@ -114,7 +114,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
             children: [
               Container(
                   height: height * 70,
-                  width: width * 40,
+                  width: width * 50,
                   padding: EdgeInsets.symmetric(
                       horizontal: width * 2, vertical: height),
                   decoration: BoxDecoration(
@@ -154,10 +154,15 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                               xValueMapper: (_ChartData data, _) => data.x,
                               yValueMapper: (_ChartData data, _) => data.y,
                               name: 'Sales',
-                              dataLabelSettings:
-                                  const DataLabelSettings(isVisible: true),
-                              markerSettings: const MarkerSettings(
-                                  isVisible: true), // Add markers
+                              dataLabelSettings: const DataLabelSettings(
+                                isVisible: true,
+                                labelAlignment: ChartDataLabelAlignment
+                                    .top, // Adjust label position
+                                textStyle: TextStyle(
+                                    fontSize: 10, color: Colors.black),
+                              ),
+                              markerSettings:
+                                  const MarkerSettings(isVisible: true),
                             ),
                           ],
                         ),
@@ -167,28 +172,32 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                           Row(
                             children: [
                               SizedBox(
-                                width: width * 20,
+                                width: width * 18,
                                 child: buildCustomText("Total Revenue",
                                     Data.darkTextColor, width * 2,
                                     fontWeight: FontWeight.bold),
                               ),
-                              buildCustomText("Rs 10000",
-                                  Data.lightGreyTextColor, width * 2),
+                              buildCustomText(
+                                  "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} 10000",
+                                  Data.lightGreyTextColor,
+                                  width * 2),
                             ],
                           ),
                           SizedBox(height: height),
                           Row(
                             children: [
                               SizedBox(
-                                width: width * 20,
+                                width: width * 18,
                                 child: buildCustomText(
                                     "Average ($filterDropDownValue)",
                                     Data.darkTextColor,
                                     width * 2,
                                     fontWeight: FontWeight.bold),
                               ),
-                              buildCustomText("Rs 10000",
-                                  Data.lightGreyTextColor, width * 2),
+                              buildCustomText(
+                                  "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} 10000",
+                                  Data.lightGreyTextColor,
+                                  width * 2),
                             ],
                           ),
                         ],
