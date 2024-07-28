@@ -128,6 +128,100 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     ],
   };
 
+  double filteredRevenue = 0;
+  double calculateFilteredRevenue({
+    required List<ProcessedOrder> processedOrders,
+    required List<OrderItem> priceList,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) {
+    print("ProcessedOrders: ${processedOrders.length}");
+    print("PriceList: ${priceList.length}");
+
+    // Create a lookup map for item names to prices
+    Map<String, double> itemPriceMap = {};
+    for (var orderItem in priceList) {
+      itemPriceMap[orderItem.name] = orderItem.price;
+    }
+
+    // Initialize total revenue
+    double filteredRevenue = 0.0;
+
+    // Aggregate revenue data within the specified date range
+    for (var order in processedOrders) {
+      if (order.orderDateTime != null) {
+        DateTime orderDate = order.orderDateTime!;
+
+        if (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) {
+          var itemsInOrder = order.items.split(', ');
+          for (var item in itemsInOrder) {
+            var parts = item.split(' x');
+            if (parts.length == 2) {
+              var itemName = parts[0].trim();
+              var quantity = int.tryParse(parts[1].trim()) ?? 0;
+
+              // Ensure the item name exists in the itemPriceMap
+              if (itemPriceMap.containsKey(itemName)) {
+                var itemPrice = itemPriceMap[itemName]!;
+                var totalAmount = itemPrice * quantity;
+                filteredRevenue += totalAmount;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Print or return the total revenue
+    print("Total Revenue: \$${filteredRevenue.toStringAsFixed(2)}");
+
+    return filteredRevenue;
+  }
+
+  double totalRevenue = 0;
+  double calculateTotalRevenue({
+    required List<ProcessedOrder> processedOrders,
+    required List<OrderItem> priceList,
+  }) {
+    print("ProcessedOrders: ${processedOrders.length}");
+    print("PriceList: ${priceList.length}");
+
+    // Create a lookup map for item names to prices
+    Map<String, double> itemPriceMap = {};
+    for (var orderItem in priceList) {
+      itemPriceMap[orderItem.name] = orderItem.price;
+    }
+
+    // Initialize total revenue
+    double totalRevenue = 0.0;
+
+    // Aggregate revenue data for all orders
+    for (var order in processedOrders) {
+      if (order.orderDateTime != null) {
+        var itemsInOrder = order.items.split(', ');
+        for (var item in itemsInOrder) {
+          var parts = item.split(' x');
+          if (parts.length == 2) {
+            var itemName = parts[0].trim();
+            var quantity = int.tryParse(parts[1].trim()) ?? 0;
+
+            // Ensure the item name exists in the itemPriceMap
+            if (itemPriceMap.containsKey(itemName)) {
+              var itemPrice = itemPriceMap[itemName]!;
+              var totalAmount = itemPrice * quantity;
+              totalRevenue += totalAmount;
+            }
+          }
+        }
+      }
+    }
+
+    // Print or return the total revenue
+    print("Total Revenue: \$${totalRevenue.toStringAsFixed(2)}");
+
+    return totalRevenue;
+  }
+
   Map<String, double> calculateSalesByCategory({
     required List<MenuItemsByCategory> menuItemsByCategory,
     required List<ProcessedOrder> processedOrders,
@@ -206,6 +300,20 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     setState(() {
       // Get date range based on filter
       DateTimeRange dateRange = getDateRange(filterDropDownValue);
+
+      totalRevenue = calculateTotalRevenue(
+        processedOrders:
+            Provider.of<OrderProvider>(context, listen: false).processedOrders,
+        priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
+      );
+
+      filteredRevenue = calculateFilteredRevenue(
+        processedOrders:
+            Provider.of<OrderProvider>(context, listen: false).processedOrders,
+        priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
+        startDate: dateRange.start,
+        endDate: dateRange.end,
+      );
 
       // Extract top selling items based on the selected date range
       topSellingItems = extractTopSellingItems(
@@ -442,7 +550,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                                     fontWeight: FontWeight.bold),
                               ),
                               buildCustomText(
-                                  "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} 10000",
+                                  "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${totalRevenue.toStringAsFixed(2)}",
                                   Data.lightGreyTextColor,
                                   width * 2),
                             ],
@@ -453,13 +561,13 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                               SizedBox(
                                 width: width * 18,
                                 child: buildCustomText(
-                                    "Average ($filterDropDownValue)",
+                                    "Revenue ($filterDropDownValue)",
                                     Data.darkTextColor,
                                     width * 2,
                                     fontWeight: FontWeight.bold),
                               ),
                               buildCustomText(
-                                  "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} 10000",
+                                  "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${filteredRevenue.toStringAsFixed(2)}",
                                   Data.lightGreyTextColor,
                                   width * 2),
                             ],
@@ -597,7 +705,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                                             width * 2,
                                           ),
                                           buildCustomText(
-                                            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${item.totalSalesAmount}",
+                                            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${item.totalSalesAmount.toStringAsFixed(2)}",
                                             Data.lightGreyTextColor,
                                             width * 2,
                                           ),
