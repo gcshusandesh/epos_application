@@ -1,7 +1,10 @@
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
+import 'package:epos_application/providers/order_provider.dart';
 import 'package:epos_application/providers/user_provider.dart';
 import 'package:epos_application/screens/employees/manage_employee.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +25,26 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
   bool isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  _fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await Provider.of<OrderProvider>(context, listen: false).getOrders(
+      context: context,
+      accessToken:
+          Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+    );
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     if (init) {
@@ -29,7 +52,12 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-
+      topSellingItems = extractTopSellingItems(
+          Provider.of<OrderProvider>(context, listen: true).processedOrders);
+      for (var item in topSellingItems) {
+        print(
+            'Item: ${item.itemName}, Quantity: ${item.quantity}, Total Sales Amount: ${item.totalSalesAmount}');
+      }
       init = false;
     }
   }
@@ -79,8 +107,57 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     ],
   };
 
+  List<ItemSales> extractTopSellingItems(List<ProcessedOrder> orders) {
+    // A map to hold item sales data
+    Map<String, ItemSales> itemSalesMap = {};
+
+    // Aggregate sales data
+    for (var order in orders) {
+      // Split items string and process each item
+      var items = order.items.split(', ');
+      for (var item in items) {
+        var parts = item.split(' x');
+        var itemName = parts[0];
+        var quantity = int.parse(parts[1]);
+
+        var itemPrice = order.price / items.length; // Average price per item
+        var totalAmount = itemPrice * quantity;
+
+        if (itemSalesMap.containsKey(itemName)) {
+          itemSalesMap[itemName]!.addSale(quantity, totalAmount);
+        } else {
+          itemSalesMap[itemName] = ItemSales(
+            itemName: itemName,
+            quantity: quantity,
+            totalSalesAmount: totalAmount,
+          );
+        }
+      }
+    }
+
+    // Convert the map to a list and sort by total sales amount in descending order
+    var sortedItems = itemSalesMap.values.toList()
+      ..sort((a, b) => b.totalSalesAmount.compareTo(a.totalSalesAmount));
+
+    // Get the top 3 selling items
+    return sortedItems.take(3).toList();
+  }
+
+  List<ItemSales> topSellingItems = [];
+
   @override
   Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        mainBody(context),
+        isLoading
+            ? onLoading(width: width, context: context)
+            : const SizedBox(),
+      ],
+    );
+  }
+
+  Scaffold mainBody(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -315,26 +392,38 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                             children: [
                               Column(
                                 children: [
-                                  buildCustomText("1. Product A",
-                                      Data.darkTextColor, width * 2),
-                                  buildCustomText("Rs 1000",
-                                      Data.lightGreyTextColor, width * 2),
+                                  buildCustomText(
+                                      "1. ${topSellingItems[0].itemName}",
+                                      Data.darkTextColor,
+                                      width * 2),
+                                  buildCustomText(
+                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${topSellingItems[0].totalSalesAmount}",
+                                      Data.lightGreyTextColor,
+                                      width * 2),
                                 ],
                               ),
                               Column(
                                 children: [
-                                  buildCustomText("2. Product B",
-                                      Data.darkTextColor, width * 2),
-                                  buildCustomText("Rs 1000",
-                                      Data.lightGreyTextColor, width * 2),
+                                  buildCustomText(
+                                      "2. ${topSellingItems[1].itemName}",
+                                      Data.darkTextColor,
+                                      width * 2),
+                                  buildCustomText(
+                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${topSellingItems[1].totalSalesAmount}",
+                                      Data.lightGreyTextColor,
+                                      width * 2),
                                 ],
                               ),
                               Column(
                                 children: [
-                                  buildCustomText("3. Product C",
-                                      Data.darkTextColor, width * 2),
-                                  buildCustomText("Rs 1000",
-                                      Data.lightGreyTextColor, width * 2),
+                                  buildCustomText(
+                                      "3. ${topSellingItems[2].itemName}",
+                                      Data.darkTextColor,
+                                      width * 2),
+                                  buildCustomText(
+                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${topSellingItems[2].totalSalesAmount}",
+                                      Data.lightGreyTextColor,
+                                      width * 2),
                                 ],
                               ),
                             ],
@@ -624,4 +713,21 @@ class _ChartData {
 
   final String x;
   final double y;
+}
+
+class ItemSales {
+  String itemName;
+  int quantity;
+  double totalSalesAmount;
+
+  ItemSales({
+    required this.itemName,
+    this.quantity = 0,
+    this.totalSalesAmount = 0.0,
+  });
+
+  void addSale(int qty, double amount) {
+    quantity += qty;
+    totalSalesAmount += amount;
+  }
 }
