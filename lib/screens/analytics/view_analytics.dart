@@ -202,9 +202,11 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
 
       // Extract top selling items based on the selected date range
       topSellingItems = extractTopSellingItems(
-          Provider.of<OrderProvider>(context, listen: false).processedOrders,
-          dateRange.start,
-          dateRange.end);
+        Provider.of<OrderProvider>(context, listen: false).processedOrders,
+        dateRange.start,
+        dateRange.end,
+        Provider.of<MenuProvider>(context, listen: false).priceList,
+      );
 
       salesByCategory = calculateSalesByCategory(
         menuItemsByCategory: Provider.of<MenuProvider>(context, listen: false)
@@ -217,9 +219,19 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
   }
 
   List<ItemSales> extractTopSellingItems(
-      List<ProcessedOrder> orders, DateTime startDate, DateTime endDate) {
+    List<ProcessedOrder> orders,
+    DateTime startDate,
+    DateTime endDate,
+    List<OrderItem> priceList, // Added parameter
+  ) {
     // A map to hold item sales data
     Map<String, ItemSales> itemSalesMap = {};
+
+    // Create a lookup map for item prices
+    Map<String, double> itemPriceMap = {};
+    for (var item in priceList) {
+      itemPriceMap[item.name] = item.price;
+    }
 
     // Aggregate sales data
     for (var order in orders) {
@@ -234,7 +246,9 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
           var itemName = parts[0];
           var quantity = int.parse(parts[1]);
 
-          var itemPrice = order.price / items.length; // Average price per item
+          // Look up the price for the item
+          var itemPrice =
+              itemPriceMap[itemName] ?? 0.0; // Default to 0.0 if not found
           var totalAmount = itemPrice * quantity;
 
           if (itemSalesMap.containsKey(itemName)) {
@@ -536,70 +550,64 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                   ),
                   SizedBox(height: height),
                   Container(
-                      height: height * 20,
-                      width: width * 40,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6.0),
-                        border: Border.all(
-                          color: Colors.black,
-                        ),
+                    height: height * 20,
+                    width: width * 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6.0),
+                      border: Border.all(
+                        color: Colors.black,
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          buildCustomText("Top Selling Items",
-                              Data.darkTextColor, width * 2.2,
-                              fontWeight: FontWeight.bold),
-                          SizedBox(height: height),
-                          topSellingItems.isNotEmpty
-                              ? Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        buildCustomText(
-                                            "1. ${topSellingItems[0].itemName}",
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        buildCustomText(
+                          "Top Selling Items",
+                          Data.darkTextColor,
+                          width * 2.2,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        SizedBox(height: height),
+                        topSellingItems.isNotEmpty
+                            ? Expanded(
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: topSellingItems.length,
+                                  itemBuilder: (context, index) {
+                                    final item = topSellingItems[index];
+                                    return Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: width * 1.5),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          buildCustomText(
+                                            "${index + 1}. ${item.itemName}",
                                             Data.darkTextColor,
-                                            width * 2),
-                                        buildCustomText(
-                                            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${topSellingItems[0].totalSalesAmount}",
+                                            width * 2,
+                                          ),
+                                          buildCustomText(
+                                            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${item.totalSalesAmount}",
                                             Data.lightGreyTextColor,
-                                            width * 2),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        buildCustomText(
-                                            "2. ${topSellingItems[1].itemName}",
-                                            Data.darkTextColor,
-                                            width * 2),
-                                        buildCustomText(
-                                            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${topSellingItems[1].totalSalesAmount}",
-                                            Data.lightGreyTextColor,
-                                            width * 2),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        buildCustomText(
-                                            "3. ${topSellingItems[2].itemName}",
-                                            Data.darkTextColor,
-                                            width * 2),
-                                        buildCustomText(
-                                            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${topSellingItems[2].totalSalesAmount}",
-                                            Data.lightGreyTextColor,
-                                            width * 2),
-                                      ],
-                                    ),
-                                  ],
-                                )
-                              : Center(
-                                  child: buildCustomText("No data available",
-                                      Data.darkTextColor, width * 2),
-                                )
-                        ],
-                      )),
+                                            width * 2,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              )
+                            : Center(
+                                child: buildCustomText(
+                                  "No data available",
+                                  Data.darkTextColor,
+                                  width * 2,
+                                ),
+                              ),
+                      ],
+                    ),
+                  ),
                   SizedBox(height: height),
                   SalesByCategoryContainer(
                     categorySalesMap: salesByCategory,
