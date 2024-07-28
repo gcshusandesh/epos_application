@@ -33,6 +33,9 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     }
   }
 
+  String? filterDropDownValue;
+  List<String> filterDropDownList = ["Daily", "Weekly", "Monthly", "Yearly"];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,8 +149,10 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                                 children: [
                                   SizedBox(
                                     width: width * 20,
-                                    child: buildCustomText("Average Monthly",
-                                        Data.darkTextColor, width * 2,
+                                    child: buildCustomText(
+                                        "Average $filterDropDownValue",
+                                        Data.darkTextColor,
+                                        width * 2,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   buildCustomText("Rs 10000",
@@ -161,28 +166,95 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                   Column(
                     children: [
                       Container(
-                          height: height * 10,
-                          width: width * 40,
-                          padding: EdgeInsets.symmetric(horizontal: width * 2),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6.0),
-                            border: Border.all(
-                              color: Colors.black,
+                        height: height * 10,
+                        width: width * 40,
+                        padding: EdgeInsets.symmetric(horizontal: width * 2),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6.0),
+                          border: Border.all(
+                            color: Colors.black,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            buildCustomText(
+                              "Filter",
+                              Data.darkTextColor,
+                              width * 2.2,
+                              fontWeight: FontWeight.bold,
                             ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              buildCustomText(
-                                  "Filter", Data.darkTextColor, width * 2.2,
-                                  fontWeight: FontWeight.bold),
-                              buildCustomText(
-                                  "View", Data.darkTextColor, width * 2),
-                            ],
-                          )
-
-                          /// add dropdown
-                          ),
+                            SizedBox(
+                              height: height * 8,
+                              width: width * 20,
+                              child: DropdownButtonFormField<String>(
+                                // Remove padding to ensure text fits
+                                padding: EdgeInsets.zero,
+                                icon: const Icon(
+                                    Icons.arrow_drop_down_circle_outlined),
+                                iconSize: width * 2.5,
+                                iconDisabledColor: Provider.of<InfoProvider>(
+                                        context,
+                                        listen: true)
+                                    .systemInfo
+                                    .iconsColor,
+                                iconEnabledColor: Provider.of<InfoProvider>(
+                                        context,
+                                        listen: true)
+                                    .systemInfo
+                                    .iconsColor,
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal:
+                                          width * 1), // Adjust padding here
+                                  enabledBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Data
+                                          .lightGreyBodyColor, // Custom focused border color
+                                      width:
+                                          1, // Custom focused border width (optional)
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Provider.of<InfoProvider>(context,
+                                              listen: true)
+                                          .systemInfo
+                                          .primaryColor, // Custom focused border color
+                                      width:
+                                          2.0, // Custom focused border width (optional)
+                                    ),
+                                  ),
+                                ),
+                                hint: buildCustomText(
+                                  "Select",
+                                  Data.lightGreyTextColor,
+                                  width * 1.75,
+                                ),
+                                style: TextStyle(
+                                  color: Data.darkTextColor,
+                                  fontSize: width * 1.75,
+                                ),
+                                dropdownColor: Colors.white,
+                                value: filterDropDownValue,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    filterDropDownValue = newValue!;
+                                  });
+                                },
+                                items: filterDropDownList
+                                    .map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       SizedBox(height: height),
                       Container(
                           height: height * 20,
@@ -196,7 +268,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              buildCustomText("Top Selling Products",
+                              buildCustomText("Top Selling Items",
                                   Data.darkTextColor, width * 2.2,
                                   fontWeight: FontWeight.bold),
                               SizedBox(height: height),
@@ -236,6 +308,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                       Container(
                           height: height * 38,
                           width: width * 40,
+                          padding: EdgeInsets.symmetric(horizontal: width * 2),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(6.0),
                             border: Border.all(
@@ -243,40 +316,41 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                             ),
                           ),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              buildCustomText("Top Selling Products",
+                              SizedBox(height: height),
+                              buildCustomText("Sales By Category",
                                   Data.darkTextColor, width * 2.2,
                                   fontWeight: FontWeight.bold),
                               SizedBox(height: height),
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Column(
-                                    children: [
-                                      buildCustomText("1. Product A",
-                                          Data.darkTextColor, width * 2),
-                                      buildCustomText("Rs 1000",
-                                          Data.lightGreyTextColor, width * 2),
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      buildCustomText("2. Product B",
-                                          Data.darkTextColor, width * 2),
-                                      buildCustomText("Rs 1000",
-                                          Data.lightGreyTextColor, width * 2),
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      buildCustomText("3. Product C",
-                                          Data.darkTextColor, width * 2),
-                                      buildCustomText("Rs 1000",
-                                          Data.lightGreyTextColor, width * 2),
-                                    ],
-                                  ),
+                                  buildCustomText(
+                                      "1. Food", Data.darkTextColor, width * 2),
+                                  buildCustomText("Rs 1000",
+                                      Data.lightGreyTextColor, width * 2),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  buildCustomText("2. Drinks",
+                                      Data.darkTextColor, width * 2),
+                                  buildCustomText("Rs 1000",
+                                      Data.lightGreyTextColor, width * 2),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  buildCustomText(
+                                      "3. Food", Data.darkTextColor, width * 2),
+                                  buildCustomText("Rs 1000",
+                                      Data.lightGreyTextColor, width * 2),
                                 ],
                               ),
                             ],
