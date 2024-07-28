@@ -4,9 +4,9 @@ import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/user_provider.dart';
 import 'package:epos_application/screens/employees/manage_employee.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ViewAnalytics extends StatefulWidget {
   const ViewAnalytics({super.key});
@@ -34,9 +34,49 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     }
   }
 
-  // default value is daily
   String filterDropDownValue = "Daily";
   List<String> filterDropDownList = ["Daily", "Weekly", "Monthly", "Yearly"];
+
+  // Example data sets for the graph
+  final Map<String, List<_ChartData>> graphData = {
+    "Daily": [
+      _ChartData('0h', 1),
+      _ChartData('4h', 3),
+      _ChartData('8h', 5),
+      _ChartData('12h', 7),
+      _ChartData('16h', 9),
+      _ChartData('20h', 11),
+    ],
+    "Weekly": [
+      _ChartData('Mon', 2),
+      _ChartData('Tue', 4),
+      _ChartData('Wed', 6),
+      _ChartData('Thu', 8),
+      _ChartData('Fri', 10),
+      _ChartData('Sat', 12),
+      _ChartData('Sun', 14),
+    ],
+    "Monthly": [
+      _ChartData('Week 1', 1.5),
+      _ChartData('Week 2', 3.5),
+      _ChartData('Week 3', 5.5),
+      _ChartData('Week 4', 7.5),
+    ],
+    "Yearly": [
+      _ChartData('Jan', 2.5),
+      _ChartData('Feb', 4.5),
+      _ChartData('Mar', 6.5),
+      _ChartData('Apr', 8.5),
+      _ChartData('May', 10.5),
+      _ChartData('Jun', 12.5),
+      _ChartData('Jul', 14.5),
+      _ChartData('Aug', 16.5),
+      _ChartData('Sep', 18.5),
+      _ChartData('Oct', 20.5),
+      _ChartData('Nov', 22.5),
+      _ChartData('Dec', 24.5),
+    ],
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -96,49 +136,30 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                         ],
                       ),
                       Expanded(
-                        child: LineChart(
-                          LineChartData(
-                            gridData: const FlGridData(show: true),
-                            titlesData: FlTitlesData(
-                              leftTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  reservedSize: 30,
-                                  getTitlesWidget: (value, meta) {
-                                    return Text(value.toInt().toString());
-                                  },
-                                ),
-                              ),
-                              bottomTitles: AxisTitles(
-                                sideTitles: SideTitles(
-                                  showTitles: true,
-                                  reservedSize: 30,
-                                  getTitlesWidget: (value, meta) {
-                                    return Text(value.toInt().toString());
-                                  },
-                                ),
-                              ),
-                            ),
-                            borderData: FlBorderData(
-                              show: true,
-                              border: Border.all(color: Colors.black, width: 1),
-                            ),
-                            lineBarsData: [
-                              LineChartBarData(
-                                spots: const [
-                                  FlSpot(0, 1),
-                                  FlSpot(1, 3),
-                                  FlSpot(2, 10),
-                                  FlSpot(3, 7),
-                                  FlSpot(4, 12),
-                                ],
-                                isCurved: true,
-                                barWidth: 2,
-                                color: Colors.blue,
-                                belowBarData: BarAreaData(show: false),
-                              ),
-                            ],
+                        child: SfCartesianChart(
+                          primaryXAxis: const CategoryAxis(),
+                          primaryYAxis: NumericAxis(
+                            axisLabelFormatter:
+                                (AxisLabelRenderDetails details) {
+                              return ChartAxisLabel(
+                                  '£${details.value}', const TextStyle());
+                            },
                           ),
+                          title: const ChartTitle(text: 'Sales Analysis'),
+                          legend: const Legend(isVisible: true),
+                          tooltipBehavior: TooltipBehavior(enable: true),
+                          series: <CartesianSeries<dynamic, dynamic>>[
+                            LineSeries<_ChartData, String>(
+                              dataSource: graphData[filterDropDownValue]!,
+                              xValueMapper: (_ChartData data, _) => data.x,
+                              yValueMapper: (_ChartData data, _) => data.y,
+                              name: 'Sales',
+                              dataLabelSettings:
+                                  const DataLabelSettings(isVisible: true),
+                              markerSettings: const MarkerSettings(
+                                  isVisible: true), // Add markers
+                            ),
+                          ],
                         ),
                       ),
                       Column(
@@ -586,4 +607,11 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       ),
     );
   }
+}
+
+class _ChartData {
+  _ChartData(this.x, this.y);
+
+  final String x;
+  final double y;
 }
