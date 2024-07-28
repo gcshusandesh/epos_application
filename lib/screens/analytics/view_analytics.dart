@@ -52,17 +52,13 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-      topSellingItems = extractTopSellingItems(
-          Provider.of<OrderProvider>(context, listen: true).processedOrders);
-      for (var item in topSellingItems) {
-        print(
-            'Item: ${item.itemName}, Quantity: ${item.quantity}, Total Sales Amount: ${item.totalSalesAmount}');
-      }
+      calculateData();
+
       init = false;
     }
   }
 
-  String filterDropDownValue = "Daily";
+  String filterDropDownValue = "Weekly";
   List<String> filterDropDownList = ["Daily", "Weekly", "Monthly", "Yearly"];
 
   // Example data sets for the graph
@@ -107,30 +103,47 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     ],
   };
 
-  List<ItemSales> extractTopSellingItems(List<ProcessedOrder> orders) {
+  void calculateData() {
+    // Get date range based on filter
+    DateTimeRange dateRange = getDateRange(filterDropDownValue);
+
+    // Extract top selling items based on the selected date range
+    topSellingItems = extractTopSellingItems(
+        Provider.of<OrderProvider>(context, listen: false).processedOrders,
+        dateRange.start,
+        dateRange.end);
+  }
+
+  List<ItemSales> extractTopSellingItems(
+      List<ProcessedOrder> orders, DateTime startDate, DateTime endDate) {
     // A map to hold item sales data
     Map<String, ItemSales> itemSalesMap = {};
 
     // Aggregate sales data
     for (var order in orders) {
-      // Split items string and process each item
-      var items = order.items.split(', ');
-      for (var item in items) {
-        var parts = item.split(' x');
-        var itemName = parts[0];
-        var quantity = int.parse(parts[1]);
+      // Check if the order date falls within the specified range
+      DateTime orderDate = order.orderDateTime!;
 
-        var itemPrice = order.price / items.length; // Average price per item
-        var totalAmount = itemPrice * quantity;
+      if (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) {
+        // Split items string and process each item
+        var items = order.items.split(', ');
+        for (var item in items) {
+          var parts = item.split(' x');
+          var itemName = parts[0];
+          var quantity = int.parse(parts[1]);
 
-        if (itemSalesMap.containsKey(itemName)) {
-          itemSalesMap[itemName]!.addSale(quantity, totalAmount);
-        } else {
-          itemSalesMap[itemName] = ItemSales(
-            itemName: itemName,
-            quantity: quantity,
-            totalSalesAmount: totalAmount,
-          );
+          var itemPrice = order.price / items.length; // Average price per item
+          var totalAmount = itemPrice * quantity;
+
+          if (itemSalesMap.containsKey(itemName)) {
+            itemSalesMap[itemName]!.addSale(quantity, totalAmount);
+          } else {
+            itemSalesMap[itemName] = ItemSales(
+              itemName: itemName,
+              quantity: quantity,
+              totalSalesAmount: totalAmount,
+            );
+          }
         }
       }
     }
@@ -139,8 +152,52 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     var sortedItems = itemSalesMap.values.toList()
       ..sort((a, b) => b.totalSalesAmount.compareTo(a.totalSalesAmount));
 
+    print("sortedItems: ${sortedItems.length}");
     // Get the top 3 selling items
     return sortedItems.take(3).toList();
+  }
+
+  DateTimeRange getDateRange(String filterType) {
+    DateTime now = DateTime.now();
+
+    switch (filterType) {
+      case 'Daily':
+        return DateTimeRange(
+          start: now.subtract(Duration(
+              hours: now.hour,
+              minutes: now.minute,
+              seconds: now.second,
+              milliseconds: now.millisecond)),
+          end: now.add(const Duration(days: 1)).subtract(Duration(
+              hours: now.hour,
+              minutes: now.minute,
+              seconds: now.second,
+              milliseconds: now.millisecond)),
+        );
+
+      case 'Weekly':
+        int daysToStartOfWeek = now.weekday - DateTime.monday;
+        return DateTimeRange(
+          start: now.subtract(Duration(days: daysToStartOfWeek)),
+          end: now.add(Duration(days: 7 - daysToStartOfWeek)),
+        );
+
+      case 'Monthly':
+        return DateTimeRange(
+          start: DateTime(now.year, now.month, 1),
+          end: DateTime(now.year, now.month + 1, 1)
+              .subtract(const Duration(days: 1)),
+        );
+
+      case 'Yearly':
+        return DateTimeRange(
+          start: DateTime(now.year, 1, 1),
+          end: DateTime(now.year + 1, 1, 1).subtract(const Duration(days: 1)),
+        );
+
+      default:
+        return DateTimeRange(start: now, end: now); // Default to current date
+    }
   }
 
   List<ItemSales> topSellingItems = [];
@@ -356,6 +413,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                             onChanged: (String? newValue) {
                               setState(() {
                                 filterDropDownValue = newValue!;
+                                calculateData();
                               });
                             },
                             items: filterDropDownList
@@ -387,47 +445,53 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                               Data.darkTextColor, width * 2.2,
                               fontWeight: FontWeight.bold),
                           SizedBox(height: height),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Column(
-                                children: [
-                                  buildCustomText(
-                                      "1. ${topSellingItems[0].itemName}",
-                                      Data.darkTextColor,
-                                      width * 2),
-                                  buildCustomText(
-                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${topSellingItems[0].totalSalesAmount}",
-                                      Data.lightGreyTextColor,
-                                      width * 2),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  buildCustomText(
-                                      "2. ${topSellingItems[1].itemName}",
-                                      Data.darkTextColor,
-                                      width * 2),
-                                  buildCustomText(
-                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${topSellingItems[1].totalSalesAmount}",
-                                      Data.lightGreyTextColor,
-                                      width * 2),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  buildCustomText(
-                                      "3. ${topSellingItems[2].itemName}",
-                                      Data.darkTextColor,
-                                      width * 2),
-                                  buildCustomText(
-                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${topSellingItems[2].totalSalesAmount}",
-                                      Data.lightGreyTextColor,
-                                      width * 2),
-                                ],
-                              ),
-                            ],
-                          ),
+                          topSellingItems.isNotEmpty
+                              ? Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        buildCustomText(
+                                            "1. ${topSellingItems[0].itemName}",
+                                            Data.darkTextColor,
+                                            width * 2),
+                                        buildCustomText(
+                                            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${topSellingItems[0].totalSalesAmount}",
+                                            Data.lightGreyTextColor,
+                                            width * 2),
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        buildCustomText(
+                                            "2. ${topSellingItems[1].itemName}",
+                                            Data.darkTextColor,
+                                            width * 2),
+                                        buildCustomText(
+                                            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${topSellingItems[1].totalSalesAmount}",
+                                            Data.lightGreyTextColor,
+                                            width * 2),
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        buildCustomText(
+                                            "3. ${topSellingItems[2].itemName}",
+                                            Data.darkTextColor,
+                                            width * 2),
+                                        buildCustomText(
+                                            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${topSellingItems[2].totalSalesAmount}",
+                                            Data.lightGreyTextColor,
+                                            width * 2),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              : Center(
+                                  child: buildCustomText("No data available",
+                                      Data.darkTextColor, width * 2),
+                                )
                         ],
                       )),
                   SizedBox(height: height),
