@@ -3,6 +3,7 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/screens/employees/manage_employee.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -35,55 +36,293 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+              child: topSection(
+                context: context,
+                height: height,
+                text: "Analytics",
+                width: width,
+              ),
+            ),
+            employeeAnalytics(context),
+            buildCustomText("Sales Data", Data.darkTextColor, width * 2.2,
+                fontWeight: FontWeight.bold),
+            SizedBox(height: height),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Container(
+                      height: height * 70,
+                      width: width * 40,
+                      padding: EdgeInsets.symmetric(
+                          horizontal: width * 2, vertical: height),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6.0),
+                        border: Border.all(
+                          color: Colors.black,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              buildCustomText("Revenue Overview",
+                                  Data.darkTextColor, width * 2.2,
+                                  fontWeight: FontWeight.bold),
+                              SizedBox(height: height),
+                            ],
+                          ),
+                          Expanded(
+                            child: LineChart(
+                              LineChartData(
+                                gridData: const FlGridData(show: true),
+                                titlesData: FlTitlesData(
+                                  leftTitles: AxisTitles(
+                                    sideTitles: SideTitles(
+                                      showTitles: true,
+                                      reservedSize: 30,
+                                      getTitlesWidget: (value, meta) {
+                                        return Text(value.toInt().toString());
+                                      },
+                                    ),
+                                  ),
+                                  bottomTitles: AxisTitles(
+                                    sideTitles: SideTitles(
+                                      showTitles: true,
+                                      reservedSize: 30,
+                                      getTitlesWidget: (value, meta) {
+                                        return Text(value.toInt().toString());
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                borderData: FlBorderData(
+                                  show: true,
+                                  border:
+                                      Border.all(color: Colors.black, width: 1),
+                                ),
+                                lineBarsData: [
+                                  LineChartBarData(
+                                    spots: const [
+                                      FlSpot(0, 1),
+                                      FlSpot(1, 3),
+                                      FlSpot(2, 10),
+                                      FlSpot(3, 7),
+                                      FlSpot(4, 12),
+                                    ],
+                                    isCurved: true,
+                                    barWidth: 2,
+                                    color: Colors.blue,
+                                    belowBarData: BarAreaData(show: false),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: width * 20,
+                                    child: buildCustomText("Total Revenue",
+                                        Data.darkTextColor, width * 2,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  buildCustomText("Rs 10000",
+                                      Data.lightGreyTextColor, width * 2),
+                                ],
+                              ),
+                              SizedBox(height: height),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: width * 20,
+                                    child: buildCustomText("Average Monthly",
+                                        Data.darkTextColor, width * 2,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  buildCustomText("Rs 10000",
+                                      Data.lightGreyTextColor, width * 2),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      )),
+                  Column(
+                    children: [
+                      Container(
+                          height: height * 10,
+                          width: width * 40,
+                          padding: EdgeInsets.symmetric(horizontal: width * 2),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6.0),
+                            border: Border.all(
+                              color: Colors.black,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              buildCustomText(
+                                  "Filter", Data.darkTextColor, width * 2.2,
+                                  fontWeight: FontWeight.bold),
+                              buildCustomText(
+                                  "View", Data.darkTextColor, width * 2),
+                            ],
+                          )
+
+                          /// add dropdown
+                          ),
+                      SizedBox(height: height),
+                      Container(
+                          height: height * 20,
+                          width: width * 40,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6.0),
+                            border: Border.all(
+                              color: Colors.black,
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              buildCustomText("Top Selling Products",
+                                  Data.darkTextColor, width * 2.2,
+                                  fontWeight: FontWeight.bold),
+                              SizedBox(height: height),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Column(
+                                    children: [
+                                      buildCustomText("1. Product A",
+                                          Data.darkTextColor, width * 2),
+                                      buildCustomText("Rs 1000",
+                                          Data.lightGreyTextColor, width * 2),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      buildCustomText("2. Product B",
+                                          Data.darkTextColor, width * 2),
+                                      buildCustomText("Rs 1000",
+                                          Data.lightGreyTextColor, width * 2),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      buildCustomText("3. Product C",
+                                          Data.darkTextColor, width * 2),
+                                      buildCustomText("Rs 1000",
+                                          Data.lightGreyTextColor, width * 2),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )),
+                      SizedBox(height: height),
+                      Container(
+                          height: height * 38,
+                          width: width * 40,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6.0),
+                            border: Border.all(
+                              color: Colors.black,
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              buildCustomText("Top Selling Products",
+                                  Data.darkTextColor, width * 2.2,
+                                  fontWeight: FontWeight.bold),
+                              SizedBox(height: height),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Column(
+                                    children: [
+                                      buildCustomText("1. Product A",
+                                          Data.darkTextColor, width * 2),
+                                      buildCustomText("Rs 1000",
+                                          Data.lightGreyTextColor, width * 2),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      buildCustomText("2. Product B",
+                                          Data.darkTextColor, width * 2),
+                                      buildCustomText("Rs 1000",
+                                          Data.lightGreyTextColor, width * 2),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      buildCustomText("3. Product C",
+                                          Data.darkTextColor, width * 2),
+                                      buildCustomText("Rs 1000",
+                                          Data.lightGreyTextColor, width * 2),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Container employeeAnalytics(BuildContext context) {
+    return Container(
+      color: Provider.of<InfoProvider>(context, listen: true)
+          .systemInfo
+          .iconsColor
+          .withOpacity(0.5),
+      margin: EdgeInsets.symmetric(vertical: height * 1.5),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      height: height * 30,
+      child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-            child: topSection(
-              context: context,
-              height: height,
-              text: "Analytics",
-              width: width,
-            ),
-          ),
-          Container(
-            color: Provider.of<InfoProvider>(context, listen: true)
-                .systemInfo
-                .iconsColor
-                .withOpacity(0.5),
-            margin: EdgeInsets.symmetric(vertical: height * 1.5),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            height: height * 30,
-            child: Column(
-              children: [
-                buildCustomText(
-                    "Employee Data", Data.lightGreyTextColor, width * 2.2,
-                    fontWeight: FontWeight.bold),
-                SizedBox(height: height),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    analyticsBox(
-                      title: "Total Employees",
-                      count: 10,
-                      context: context,
-                      isTotal: true,
-                    ),
-                    analyticsBox(
-                      title: "Active Employees",
-                      count: 10,
-                      context: context,
-                    ),
-                    analyticsBox(
-                      title: "Total Employees",
-                      count: 10,
-                      context: context,
-                    ),
-                    topEmployeeBox(context: context),
-                  ],
-                ),
-              ],
-            ),
+          buildCustomText("Employee Data", Data.darkTextColor, width * 2.2,
+              fontWeight: FontWeight.bold),
+          SizedBox(height: height),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              analyticsBox(
+                title: "Total Employees",
+                count: 10,
+                context: context,
+                isTotal: true,
+              ),
+              analyticsBox(
+                title: "Active Employees",
+                count: 10,
+                context: context,
+              ),
+              genderBox(context: context),
+              topEmployeeBox(context: context),
+            ],
           ),
         ],
       ),
@@ -183,6 +422,64 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
             height: height,
           ),
           buildCustomText("Mr Shusandesh G C", Colors.white, width * 1.65),
+        ],
+      ),
+    );
+  }
+
+  Container genderBox({
+    required BuildContext context,
+  }) {
+    return Container(
+      width: width * 32,
+      height: height * 20,
+      padding: EdgeInsets.symmetric(horizontal: width),
+      decoration: BoxDecoration(
+        color: Provider.of<InfoProvider>(context, listen: true)
+            .systemInfo
+            .primaryColor,
+        borderRadius: BorderRadius.circular(6.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25), // Shadow color
+            spreadRadius: 0, // How much the shadow spreads
+            blurRadius: 4, // How much the shadow blurs
+            offset: const Offset(0, 5), // The offset of the shadow
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.man, color: Colors.white, size: width * 7),
+              buildCustomText("3", Colors.white, width * 3,
+                  fontWeight: FontWeight.bold),
+              SizedBox(width: width),
+            ],
+          ),
+          Container(height: height * 15, width: 1.5, color: Colors.white),
+          Row(
+            children: [
+              Icon(Icons.woman, color: Colors.white, size: width * 7),
+              buildCustomText("1", Colors.white, width * 3,
+                  fontWeight: FontWeight.bold),
+              SizedBox(width: width),
+            ],
+          ),
+          Container(height: height * 15, width: 1.5, color: Colors.white),
+          Row(
+            children: [
+              SizedBox(width: width),
+              buildCustomText("Other", Colors.white, width * 2,
+                  fontWeight: FontWeight.bold),
+              SizedBox(width: width),
+              buildCustomText("0", Colors.white, width * 3,
+                  fontWeight: FontWeight.bold),
+              SizedBox(width: width),
+            ],
+          ),
         ],
       ),
     );
