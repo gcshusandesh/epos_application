@@ -914,14 +914,22 @@ class SalesByCategoryContainer extends StatelessWidget {
               width * 2.2,
               fontWeight: FontWeight.bold),
           SizedBox(height: height),
-          Expanded(
-            // Wrap in Expanded to make sure it takes available space
-            child: SingleChildScrollView(
-              child: Column(
-                children: salesRows, // Add rows inside this Column
-              ),
-            ),
-          ), // Spread the list of rows here
+          categorySalesMap.isNotEmpty
+              ? Expanded(
+                  // Wrap in Expanded to make sure it takes available space
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: salesRows, // Add rows inside this Column
+                    ),
+                  ),
+                )
+              : Center(
+                  child: buildCustomText(
+                    "No data available",
+                    Data.darkTextColor,
+                    width * 2,
+                  ),
+                ),
         ],
       ),
     );
