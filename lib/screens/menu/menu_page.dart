@@ -159,6 +159,9 @@ class _MenuPageState extends State<MenuPage> {
                           .isEmpty ||
                       Provider.of<MenuProvider>(context, listen: false)
                               .getActiveItemsCountByCategory() ==
+                          0 ||
+                      Provider.of<MenuProvider>(context, listen: false)
+                              .getActiveCategoryCount() ==
                           0
                   ? Center(
                       child: buildBodyText(
@@ -701,6 +704,7 @@ class _MenuPageState extends State<MenuPage> {
                     )
                   : Container(
                       width: width * 60,
+                      height: height * 25,
                       color: Data.lightGreyBodyColor.withOpacity(0.4),
                       child: Center(
                           child: buildCustomText(

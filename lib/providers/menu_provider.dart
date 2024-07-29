@@ -636,6 +636,16 @@ class MenuProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  int getActiveCategoryCount() {
+    int count = 0;
+    for (int i = 0; i < categoryList.length; i++) {
+      if (categoryList[i].status) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   /// Function to count the number of active menu items in a selected category using its index
   int getActiveItemsCountByCategory() {
     // Check if the provided index is valid
