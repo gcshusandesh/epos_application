@@ -189,8 +189,17 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       }
     }
 
+    // Sort the map by sales amount in descending order
+    var sortedCategorySales = categorySalesMap.entries.toList()
+      ..sort((e1, e2) => e2.value.compareTo(e1.value));
+
+    // Convert sorted entries back to a map
+    var sortedCategorySalesMap = {
+      for (var entry in sortedCategorySales) entry.key: entry.value
+    };
+
     // Return the sales amount by category
-    return categorySalesMap;
+    return sortedCategorySalesMap;
   }
 
   void calculateData() {
@@ -255,8 +264,6 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       // Check if the order date falls within the specified range and is paid
       if (order.orderDateTime != null) {
         DateTime orderDate = order.orderDateTime!;
-        print(
-            "Processing order: $orderDate, Is Paid: ${order.isPaid}"); // Debugging
 
         if (orderDate.isAfter(startDate) &&
             orderDate.isBefore(endDate) &&
@@ -283,24 +290,15 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                   totalSalesAmount: totalAmount,
                 );
               }
-            } else {
-              print("Incorrect item format: $item"); // Debugging
             }
           }
         }
-      } else {
-        print("Order with null date: ${order.items}"); // Debugging
       }
     }
 
     // Convert the map to a list and sort by total sales amount in descending order
     var sortedItems = itemSalesMap.values.toList()
       ..sort((a, b) => b.totalSalesAmount.compareTo(a.totalSalesAmount));
-
-    print("sortedItems: ${sortedItems.length}");
-    for (int i = 0; i < sortedItems.length; i++) {
-      print("Sorted Item = ${sortedItems[i].itemName}");
-    }
     // Get the top 3 selling items
     return sortedItems.take(3).toList();
   }
