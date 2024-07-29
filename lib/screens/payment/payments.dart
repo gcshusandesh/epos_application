@@ -352,7 +352,14 @@ class _PaymentState extends State<Payment> {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return alert(order: order);
+                        return Dialog(
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            color: Colors.white,
+                            child: alert(order: order),
+                          ),
+                        );
                       },
                     );
                   },
