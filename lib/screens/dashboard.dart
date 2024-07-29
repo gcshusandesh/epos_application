@@ -77,7 +77,6 @@ class _DashboardState extends State<Dashboard> {
     false,
     false,
     false,
-    false,
     false
   ];
 
@@ -86,7 +85,6 @@ class _DashboardState extends State<Dashboard> {
         UserType.owner) {
       /// Owner
       dashboardVisibility = [
-        true,
         true,
         true,
         true,
@@ -108,7 +106,6 @@ class _DashboardState extends State<Dashboard> {
         true,
         true,
         true,
-        true,
       ];
     } else if (Provider.of<AuthProvider>(context, listen: false)
             .user
@@ -122,7 +119,6 @@ class _DashboardState extends State<Dashboard> {
         false,
         false,
         true,
-        true,
         false,
       ];
     } else {
@@ -132,7 +128,6 @@ class _DashboardState extends State<Dashboard> {
         true,
         true,
         true,
-        false,
         false,
         false,
         false,
@@ -272,15 +267,7 @@ class _DashboardState extends State<Dashboard> {
               context,
               isVisible: dashboardVisibility[4],
             ),
-            Padding(
-              padding: EdgeInsets.only(
-                  right: Provider.of<AuthProvider>(context, listen: true)
-                              .user
-                              .userType ==
-                          UserType.chef
-                      ? width * 20
-                      : 0),
-              child: dashboardItem(
+            dashboardItem(
                 "assets/dashboard/kitchen.svg",
                 "Kitchen",
                 height,
@@ -294,18 +281,6 @@ class _DashboardState extends State<Dashboard> {
                 context,
                 isVisible: dashboardVisibility[5],
               ),
-            ),
-            dashboardItem(
-              "assets/dashboard/inventory.svg",
-              "Inventory",
-              height,
-              width,
-              () {
-                //do something
-              },
-              context,
-              isVisible: dashboardVisibility[6],
-            ),
             dashboardItem(
               "assets/dashboard/analytics.svg",
               "Analytics",
@@ -319,7 +294,7 @@ class _DashboardState extends State<Dashboard> {
                 );
               },
               context,
-              isVisible: dashboardVisibility[7],
+              isVisible: dashboardVisibility[6],
             ),
           ],
         ),
