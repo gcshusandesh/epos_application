@@ -85,6 +85,45 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
   String filterDropDownValue = "Daily";
   List<String> filterDropDownList = ["Daily", "Weekly", "Monthly", "Yearly"];
 
+  void calculateData() {
+    setState(() {
+      // Get date range based on filter
+      DateTimeRange dateRange = getDateRange(filterDropDownValue);
+      List<ProcessedOrder> paidOrders =
+          Provider.of<OrderProvider>(context, listen: false)
+              .processedOrders
+              .where((element) => element.isPaid)
+              .toList();
+
+      totalRevenue = calculateTotalRevenue(
+        paidOrders: paidOrders,
+      );
+
+      filteredRevenue = calculateFilteredRevenue(
+        paidOrders: paidOrders,
+        startDate: dateRange.start,
+        endDate: dateRange.end,
+      );
+
+      // Extract top selling items based on the selected date range
+      topSellingItems = extractTopSellingItems(
+        paidOrders,
+        dateRange.start,
+        dateRange.end,
+        Provider.of<MenuProvider>(context, listen: false).priceList,
+      );
+
+      salesByCategory = calculateSalesByCategory(
+        menuItemsByCategory: Provider.of<MenuProvider>(context, listen: false)
+            .menuItemsByCategory,
+        paidOrders: paidOrders,
+        priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
+        startDate: dateRange.start,
+        endDate: dateRange.end,
+      );
+    });
+  }
+
   double filteredRevenue = 0;
 
   double calculateFilteredRevenue({
@@ -202,45 +241,6 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     return sortedCategorySalesMap;
   }
 
-  void calculateData() {
-    setState(() {
-      // Get date range based on filter
-      DateTimeRange dateRange = getDateRange(filterDropDownValue);
-      List<ProcessedOrder> paidOrders =
-          Provider.of<OrderProvider>(context, listen: false)
-              .processedOrders
-              .where((element) => element.isPaid)
-              .toList();
-
-      totalRevenue = calculateTotalRevenue(
-        paidOrders: paidOrders,
-      );
-
-      filteredRevenue = calculateFilteredRevenue(
-        paidOrders: paidOrders,
-        startDate: dateRange.start,
-        endDate: dateRange.end,
-      );
-
-      // Extract top selling items based on the selected date range
-      topSellingItems = extractTopSellingItems(
-        paidOrders,
-        dateRange.start,
-        dateRange.end,
-        Provider.of<MenuProvider>(context, listen: false).priceList,
-      );
-
-      salesByCategory = calculateSalesByCategory(
-        menuItemsByCategory: Provider.of<MenuProvider>(context, listen: false)
-            .menuItemsByCategory,
-        paidOrders: paidOrders,
-        priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
-        startDate: dateRange.start,
-        endDate: dateRange.end,
-      );
-    });
-  }
-
   List<ItemSales> extractTopSellingItems(
     List<ProcessedOrder> paidOrders,
     DateTime startDate,
@@ -313,9 +313,26 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
         return DateTimeRange(start: startOfDay, end: endOfDay);
 
       case 'Weekly':
+        // Calculate days since Monday
         int daysToStartOfWeek = now.weekday - DateTime.monday;
-        DateTime startOfWeek = now.subtract(Duration(days: daysToStartOfWeek));
-        DateTime endOfWeek = startOfWeek.add(const Duration(days: 7));
+
+        // Determine the start of the week (Monday at 00:00:00)
+        DateTime startOfWeek = DateTime(
+          now.year,
+          now.month,
+          now.day -
+              daysToStartOfWeek, // Calculate the Monday of the current week
+          0, 0, 0, // Set time to 00:00:00
+        );
+
+        // Determine the end of the week (Sunday at 23:59:59)
+        DateTime endOfWeek = DateTime(
+          startOfWeek.year,
+          startOfWeek.month,
+          startOfWeek.day + 6, // Sunday is 6 days after Monday
+          23, 59, 59, // Set time to 23:59:59
+        );
+
         return DateTimeRange(start: startOfWeek, end: endOfWeek);
 
       case 'Monthly':
