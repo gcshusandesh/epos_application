@@ -51,6 +51,7 @@ class OrderProvider extends ChangeNotifier {
             isPaid: attributes['isPaid'],
             paymentMode: attributes['paymentMode'],
             orderDateTime: DateTime.parse(attributes['updatedAt']),
+            receivedBy: attributes['receivedBy'],
           );
         }).toList();
 
@@ -191,6 +192,7 @@ class OrderProvider extends ChangeNotifier {
           "billedTo":
               order.billedTo ?? "", // Add default value or handle null case
           "isPaid": order.isPaid,
+          "receivedBy": order.receivedBy ?? "",
         }
       };
       var response = await http.post(

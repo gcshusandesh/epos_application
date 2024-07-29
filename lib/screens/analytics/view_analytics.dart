@@ -85,6 +85,8 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
   String filterDropDownValue = "Daily";
   List<String> filterDropDownList = ["Daily", "Weekly", "Monthly", "Yearly"];
 
+  String? topEmployee;
+
   void calculateData() {
     setState(() {
       // Get date range based on filter
@@ -94,6 +96,12 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
               .processedOrders
               .where((element) => element.isPaid)
               .toList();
+
+      topEmployee = extractTopEmployee(
+        paidOrders,
+        dateRange.start,
+        dateRange.end,
+      );
 
       totalRevenue = calculateTotalRevenue(
         paidOrders: paidOrders,
@@ -122,6 +130,49 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
         endDate: dateRange.end,
       );
     });
+  }
+
+  String extractTopEmployee(
+      List<ProcessedOrder> paidOrders, DateTime startDate, DateTime endDate,
+      {int topN = 3}) {
+    // A map to hold employee sales data
+    Map<String, EmployeeSales> employeeSalesMap = {};
+
+    // Filter orders based on the date range and payment status
+    List<ProcessedOrder> filteredOrders = paidOrders.where((order) {
+      if (!order.isPaid || order.orderDateTime == null) return false;
+      DateTime orderDate = order.orderDateTime!;
+      return orderDate.isAfter(startDate) && orderDate.isBefore(endDate);
+    }).toList();
+
+    // Aggregate sales data by employee
+    for (var order in filteredOrders) {
+      if (order.receivedBy != null) {
+        String employeeName = order.receivedBy!;
+
+        // Calculate total amount for the order
+        double totalAmount = order.paidPrice;
+
+        if (employeeSalesMap.containsKey(employeeName)) {
+          employeeSalesMap[employeeName]!.addSale(totalAmount);
+        } else {
+          employeeSalesMap[employeeName] = EmployeeSales(
+            employeeName: employeeName,
+            totalSalesAmount: totalAmount,
+          );
+        }
+      }
+    }
+
+    // Convert the map to a list and sort by total sales amount in descending order
+    var sortedEmployees = employeeSalesMap.values.toList()
+      ..sort((a, b) => b.totalSalesAmount.compareTo(a.totalSalesAmount));
+
+    sortedEmployees.take(topN).toList();
+    print("Top Employee Name: ${sortedEmployees[0].employeeName}");
+
+    // Get the top N employees
+    return sortedEmployees[0].employeeName;
   }
 
   double filteredRevenue = 0;
@@ -762,7 +813,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
           SizedBox(
             height: height,
           ),
-          buildCustomText("Mr Shusandesh G C", Colors.white, width * 1.65),
+          buildCustomText(topEmployee ?? "", Colors.white, width * 1.65),
         ],
       ),
     );
@@ -939,5 +990,20 @@ class SalesByCategoryContainer extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class EmployeeSales {
+  String employeeName;
+  double totalSalesAmount;
+
+  EmployeeSales({
+    required this.employeeName,
+    required this.totalSalesAmount,
+  });
+
+  // Method to add sales to an existing record
+  void addSale(double amount) {
+    totalSalesAmount += amount;
   }
 }

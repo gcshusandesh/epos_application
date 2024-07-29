@@ -250,6 +250,8 @@ class _OrderTakerState extends State<OrderTaker> {
                 discount: 0,
                 status: OrderStatus.processing,
                 isPaid: false,
+                receivedBy:
+                    Provider.of<AuthProvider>(context, listen: false).user.name,
               ),
             );
             setState(() {
