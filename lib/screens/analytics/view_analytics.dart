@@ -91,44 +91,49 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     setState(() {
       // Get date range based on filter
       DateTimeRange dateRange = getDateRange(filterDropDownValue);
-      List<ProcessedOrder> paidOrders =
-          Provider.of<OrderProvider>(context, listen: false)
-              .processedOrders
-              .where((element) => element.isPaid)
-              .toList();
+      if (Provider.of<OrderProvider>(context, listen: false)
+          .processedOrders
+          .isNotEmpty) {
+        List<ProcessedOrder> paidOrders =
+            Provider.of<OrderProvider>(context, listen: false)
+                .processedOrders
+                .where((element) => element.isPaid)
+                .toList();
 
-      topEmployee = extractTopEmployee(
-        paidOrders,
-        dateRange.start,
-        dateRange.end,
-      );
+        topEmployee = extractTopEmployee(
+          paidOrders,
+          dateRange.start,
+          dateRange.end,
+        );
 
-      totalRevenue = calculateTotalRevenue(
-        paidOrders: paidOrders,
-      );
+        totalRevenue = calculateTotalRevenue(
+          paidOrders: paidOrders,
+        );
 
-      filteredRevenue = calculateFilteredRevenue(
-        paidOrders: paidOrders,
-        startDate: dateRange.start,
-        endDate: dateRange.end,
-      );
+        filteredRevenue = calculateFilteredRevenue(
+          paidOrders: paidOrders,
+          startDate: dateRange.start,
+          endDate: dateRange.end,
+        );
 
-      // Extract top selling items based on the selected date range
-      topSellingItems = extractTopSellingItems(
-        paidOrders,
-        dateRange.start,
-        dateRange.end,
-        Provider.of<MenuProvider>(context, listen: false).priceList,
-      );
+        // Extract top selling items based on the selected date range
+        topSellingItems = extractTopSellingItems(
+          paidOrders,
+          dateRange.start,
+          dateRange.end,
+          Provider.of<MenuProvider>(context, listen: false).priceList,
+        );
 
-      salesByCategory = calculateSalesByCategory(
-        menuItemsByCategory: Provider.of<MenuProvider>(context, listen: false)
-            .menuItemsByCategory,
-        paidOrders: paidOrders,
-        priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
-        startDate: dateRange.start,
-        endDate: dateRange.end,
-      );
+        salesByCategory = calculateSalesByCategory(
+          menuItemsByCategory: Provider.of<MenuProvider>(context, listen: false)
+              .menuItemsByCategory,
+          paidOrders: paidOrders,
+          priceList:
+              Provider.of<MenuProvider>(context, listen: false).priceList,
+          startDate: dateRange.start,
+          endDate: dateRange.end,
+        );
+      }
     });
   }
 
@@ -813,7 +818,8 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
           SizedBox(
             height: height,
           ),
-          buildCustomText(topEmployee ?? "", Colors.white, width * 1.65),
+          buildCustomText(
+              topEmployee ?? "No Data Available", Colors.white, width * 1.65),
         ],
       ),
     );
