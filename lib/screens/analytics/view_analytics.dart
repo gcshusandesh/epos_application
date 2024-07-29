@@ -577,7 +577,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                               Row(
                                 children: [
                                   SizedBox(
-                                    width: width * 18,
+                                    width: width * 20,
                                     child: buildCustomText("Total Revenue",
                                         Data.darkTextColor, width * 2,
                                         fontWeight: FontWeight.bold),
@@ -592,7 +592,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                               Row(
                                 children: [
                                   SizedBox(
-                                    width: width * 18,
+                                    width: width * 20,
                                     child: buildCustomText(
                                         "Revenue ($filterDropDownValue)",
                                         Data.darkTextColor,
@@ -792,7 +792,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     required BuildContext context,
   }) {
     return Container(
-      width: width * 20,
+      width: width * 22,
       height: height * 20,
       padding: EdgeInsets.symmetric(horizontal: width),
       decoration: BoxDecoration(
@@ -861,7 +861,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                   Colors.white,
                   width * 3,
                   fontWeight: FontWeight.bold),
-              SizedBox(width: width),
+              SizedBox(width: width * 0.8),
             ],
           ),
           Container(height: height * 15, width: 1.5, color: Colors.white),
@@ -877,16 +877,16 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                   Colors.white,
                   width * 3,
                   fontWeight: FontWeight.bold),
-              SizedBox(width: width),
+              SizedBox(width: width * 0.8),
             ],
           ),
           Container(height: height * 15, width: 1.5, color: Colors.white),
           Row(
             children: [
-              SizedBox(width: width),
+              SizedBox(width: width * 0.8),
               buildCustomText("Others", Colors.white, width * 2,
                   fontWeight: FontWeight.bold),
-              SizedBox(width: width),
+              SizedBox(width: width * 0.8),
               buildCustomText(
                   Provider.of<UserProvider>(context, listen: true)
                       .userList
@@ -896,7 +896,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                   Colors.white,
                   width * 3,
                   fontWeight: FontWeight.bold),
-              SizedBox(width: width),
+              SizedBox(width: width * 0.8),
             ],
           ),
         ],
