@@ -412,6 +412,7 @@ class MenuProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
+      print("error: $e");
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(

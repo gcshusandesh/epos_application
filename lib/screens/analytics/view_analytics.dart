@@ -88,7 +88,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
   double filteredRevenue = 0;
 
   double calculateFilteredRevenue({
-    required List<ProcessedOrder> processedOrders,
+    required List<ProcessedOrder> paidOrders,
     required DateTime startDate,
     required DateTime endDate,
   }) {
@@ -96,7 +96,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     double filteredRevenue = 0.0;
 
     // Aggregate revenue data within the specified date range and for paid orders
-    for (var order in processedOrders) {
+    for (var order in paidOrders) {
       if (order.isPaid) {
         DateTime orderDate = order.orderDateTime!;
 
@@ -111,13 +111,13 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
 
   double totalRevenue = 0;
   double calculateTotalRevenue({
-    required List<ProcessedOrder> processedOrders,
+    required List<ProcessedOrder> paidOrders,
   }) {
     // Initialize total revenue
     double totalRevenue = 0.0;
 
     // Aggregate revenue data within the specified date range and for paid orders
-    for (var order in processedOrders) {
+    for (var order in paidOrders) {
       if (order.isPaid) {
         totalRevenue += (order.price - order.discount);
       }
@@ -128,57 +128,60 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
 
   Map<String, double> calculateSalesByCategory({
     required List<MenuItemsByCategory> menuItemsByCategory,
-    required List<ProcessedOrder> processedOrders,
+    required List<ProcessedOrder>
+        paidOrders, // Assuming this list only contains paid orders
     required List<OrderItem> priceList,
     required DateTime startDate,
     required DateTime endDate,
   }) {
-    // Create a map for item sales by category
-    Map<String, double> categorySalesMap = {};
-
-    // Create a lookup map for item names to categories
+    // Map for item names to categories
     Map<String, String> itemCategoryMap = {};
 
-    // Populate the itemCategoryMap from menuItemsByCategory
+    // Map for item names to prices
+    Map<String, double> itemPriceMap = {};
+
+    // Populate itemCategoryMap
     for (var categoryGroup in menuItemsByCategory) {
       for (var item in categoryGroup.menuItems) {
         itemCategoryMap[item.name] = categoryGroup.category.name;
       }
     }
 
-    // Create a lookup map for item names to prices
-    Map<String, double> itemPriceMap = {};
+    // Populate itemPriceMap
     for (var orderItem in priceList) {
       itemPriceMap[orderItem.name] = orderItem.price;
     }
 
-    // Aggregate sales data within the specified date range and which are paid
-    for (var order in processedOrders) {
-      if (order.orderDateTime != null && order.isPaid) {
-        DateTime orderDate = order.orderDateTime!;
+    // Map to accumulate sales by category
+    Map<String, double> categorySalesMap = {};
 
-        if (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) {
-          var itemsInOrder = order.items.split(', ');
-          for (var item in itemsInOrder) {
-            var parts = item.split(' x');
-            if (parts.length == 2) {
-              var itemName = parts[0].trim();
-              var quantity = int.tryParse(parts[1].trim()) ?? 0;
+    // Process each paid order
+    for (var order in paidOrders) {
+      DateTime orderDate = order.orderDateTime!;
 
-              // Ensure the item name exists in the itemPriceMap
-              if (itemPriceMap.containsKey(itemName)) {
-                var itemPrice = itemPriceMap[itemName]!;
-                var totalAmount = itemPrice * quantity;
-                var category = itemCategoryMap[itemName];
+      // Check if the order is within the date range
+      if (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) {
+        var itemsInOrder = order.items.split(', ');
 
-                if (category != null) {
-                  if (categorySalesMap.containsKey(category)) {
-                    categorySalesMap[category] =
-                        categorySalesMap[category]! + totalAmount;
-                  } else {
-                    categorySalesMap[category] = totalAmount;
-                  }
-                }
+        for (var item in itemsInOrder) {
+          var parts = item.split(' x');
+          if (parts.length == 2) {
+            var itemName = parts[0].trim();
+            var quantity = int.tryParse(parts[1].trim()) ?? 0;
+
+            // Retrieve price and category for the item
+            var itemPrice = itemPriceMap[itemName];
+            var category = itemCategoryMap[itemName];
+
+            if (itemPrice != null && category != null) {
+              var totalAmount = itemPrice * quantity;
+
+              // Accumulate the total sales for the category
+              if (categorySalesMap.containsKey(category)) {
+                categorySalesMap[category] =
+                    categorySalesMap[category]! + totalAmount;
+              } else {
+                categorySalesMap[category] = totalAmount;
               }
             }
           }
@@ -186,13 +189,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       }
     }
 
-    // Print or return the sales amount by category
-    print("Sales by Category:");
-    categorySalesMap.forEach((category, totalAmount) {
-      print('$category: \$${totalAmount.toStringAsFixed(2)}');
-    });
-
-    // Return the sales amount by category if needed
+    // Return the sales amount by category
     return categorySalesMap;
   }
 
@@ -200,22 +197,25 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     setState(() {
       // Get date range based on filter
       DateTimeRange dateRange = getDateRange(filterDropDownValue);
+      List<ProcessedOrder> paidOrders =
+          Provider.of<OrderProvider>(context, listen: false)
+              .processedOrders
+              .where((element) => element.isPaid)
+              .toList();
 
       totalRevenue = calculateTotalRevenue(
-        processedOrders:
-            Provider.of<OrderProvider>(context, listen: false).processedOrders,
+        paidOrders: paidOrders,
       );
 
       filteredRevenue = calculateFilteredRevenue(
-        processedOrders:
-            Provider.of<OrderProvider>(context, listen: false).processedOrders,
+        paidOrders: paidOrders,
         startDate: dateRange.start,
         endDate: dateRange.end,
       );
 
       // Extract top selling items based on the selected date range
       topSellingItems = extractTopSellingItems(
-        Provider.of<OrderProvider>(context, listen: false).processedOrders,
+        paidOrders,
         dateRange.start,
         dateRange.end,
         Provider.of<MenuProvider>(context, listen: false).priceList,
@@ -224,8 +224,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       salesByCategory = calculateSalesByCategory(
         menuItemsByCategory: Provider.of<MenuProvider>(context, listen: false)
             .menuItemsByCategory,
-        processedOrders:
-            Provider.of<OrderProvider>(context, listen: false).processedOrders,
+        paidOrders: paidOrders,
         priceList: Provider.of<MenuProvider>(context, listen: false).priceList,
         startDate: dateRange.start,
         endDate: dateRange.end,
@@ -234,7 +233,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
   }
 
   List<ItemSales> extractTopSellingItems(
-    List<ProcessedOrder> orders,
+    List<ProcessedOrder> paidOrders,
     DateTime startDate,
     DateTime endDate,
     List<OrderItem> priceList, // Added parameter
@@ -248,8 +247,11 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       itemPriceMap[item.name] = item.price;
     }
 
+    List<ProcessedOrder> filteredOrder =
+        paidOrders.where((element) => element.isPaid).toList();
+
     // Aggregate sales data
-    for (var order in orders) {
+    for (var order in filteredOrder) {
       // Check if the order date falls within the specified range and is paid
       if (order.orderDateTime != null) {
         DateTime orderDate = order.orderDateTime!;
@@ -308,38 +310,27 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
 
     switch (filterType) {
       case 'Daily':
-        return DateTimeRange(
-          start: now.subtract(Duration(
-              hours: now.hour,
-              minutes: now.minute,
-              seconds: now.second,
-              milliseconds: now.millisecond)),
-          end: now.add(const Duration(days: 1)).subtract(Duration(
-              hours: now.hour,
-              minutes: now.minute,
-              seconds: now.second,
-              milliseconds: now.millisecond)),
-        );
+        DateTime startOfDay = DateTime(now.year, now.month, now.day);
+        DateTime endOfDay = startOfDay.add(const Duration(days: 1));
+        return DateTimeRange(start: startOfDay, end: endOfDay);
 
       case 'Weekly':
         int daysToStartOfWeek = now.weekday - DateTime.monday;
-        return DateTimeRange(
-          start: now.subtract(Duration(days: daysToStartOfWeek)),
-          end: now.add(Duration(days: 7 - daysToStartOfWeek)),
-        );
+        DateTime startOfWeek = now.subtract(Duration(days: daysToStartOfWeek));
+        DateTime endOfWeek = startOfWeek.add(const Duration(days: 7));
+        return DateTimeRange(start: startOfWeek, end: endOfWeek);
 
       case 'Monthly':
-        return DateTimeRange(
-          start: DateTime(now.year, now.month, 1),
-          end: DateTime(now.year, now.month + 1, 1)
-              .subtract(const Duration(days: 1)),
-        );
+        DateTime startOfMonth = DateTime(now.year, now.month, 1);
+        DateTime endOfMonth = DateTime(now.year, now.month + 1, 1)
+            .subtract(const Duration(days: 1));
+        return DateTimeRange(start: startOfMonth, end: endOfMonth);
 
       case 'Yearly':
-        return DateTimeRange(
-          start: DateTime(now.year, 1, 1),
-          end: DateTime(now.year + 1, 1, 1).subtract(const Duration(days: 1)),
-        );
+        DateTime startOfYear = DateTime(now.year, 1, 1);
+        DateTime endOfYear =
+            DateTime(now.year + 1, 1, 1).subtract(const Duration(days: 1));
+        return DateTimeRange(start: startOfYear, end: endOfYear);
 
       default:
         return DateTimeRange(start: now, end: now); // Default to current date
