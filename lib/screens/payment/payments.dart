@@ -93,12 +93,13 @@ class _PaymentState extends State<Payment> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
+      canPop: true,
       onPopInvoked: (bool value) async {
-        Navigator.pop(context);
         if (widget.divertedFromPayment && mounted) {
           // if this is a diverted page, go back to the payment page
-          Navigator.pop(context);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pop(context);
+          });
         }
       },
       child: Stack(
@@ -128,10 +129,6 @@ class _PaymentState extends State<Payment> {
                 width,
                 () {
                   Navigator.pop(context);
-                  if (widget.divertedFromPayment) {
-                    // if this is a diverted page, go back to the payment page
-                    Navigator.pop(context);
-                  }
                 },
                 context: context,
               )

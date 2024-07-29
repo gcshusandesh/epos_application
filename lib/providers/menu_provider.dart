@@ -378,9 +378,9 @@ class MenuProvider extends ChangeNotifier {
         } else if (isCategory) {
           removeCategoryLocally(index: index);
         } else if (isItem) {
-          removeMenuItemLocally(itemIndex: index);
           deleteItemInPriceList(
               menuItemsByCategory[selectedCategoryIndex].menuItems[index].name);
+          removeMenuItemLocally(itemIndex: index);
         }
         notifyListeners();
         return true;
