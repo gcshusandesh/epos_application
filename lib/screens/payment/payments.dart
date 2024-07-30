@@ -1020,6 +1020,7 @@ class _PayState extends State<Pay> {
                   ? 0
                   : double.parse(discountController.text),
               paymentMode: isPayByCard ? "Card" : "Cash",
+              billedTo: billedToController.text,
             );
             setState(() {
               isLoading = false;
