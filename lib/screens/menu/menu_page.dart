@@ -132,15 +132,9 @@ class _MenuPageState extends State<MenuPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: isGuestMode ||
-              Provider.of<MenuProvider>(context, listen: true).hasPin == false
-          ? false
-          : true,
+      canPop: isGuestMode ? false : true,
       onPopInvoked: (bool value) async {
-        if (Provider.of<MenuProvider>(context, listen: true).hasPin == false) {
-          print("do nothing");
-          // do nothing
-        } else if (isGuestMode) {
+        if (isGuestMode) {
           showDialog(
             barrierDismissible: false,
             context: context,
@@ -148,7 +142,8 @@ class _MenuPageState extends State<MenuPage> {
               return exitAlert();
             },
           );
-        } else if (!isGuestMode) {
+        }
+        if (!isGuestMode) {
           SystemChrome.setPreferredOrientations([
             DeviceOrientation.landscapeLeft,
             DeviceOrientation.landscapeRight,
@@ -979,214 +974,223 @@ class _MenuPageState extends State<MenuPage> {
 
   // set up the AlertDialog
   Widget entryAlert() {
-    return AlertDialog(
-      backgroundColor: Colors.white,
-      title: const Text("Enter Guest Mode"),
-      content: const Text("Are you sure you want to enter Guest Mode?"),
-      actions: [
-        Column(
-          children: [
-            SizedBox(height: height * 2),
-            textButton(
-              text: "Confirm",
-              height: height,
-              width: width,
-              textColor: Data.greenColor,
-              buttonColor: Data.greenColor,
-              onTap: () {
-                setState(() {
-                  isGuestMode = true;
-                });
-                showTopSnackBar(
-                  Overlay.of(context),
-                  const CustomSnackBar.success(
-                    message: "Successfully entered Guest Mode",
-                  ),
-                );
-                // close dialog box
-                Navigator.pop(context);
-              },
-            ),
-            SizedBox(height: height * 2),
-            textButton(
-              text: "Cancel",
-              height: height,
-              width: width,
-              textColor: Data.redColor,
-              buttonColor: Data.redColor,
-              onTap: () {
-                // close dialog box
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      ],
+    return PopScope(
+      canPop: false,
+      child: AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text("Enter Guest Mode"),
+        content: const Text("Are you sure you want to enter Guest Mode?"),
+        actions: [
+          Column(
+            children: [
+              SizedBox(height: height * 2),
+              textButton(
+                text: "Confirm",
+                height: height,
+                width: width,
+                textColor: Data.greenColor,
+                buttonColor: Data.greenColor,
+                onTap: () {
+                  setState(() {
+                    isGuestMode = true;
+                  });
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.success(
+                      message: "Successfully entered Guest Mode",
+                    ),
+                  );
+                  // close dialog box
+                  Navigator.pop(context);
+                },
+              ),
+              SizedBox(height: height * 2),
+              textButton(
+                text: "Cancel",
+                height: height,
+                width: width,
+                textColor: Data.redColor,
+                buttonColor: Data.redColor,
+                onTap: () {
+                  // close dialog box
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
   // set up the AlertDialog
   Widget exitAlert() {
-    return AlertDialog(
-      backgroundColor: Colors.white,
-      title: const Text("Exit Guest Mode"),
-      content: const Text("Are you sure you want to exit Guest Mode?"),
-      actions: [
-        Column(
-          children: [
-            Center(
-              child: Pinput(
-                controller: pinController,
+    return PopScope(
+      canPop: false,
+      child: AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text("Exit Guest Mode"),
+        content: const Text("Are you sure you want to exit Guest Mode?"),
+        actions: [
+          Column(
+            children: [
+              Center(
+                child: Pinput(
+                  controller: pinController,
+                ),
               ),
-            ),
-            SizedBox(height: height * 2),
-            textButton(
-              text: "Confirm",
-              height: height,
-              width: width,
-              textColor: Data.greenColor,
-              buttonColor: Data.greenColor,
-              onTap: () {
-                if (pinController.length == 4) {
-                  if (pinController.text ==
-                      Provider.of<MenuProvider>(context, listen: false)
-                          .guestPin) {
-                    setState(() {
-                      isGuestMode = false;
-                    });
-                    // close dialog box
-                    Navigator.pop(context);
-                    showTopSnackBar(
-                      Overlay.of(context),
-                      const CustomSnackBar.success(
-                        message: "Exited Guest Mode",
-                      ),
-                    );
+              SizedBox(height: height * 2),
+              textButton(
+                text: "Confirm",
+                height: height,
+                width: width,
+                textColor: Data.greenColor,
+                buttonColor: Data.greenColor,
+                onTap: () {
+                  if (pinController.length == 4) {
+                    if (pinController.text ==
+                        Provider.of<MenuProvider>(context, listen: false)
+                            .guestPin) {
+                      setState(() {
+                        isGuestMode = false;
+                      });
+                      // close dialog box
+                      Navigator.pop(context);
+                      showTopSnackBar(
+                        Overlay.of(context),
+                        const CustomSnackBar.success(
+                          message: "Exited Guest Mode",
+                        ),
+                      );
+                    } else {
+                      //wrong pin
+                      showTopSnackBar(
+                        Overlay.of(context),
+                        const CustomSnackBar.error(
+                          message: "Wrong Pin",
+                        ),
+                      );
+                    }
+                    pinController.clear();
                   } else {
-                    //wrong pin
+                    /// Pin must be 4 digit
                     showTopSnackBar(
                       Overlay.of(context),
                       const CustomSnackBar.error(
-                        message: "Wrong Pin",
+                        message: "Pin must be 4 digits",
                       ),
                     );
                   }
-                  pinController.clear();
-                } else {
-                  /// Pin must be 4 digit
-                  showTopSnackBar(
-                    Overlay.of(context),
-                    const CustomSnackBar.error(
-                      message: "Pin must be 4 digits",
-                    ),
-                  );
-                }
-              },
-            ),
-            SizedBox(height: height * 2),
-            textButton(
-              text: "Cancel",
-              height: height,
-              width: width,
-              textColor: Data.redColor,
-              buttonColor: Data.redColor,
-              onTap: () {
-                // close dialog box
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      ],
+                },
+              ),
+              SizedBox(height: height * 2),
+              textButton(
+                text: "Cancel",
+                height: height,
+                width: width,
+                textColor: Data.redColor,
+                buttonColor: Data.redColor,
+                onTap: () {
+                  // close dialog box
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
   // set up the AlertDialog
   Widget setPinAlert({bool isReset = false}) {
-    return AlertDialog(
-      backgroundColor: Colors.white,
-      title: const Text("Set Guest Mode Pin"),
-      content: const Text("Please enter your 4 digit pin code."),
-      actions: [
-        Column(
-          children: [
-            Center(
-              child: Pinput(
-                controller: pinController,
+    return PopScope(
+      canPop: false,
+      child: AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text("Set Guest Mode Pin"),
+        content: const Text("Please enter your 4 digit pin code."),
+        actions: [
+          Column(
+            children: [
+              Center(
+                child: Pinput(
+                  controller: pinController,
+                ),
               ),
-            ),
-            SizedBox(height: height * 2),
-            textButton(
-              text: "Confirm",
-              height: height,
-              width: width,
-              textColor: Data.greenColor,
-              buttonColor: Data.greenColor,
-              onTap: () async {
-                final overlay = Overlay.of(context);
-                if (pinController.length == 4) {
-                  Navigator.pop(context);
-                  setState(() {
-                    isLoading = true;
-                  });
-                  bool isSetPinSuccess =
-                      await Provider.of<MenuProvider>(context, listen: false)
-                          .setGuestPin(
-                              accessToken: Provider.of<AuthProvider>(context,
-                                      listen: false)
-                                  .user
-                                  .accessToken!,
-                              newPin: pinController.text,
-                              context: context);
-                  setState(() {
-                    isLoading = false;
-                  });
-                  if (isSetPinSuccess) {
-                    showTopSnackBar(
-                      overlay,
-                      const CustomSnackBar.success(
-                        message: "Guest Mode pin set successfully",
-                      ),
-                    );
+              SizedBox(height: height * 2),
+              textButton(
+                text: "Confirm",
+                height: height,
+                width: width,
+                textColor: Data.greenColor,
+                buttonColor: Data.greenColor,
+                onTap: () async {
+                  final overlay = Overlay.of(context);
+                  if (pinController.length == 4) {
+                    Navigator.pop(context);
+                    setState(() {
+                      isLoading = true;
+                    });
+                    bool isSetPinSuccess =
+                        await Provider.of<MenuProvider>(context, listen: false)
+                            .setGuestPin(
+                                accessToken: Provider.of<AuthProvider>(context,
+                                        listen: false)
+                                    .user
+                                    .accessToken!,
+                                newPin: pinController.text,
+                                context: context);
+                    setState(() {
+                      isLoading = false;
+                    });
+                    if (isSetPinSuccess) {
+                      showTopSnackBar(
+                        overlay,
+                        const CustomSnackBar.success(
+                          message: "Guest Mode pin set successfully",
+                        ),
+                      );
+                    } else {
+                      showTopSnackBar(
+                        overlay,
+                        const CustomSnackBar.error(
+                          message:
+                              "Guest Mode pin could not be set. Please try again",
+                        ),
+                      );
+                    }
+                    pinController.clear();
                   } else {
+                    /// Pin must be 4 digit
                     showTopSnackBar(
                       overlay,
                       const CustomSnackBar.error(
-                        message:
-                            "Guest Mode pin could not be set. Please try again",
+                        message: "Pin must be 4 digits",
                       ),
                     );
                   }
-                  pinController.clear();
-                } else {
-                  /// Pin must be 4 digit
-                  showTopSnackBar(
-                    overlay,
-                    const CustomSnackBar.error(
-                      message: "Pin must be 4 digits",
-                    ),
-                  );
-                }
-              },
-            ),
-            isReset
-                ? Padding(
-                    padding: EdgeInsets.only(top: height),
-                    child: textButton(
-                      text: "Cancel",
-                      height: height,
-                      width: width,
-                      textColor: Data.redColor,
-                      buttonColor: Data.redColor,
-                      onTap: () async {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  )
-                : const SizedBox(),
-          ],
-        ),
-      ],
+                },
+              ),
+              isReset
+                  ? Padding(
+                      padding: EdgeInsets.only(top: height),
+                      child: textButton(
+                        text: "Cancel",
+                        height: height,
+                        width: width,
+                        textColor: Data.redColor,
+                        buttonColor: Data.redColor,
+                        onTap: () async {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    )
+                  : const SizedBox(),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
