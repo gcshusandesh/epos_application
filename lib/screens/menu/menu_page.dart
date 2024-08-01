@@ -116,14 +116,16 @@ class _MenuPageState extends State<MenuPage> {
             Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
         context: context,
       );
-      if (mounted) {
-        // Extract top selling items based on the selected date range
-        recommendations = extractTopSellingItemNames(
-          Provider.of<OrderProvider>(context, listen: false).processedOrders,
-          Provider.of<MenuProvider>(context, listen: false).priceList,
-        );
-      }
     }
+  }
+
+  void calculateRecommendations() {
+    // empty the recommendations list before adding new recommendations
+    recommendations.clear();
+    recommendations = extractTopSellingItemNames(
+      Provider.of<OrderProvider>(context, listen: false).processedOrders,
+      Provider.of<MenuProvider>(context, listen: false).priceList,
+    );
   }
 
   bool isLoading = false;
@@ -533,6 +535,36 @@ class _MenuPageState extends State<MenuPage> {
                       () {
                         Provider.of<MenuProvider>(context, listen: false)
                             .increaseMenuItemQuantity(itemIndex: itemIndex);
+
+                        /// recommend most paired items
+                        // Example data
+                        String mostOrderedPair = findMostOrderedPairWithDish(
+                            processedOrders: Provider.of<OrderProvider>(context,
+                                    listen: false)
+                                .processedOrders,
+                            targetDish: Provider.of<MenuProvider>(context,
+                                    listen: false)
+                                .menuItemsByCategory[Provider.of<MenuProvider>(
+                                        context,
+                                        listen: false)
+                                    .selectedCategoryIndex]
+                                .menuItems[itemIndex]
+                                .name);
+                        // Check if the recommendation is valid
+                        if (mostOrderedPair != "No pairings found") {
+                          // Check if the mostOrderedPair is already in the recommendations list
+                          if (recommendations.contains(mostOrderedPair)) {
+                            // Remove the existing recommendation
+                            recommendations.remove(mostOrderedPair);
+                          }
+
+                          // Insert the new recommendation at the front of the list
+                          recommendations.insert(0, mostOrderedPair);
+
+                          // Print the most ordered pair for verification
+                          print(
+                              mostOrderedPair); // Prints the dish most often ordered with Pizza
+                        }
                       },
                     ),
                   ],
@@ -1040,6 +1072,7 @@ class _MenuPageState extends State<MenuPage> {
                   setState(() {
                     isGuestMode = true;
                   });
+                  calculateRecommendations();
                   showTopSnackBar(
                     Overlay.of(context),
                     const CustomSnackBar.success(
@@ -1293,4 +1326,49 @@ List<String> extractTopSellingItemNames(
 
   // Get the names of the top 3 selling items based on quantity
   return sortedItems.take(3).map((itemSales) => itemSales.itemName).toList();
+}
+
+String findMostOrderedPairWithDish({
+  required List<ProcessedOrder> processedOrders,
+  required String targetDish,
+}) {
+  // A map to hold pairings and their counts
+  Map<String, int> pairCountMap = {};
+
+  // Process each order
+  for (var order in processedOrders) {
+    if (order.isPaid) {
+      // Split items string into a list of items
+      var items = order.items.split(', ');
+
+      // Check if the target dish is in this order
+      bool containsTargetDish =
+          items.any((item) => item.startsWith(targetDish));
+
+      if (containsTargetDish) {
+        // Iterate through the items and count pairs
+        for (var item in items) {
+          // Extract item name and quantity
+          var parts = item.split(' x');
+          if (parts.length == 2) {
+            var itemName = parts[0].trim();
+            if (itemName != targetDish) {
+              // Increment the count for this item
+              pairCountMap[itemName] = (pairCountMap[itemName] ?? 0) + 1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Find the item with the highest count
+  if (pairCountMap.isEmpty) {
+    return 'No pairings found'; // No pairings found
+  }
+
+  var mostOrderedPair =
+      pairCountMap.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+
+  return mostOrderedPair;
 }
