@@ -9,7 +9,7 @@ import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
-import 'package:epos_application/screens/analytics/test.dart';
+import 'package:epos_application/screens/analytics/recommendations_ui.dart';
 import 'package:epos_application/screens/analytics/view_analytics.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';
 import 'package:epos_application/screens/menu/edit_menu.dart';
@@ -207,7 +207,7 @@ class _MenuPageState extends State<MenuPage> {
                   ),
                   SizedBox(width: width),
                   Expanded(
-                      child: AutoScrollingListScreen(
+                      child: RecommendationsUI(
                     recommendations: recommendations,
                   )),
                 ],
