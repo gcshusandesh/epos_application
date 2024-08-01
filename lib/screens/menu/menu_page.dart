@@ -6,6 +6,7 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/order_provider.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';
 import 'package:epos_application/screens/menu/edit_menu.dart';
 import 'package:epos_application/screens/menu/edit_specials.dart';
@@ -52,6 +53,12 @@ class _MenuPageState extends State<MenuPage> {
     setState(() {
       isLoading = true;
     });
+    //No need to wait for this, need this data for accurate order number
+    Provider.of<OrderProvider>(context, listen: false).getOrders(
+      accessToken:
+          Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+      context: context,
+    );
     // Get Specials Data from API
     await Provider.of<MenuProvider>(context, listen: false).getMenuList(
         accessToken:
@@ -1093,6 +1100,7 @@ class _MenuPageState extends State<MenuPage> {
                 onTap: () {
                   // close dialog box
                   Navigator.pop(context);
+                  pinController.clear();
                 },
               ),
             ],

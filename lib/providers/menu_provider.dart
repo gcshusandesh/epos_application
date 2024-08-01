@@ -11,10 +11,9 @@ class MenuProvider extends ChangeNotifier {
   bool hasPin = true;
   String? guestPin;
 
-  void setPinLocally({required String newPin, bool hasPin = false}) {
+  void setPinLocally({required String? newPin, bool hasPin = false}) {
     guestPin = newPin;
     this.hasPin = hasPin;
-    print("hasPin: $hasPin");
     notifyListeners();
   }
 
@@ -562,7 +561,7 @@ class MenuProvider extends ChangeNotifier {
       }
       return false;
     } catch (e) {
-      print("error: $e");
+      // print("error: $e");
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
