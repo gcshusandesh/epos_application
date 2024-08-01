@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:el_tooltip/el_tooltip.dart';
 import 'package:epos_application/components/buttons.dart';
@@ -7,6 +9,7 @@ import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
+import 'package:epos_application/screens/analytics/test.dart';
 import 'package:epos_application/screens/analytics/view_analytics.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';
 import 'package:epos_application/screens/menu/edit_menu.dart';
@@ -50,7 +53,7 @@ class _MenuPageState extends State<MenuPage> {
   TextEditingController pinController = TextEditingController();
   TextEditingController tableNumberController = TextEditingController();
 
-  List<ItemSales> topSellingItems = [];
+  List<String> recommendations = [];
 
   Future<void> _fetchData() async {
     setState(() {
@@ -115,11 +118,8 @@ class _MenuPageState extends State<MenuPage> {
       );
       if (mounted) {
         // Extract top selling items based on the selected date range
-        topSellingItems = extractTopSellingItems(
-          Provider.of<OrderProvider>(context, listen: false)
-              .processedOrders
-              .where((element) => element.isPaid)
-              .toList(),
+        recommendations = extractTopSellingItemNames(
+          Provider.of<OrderProvider>(context, listen: false).processedOrders,
           Provider.of<MenuProvider>(context, listen: false).priceList,
         );
       }
@@ -199,13 +199,46 @@ class _MenuPageState extends State<MenuPage> {
                 children: [
                   buildCustomText(
                       "Recommendations:", Data.greyTextColor, width * 2),
-                  topSellingItems.isNotEmpty
-                      ? buildCustomText(
-                          topSellingItems[0].itemName,
-                          Data.greyTextColor,
-                          width * 1.5,
-                        )
-                      : const SizedBox(),
+                  SizedBox(width: width),
+                  Expanded(
+                      child: AutoScrollingListScreen(
+                    recommendations: recommendations,
+                  )),
+                  // SizedBox(
+                  //   height: height * 5,
+                  //   width: width * 80,
+                  //   child: Center(
+                  //     child: CarouselSlider(
+                  //       options: CarouselOptions(
+                  //         height: 200.0,
+                  //         enlargeCenterPage: true,
+                  //         autoPlay: true,
+                  //         aspectRatio: 16 / 9,
+                  //         autoPlayInterval: const Duration(seconds: 3),
+                  //         autoPlayAnimationDuration:
+                  //             const Duration(milliseconds: 800),
+                  //         viewportFraction: 0.8,
+                  //       ),
+                  //       items: topSellingItems
+                  //           .map((item) => Container(
+                  //                 decoration: BoxDecoration(
+                  //                   color: Colors.blueAccent,
+                  //                   borderRadius: BorderRadius.circular(10.0),
+                  //                 ),
+                  //                 margin: const EdgeInsets.all(5.0),
+                  //                 child: Center(
+                  //                   child: Text(
+                  //                     item.itemName,
+                  //                     style: const TextStyle(
+                  //                         fontSize: 24.0,
+                  //                         fontWeight: FontWeight.bold),
+                  //                   ),
+                  //                 ),
+                  //               ))
+                  //           .toList(),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             )
@@ -1240,9 +1273,9 @@ class _MenuPageState extends State<MenuPage> {
   }
 }
 
-List<ItemSales> extractTopSellingItems(
+List<String> extractTopSellingItemNames(
   List<ProcessedOrder> paidOrders,
-  List<OrderItem> priceList, // Added parameter
+  List<OrderItem> priceList,
 ) {
   // A map to hold item sales data
   Map<String, ItemSales> itemSalesMap = {};
@@ -1253,42 +1286,42 @@ List<ItemSales> extractTopSellingItems(
     itemPriceMap[item.name] = item.price;
   }
 
-  List<ProcessedOrder> filteredOrder =
-      paidOrders.where((element) => element.isPaid).toList();
+  // Filter paid orders
+  List<ProcessedOrder> filteredOrders =
+      paidOrders.where((order) => order.isPaid).toList();
 
   // Aggregate sales data
-  for (var order in filteredOrder) {
-    if (order.isPaid) {
-      // Split items string and process each item
-      var items = order.items.split(', ');
-      for (var item in items) {
-        var parts = item.split(' x');
-        if (parts.length == 2) {
-          var itemName = parts[0].trim();
-          var quantity = int.tryParse(parts[1].trim()) ?? 0;
+  for (var order in filteredOrders) {
+    // Split items string and process each item
+    var items = order.items.split(', ');
+    for (var item in items) {
+      var parts = item.split(' x');
+      if (parts.length == 2) {
+        var itemName = parts[0].trim();
+        var quantity = int.tryParse(parts[1].trim()) ?? 0;
 
-          // Look up the price for the item
-          var itemPrice =
-              itemPriceMap[itemName] ?? 0.0; // Default to 0.0 if not found
-          var totalAmount = itemPrice * quantity;
+        // Look up the price for the item (though not needed for quantity-based sorting)
+        var itemPrice =
+            itemPriceMap[itemName] ?? 0.0; // Default to 0.0 if not found
+        var totalAmount = itemPrice * quantity;
 
-          if (itemSalesMap.containsKey(itemName)) {
-            itemSalesMap[itemName]!.addSale(quantity, totalAmount);
-          } else {
-            itemSalesMap[itemName] = ItemSales(
-              itemName: itemName,
-              quantity: quantity,
-              totalSalesAmount: totalAmount,
-            );
-          }
+        if (itemSalesMap.containsKey(itemName)) {
+          itemSalesMap[itemName]!.addSale(quantity, totalAmount);
+        } else {
+          itemSalesMap[itemName] = ItemSales(
+            itemName: itemName,
+            quantity: quantity,
+            totalSalesAmount: totalAmount,
+          );
         }
       }
     }
   }
 
-  // Convert the map to a list and sort by total sales amount in descending order
+  // Convert the map to a list and sort by quantity in descending order
   var sortedItems = itemSalesMap.values.toList()
-    ..sort((a, b) => b.totalSalesAmount.compareTo(a.totalSalesAmount));
-  // Get the top 3 selling items
-  return sortedItems.take(3).toList();
+    ..sort((a, b) => b.quantity.compareTo(a.quantity));
+
+  // Get the names of the top 3 selling items based on quantity
+  return sortedItems.take(3).map((itemSales) => itemSales.itemName).toList();
 }

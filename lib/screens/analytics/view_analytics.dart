@@ -175,9 +175,11 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
 
     sortedEmployees.take(topN).toList();
     // print("Top Employee Name: ${sortedEmployees[0].employeeName}");
-
-    // Get the top N employees
-    return sortedEmployees[0].employeeName;
+    if (sortedEmployees.isNotEmpty) {
+      // Get the top N employees
+      return sortedEmployees[0].employeeName;
+    }
+    return "No Data Available";
   }
 
   double filteredRevenue = 0;
