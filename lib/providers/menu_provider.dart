@@ -8,6 +8,147 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class MenuProvider extends ChangeNotifier {
+  bool hasPin = false;
+  String? guestPin;
+
+  void setPinLocally({required String newPin, bool hasPin = false}) {
+    guestPin = newPin;
+    this.hasPin = hasPin;
+    notifyListeners();
+  }
+
+  Future<bool> getGuestPin({
+    required String accessToken,
+    required BuildContext context,
+  }) async {
+    late Uri url;
+
+    url = Uri.parse("${Data.baseUrl}/api/guest-mode-pin");
+
+    try {
+      var headers = {
+        "Accept": "application/json",
+        'Authorization': 'Bearer $accessToken',
+      };
+      var response = await http.get(url, headers: headers);
+      var extractedData = json.decode(response.body);
+      if (response.statusCode == 200) {
+        setPinLocally(
+          newPin: extractedData['data']['attributes']['pinCode'],
+          hasPin: extractedData['data']['attributes']['hasPin'],
+        );
+        return true;
+      }
+      return false;
+    } on SocketException {
+      if (context.mounted) {
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+                trace: "getGuestPin",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        await getGuestPin(
+          accessToken: accessToken,
+          context: context,
+        );
+      }
+      return false;
+    } catch (e) {
+      if (context.mounted) {
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                trace: "getGuestPin",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        await getGuestPin(
+          accessToken: accessToken,
+          context: context,
+        );
+      }
+    }
+    return false;
+  }
+
+  Future<bool> setGuestPin({
+    required String accessToken,
+    required BuildContext context,
+    required String newPin,
+  }) async {
+    late Uri url;
+
+    url = Uri.parse("${Data.baseUrl}/api/guest-mode-pin");
+
+    try {
+      var headers = {
+        "Accept": "application/json",
+        'Authorization': 'Bearer $accessToken',
+      };
+
+      Map<String, dynamic> payloadBody = {
+        "data": {
+          "pinCode": newPin,
+          "hasPin": true,
+        },
+      };
+      final response = await http.put(Uri.parse(url.toString()),
+          headers: headers, body: jsonEncode(payloadBody));
+      if (response.statusCode == 200) {
+        setPinLocally(
+          newPin: newPin,
+          hasPin: true,
+        );
+        return true;
+      }
+      return false;
+    } on SocketException {
+      if (context.mounted) {
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                isConnectedToInternet: false,
+                trace: "setGuestPin",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        await setGuestPin(
+          accessToken: accessToken,
+          context: context,
+          newPin: newPin,
+        );
+      }
+      return false;
+    } catch (e) {
+      if (context.mounted) {
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ErrorScreen(
+                trace: "setGuestPin",
+              ),
+            ));
+      }
+      if (context.mounted) {
+        await setGuestPin(
+          accessToken: accessToken,
+          context: context,
+          newPin: newPin,
+        );
+      }
+    }
+    return false;
+  }
+
   List<Specials> totalSpecialsList = [];
   List<Specials> activeSpecialsList = [];
 

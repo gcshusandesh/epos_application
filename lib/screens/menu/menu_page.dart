@@ -47,7 +47,6 @@ class _MenuPageState extends State<MenuPage> {
 
   TextEditingController pinController = TextEditingController();
   TextEditingController tableNumberController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
 
   Future<void> _fetchData() async {
     setState(() {
@@ -77,6 +76,14 @@ class _MenuPageState extends State<MenuPage> {
               .user
               .accessToken!,
           isItem: true,
+          context: context);
+    }
+    if (mounted) {
+      // Get guest mode pin
+      await Provider.of<MenuProvider>(context, listen: false).getGuestPin(
+          accessToken: Provider.of<AuthProvider>(context, listen: false)
+              .user
+              .accessToken!,
           context: context);
     }
     setState(() {
@@ -920,7 +927,27 @@ class _MenuPageState extends State<MenuPage> {
   Widget entryAlert() {
     return AlertDialog(
       backgroundColor: Colors.white,
-      title: const Text("Enter Guest Mode"),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text("Enter Guest Mode"),
+          textButton(
+            text: "Set Pin",
+            height: height,
+            width: width,
+            textColor: Provider.of<InfoProvider>(context, listen: true)
+                .systemInfo
+                .iconsColor,
+            buttonColor: Provider.of<InfoProvider>(context, listen: true)
+                .systemInfo
+                .iconsColor,
+            onTap: () {
+              // Close dialog box
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
       content: const Text("Are you sure you want to enter Guest Mode?"),
       actions: [
         Column(
@@ -971,71 +998,70 @@ class _MenuPageState extends State<MenuPage> {
       title: const Text("Exit Guest Mode"),
       content: const Text("Are you sure you want to exit Guest Mode?"),
       actions: [
-        Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Center(
-                child: Pinput(
-                  controller: pinController,
-                ),
+        Column(
+          children: [
+            Center(
+              child: Pinput(
+                controller: pinController,
               ),
-              SizedBox(height: height * 2),
-              textButton(
-                text: "Confirm",
-                height: height,
-                width: width,
-                textColor: Data.greenColor,
-                buttonColor: Data.greenColor,
-                onTap: () {
-                  if (pinController.length == 4) {
-                    if (pinController.text == "1234") {
-                      setState(() {
-                        isGuestMode = false;
-                      });
-                      // close dialog box
-                      Navigator.pop(context);
-                      showTopSnackBar(
-                        Overlay.of(context),
-                        const CustomSnackBar.success(
-                          message: "Exited Guest Mode",
-                        ),
-                      );
-                      pinController.clear();
-                    } else {
-                      //wrong pin
-                      showTopSnackBar(
-                        Overlay.of(context),
-                        const CustomSnackBar.error(
-                          message: "Wrong Pin",
-                        ),
-                      );
-                    }
+            ),
+            SizedBox(height: height * 2),
+            textButton(
+              text: "Confirm",
+              height: height,
+              width: width,
+              textColor: Data.greenColor,
+              buttonColor: Data.greenColor,
+              onTap: () {
+                if (pinController.length == 4) {
+                  if (pinController.text ==
+                      Provider.of<MenuProvider>(context, listen: false)
+                          .guestPin) {
+                    setState(() {
+                      isGuestMode = false;
+                    });
+                    // close dialog box
+                    Navigator.pop(context);
+                    showTopSnackBar(
+                      Overlay.of(context),
+                      const CustomSnackBar.success(
+                        message: "Exited Guest Mode",
+                      ),
+                    );
+                    pinController.clear();
                   } else {
-                    /// Pin must be 4 digit
+                    //wrong pin
                     showTopSnackBar(
                       Overlay.of(context),
                       const CustomSnackBar.error(
-                        message: "Pin must be 4 digits",
+                        message: "Wrong Pin",
                       ),
                     );
                   }
-                },
-              ),
-              SizedBox(height: height * 2),
-              textButton(
-                text: "Cancel",
-                height: height,
-                width: width,
-                textColor: Data.redColor,
-                buttonColor: Data.redColor,
-                onTap: () {
-                  // close dialog box
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
+                } else {
+                  /// Pin must be 4 digit
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.error(
+                      message: "Pin must be 4 digits",
+                    ),
+                  );
+                }
+              },
+            ),
+            SizedBox(height: height * 2),
+            textButton(
+              text: "Cancel",
+              height: height,
+              width: width,
+              textColor: Data.redColor,
+              buttonColor: Data.redColor,
+              onTap: () {
+                // close dialog box
+                Navigator.pop(context);
+              },
+            ),
+          ],
         ),
       ],
     );
