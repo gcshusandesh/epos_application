@@ -37,7 +37,7 @@ Widget buildInputField(String hintText, double height, double width,
       decoration: InputDecoration(
         isDense: true,
         contentPadding:
-            EdgeInsets.symmetric(vertical: height * 1.1, horizontal: 5),
+            EdgeInsets.symmetric(vertical: height * 1.5, horizontal: 10),
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(
             color: Data.lightGreyBodyColor, // Custom focused border color
@@ -85,8 +85,7 @@ Widget buildPasswordField(
       },
       decoration: InputDecoration(
         isDense: true,
-        contentPadding:
-            EdgeInsets.symmetric(vertical: height * 1.1, horizontal: 5),
+        contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(
             color: Data.lightGreyBodyColor, // Custom focused border color
