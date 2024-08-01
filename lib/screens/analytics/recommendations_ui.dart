@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RecommendationsUI extends StatefulWidget {
   const RecommendationsUI({super.key, required this.recommendations});
@@ -83,6 +85,18 @@ class _RecommendationsUIState extends State<RecommendationsUI> {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch the dynamic color from the provider
+    Color dynamicColor =
+        Provider.of<InfoProvider>(context, listen: true).systemInfo.iconsColor;
+    // Create a gradient with the dynamic color and a less opaque version
+    Gradient gradient = LinearGradient(
+      colors: [
+        dynamicColor,
+        dynamicColor.withOpacity(0.5),
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
     return SizedBox(
       child: ListView.builder(
         controller: _scrollController,
@@ -105,11 +119,7 @@ class _RecommendationsUIState extends State<RecommendationsUI> {
                   offset: const Offset(0, 4),
                 ),
               ],
-              gradient: const LinearGradient(
-                colors: [Colors.blueAccent, Colors.lightBlueAccent],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              gradient: gradient,
             ),
             child: Column(
               children: [
