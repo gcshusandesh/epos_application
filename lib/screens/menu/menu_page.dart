@@ -7,6 +7,7 @@ import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
+import 'package:epos_application/screens/analytics/view_analytics.dart';
 import 'package:epos_application/screens/menu/edit_category.dart';
 import 'package:epos_application/screens/menu/edit_menu.dart';
 import 'package:epos_application/screens/menu/edit_specials.dart';
@@ -49,16 +50,12 @@ class _MenuPageState extends State<MenuPage> {
   TextEditingController pinController = TextEditingController();
   TextEditingController tableNumberController = TextEditingController();
 
+  List<ItemSales> topSellingItems = [];
+
   Future<void> _fetchData() async {
     setState(() {
       isLoading = true;
     });
-    //No need to wait for this, need this data for accurate order number
-    Provider.of<OrderProvider>(context, listen: false).getOrders(
-      accessToken:
-          Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
-      context: context,
-    );
     // Get Specials Data from API
     await Provider.of<MenuProvider>(context, listen: false).getMenuList(
         accessToken:
@@ -108,6 +105,25 @@ class _MenuPageState extends State<MenuPage> {
     setState(() {
       isLoading = false;
     });
+
+    if (mounted) {
+      // need this data for accurate order number
+      await Provider.of<OrderProvider>(context, listen: false).getOrders(
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+        context: context,
+      );
+      if (mounted) {
+        // Extract top selling items based on the selected date range
+        topSellingItems = extractTopSellingItems(
+          Provider.of<OrderProvider>(context, listen: false)
+              .processedOrders
+              .where((element) => element.isPaid)
+              .toList(),
+          Provider.of<MenuProvider>(context, listen: false).priceList,
+        );
+      }
+    }
   }
 
   bool isLoading = false;
@@ -173,6 +189,27 @@ class _MenuPageState extends State<MenuPage> {
   Widget mainBody(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      bottomNavigationBar: isGuestMode
+          ? Container(
+              height: height * 10,
+              padding: EdgeInsets.symmetric(horizontal: width * 2),
+              width: double.infinity,
+              color: Data.lightGreyBodyColor,
+              child: Row(
+                children: [
+                  buildCustomText(
+                      "Recommendations:", Data.greyTextColor, width * 2),
+                  topSellingItems.isNotEmpty
+                      ? buildCustomText(
+                          topSellingItems[0].itemName,
+                          Data.greyTextColor,
+                          width * 1.5,
+                        )
+                      : const SizedBox(),
+                ],
+              ),
+            )
+          : null,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -1201,4 +1238,57 @@ class _MenuPageState extends State<MenuPage> {
       ),
     );
   }
+}
+
+List<ItemSales> extractTopSellingItems(
+  List<ProcessedOrder> paidOrders,
+  List<OrderItem> priceList, // Added parameter
+) {
+  // A map to hold item sales data
+  Map<String, ItemSales> itemSalesMap = {};
+
+  // Create a lookup map for item prices
+  Map<String, double> itemPriceMap = {};
+  for (var item in priceList) {
+    itemPriceMap[item.name] = item.price;
+  }
+
+  List<ProcessedOrder> filteredOrder =
+      paidOrders.where((element) => element.isPaid).toList();
+
+  // Aggregate sales data
+  for (var order in filteredOrder) {
+    if (order.isPaid) {
+      // Split items string and process each item
+      var items = order.items.split(', ');
+      for (var item in items) {
+        var parts = item.split(' x');
+        if (parts.length == 2) {
+          var itemName = parts[0].trim();
+          var quantity = int.tryParse(parts[1].trim()) ?? 0;
+
+          // Look up the price for the item
+          var itemPrice =
+              itemPriceMap[itemName] ?? 0.0; // Default to 0.0 if not found
+          var totalAmount = itemPrice * quantity;
+
+          if (itemSalesMap.containsKey(itemName)) {
+            itemSalesMap[itemName]!.addSale(quantity, totalAmount);
+          } else {
+            itemSalesMap[itemName] = ItemSales(
+              itemName: itemName,
+              quantity: quantity,
+              totalSalesAmount: totalAmount,
+            );
+          }
+        }
+      }
+    }
+  }
+
+  // Convert the map to a list and sort by total sales amount in descending order
+  var sortedItems = itemSalesMap.values.toList()
+    ..sort((a, b) => b.totalSalesAmount.compareTo(a.totalSalesAmount));
+  // Get the top 3 selling items
+  return sortedItems.take(3).toList();
 }
