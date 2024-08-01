@@ -198,47 +198,16 @@ class _MenuPageState extends State<MenuPage> {
               child: Row(
                 children: [
                   buildCustomText(
-                      "Recommendations:", Data.greyTextColor, width * 2),
+                    "Recommendations:",
+                    Data.greyTextColor,
+                    width * 1.5,
+                    fontWeight: FontWeight.bold,
+                  ),
                   SizedBox(width: width),
                   Expanded(
                       child: AutoScrollingListScreen(
                     recommendations: recommendations,
                   )),
-                  // SizedBox(
-                  //   height: height * 5,
-                  //   width: width * 80,
-                  //   child: Center(
-                  //     child: CarouselSlider(
-                  //       options: CarouselOptions(
-                  //         height: 200.0,
-                  //         enlargeCenterPage: true,
-                  //         autoPlay: true,
-                  //         aspectRatio: 16 / 9,
-                  //         autoPlayInterval: const Duration(seconds: 3),
-                  //         autoPlayAnimationDuration:
-                  //             const Duration(milliseconds: 800),
-                  //         viewportFraction: 0.8,
-                  //       ),
-                  //       items: topSellingItems
-                  //           .map((item) => Container(
-                  //                 decoration: BoxDecoration(
-                  //                   color: Colors.blueAccent,
-                  //                   borderRadius: BorderRadius.circular(10.0),
-                  //                 ),
-                  //                 margin: const EdgeInsets.all(5.0),
-                  //                 child: Center(
-                  //                   child: Text(
-                  //                     item.itemName,
-                  //                     style: const TextStyle(
-                  //                         fontSize: 24.0,
-                  //                         fontWeight: FontWeight.bold),
-                  //                   ),
-                  //                 ),
-                  //               ))
-                  //           .toList(),
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
             )
