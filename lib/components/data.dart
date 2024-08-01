@@ -69,7 +69,7 @@ Widget buildPasswordField(
   Function? validator,
 }) {
   return Container(
-    height: height * 6,
+    // height: height * 6,
     width: width * 40,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(5.0),
@@ -84,6 +84,9 @@ Widget buildPasswordField(
         return validator!(value);
       },
       decoration: InputDecoration(
+        isDense: true,
+        contentPadding:
+            EdgeInsets.symmetric(vertical: height * 1.1, horizontal: 5),
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(
             color: Data.lightGreyBodyColor, // Custom focused border color

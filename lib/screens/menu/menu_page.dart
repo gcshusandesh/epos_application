@@ -14,7 +14,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 import '../../providers/info_provider.dart';
 import '../../providers/menu_provider.dart';
@@ -42,7 +45,9 @@ class _MenuPageState extends State<MenuPage> {
     ]);
   }
 
+  TextEditingController pinController = TextEditingController();
   TextEditingController tableNumberController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   Future<void> _fetchData() async {
     setState(() {
@@ -84,6 +89,7 @@ class _MenuPageState extends State<MenuPage> {
   late double height;
   late double width;
   bool isTakingOrder = false;
+  bool isGuestMode = false;
 
   @override
   void didChangeDependencies() async {
@@ -102,18 +108,30 @@ class _MenuPageState extends State<MenuPage> {
   void dispose() {
     super.dispose();
     tableNumberController.dispose();
+    pinController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: true,
+      canPop: isGuestMode ? false : true,
       onPopInvoked: (bool value) async {
-        //for faster swapping of orientation
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight,
-        ]);
+        if (isGuestMode) {
+          // TODO: exit guest mode prompt
+          showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) {
+              return exitAlert();
+            },
+          );
+        }
+        if (!isGuestMode) {
+          SystemChrome.setPreferredOrientations([
+            DeviceOrientation.landscapeLeft,
+            DeviceOrientation.landscapeRight,
+          ]);
+        }
       },
       child: Stack(
         children: [
@@ -212,23 +230,48 @@ class _MenuPageState extends State<MenuPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        iconButton(
-          "assets/svg/arrow_back.svg",
-          height,
-          width,
-          () {
-            Navigator.pop(context);
-            //for faster swapping of orientation
-            SystemChrome.setPreferredOrientations([
-              DeviceOrientation.landscapeLeft,
-              DeviceOrientation.landscapeRight,
-            ]);
-          },
-          context: context,
-        ),
+        !isGuestMode
+            ? Padding(
+                padding: EdgeInsets.only(right: width * 4),
+                child: iconButton(
+                  "assets/svg/arrow_back.svg",
+                  height,
+                  width,
+                  () {
+                    Navigator.pop(context);
+                    //for faster swapping of orientation
+                    SystemChrome.setPreferredOrientations([
+                      DeviceOrientation.landscapeLeft,
+                      DeviceOrientation.landscapeRight,
+                    ]);
+                  },
+                  context: context,
+                ),
+              )
+            : SizedBox(width: width * 9.4),
         buildTitleText(text, Data.darkTextColor, width),
-        SizedBox(
-          width: width * 5,
+        textButton(
+          text: "  Guest Mode  ",
+          height: height,
+          width: width,
+          textColor: Provider.of<InfoProvider>(context, listen: true)
+              .systemInfo
+              .iconsColor,
+          buttonColor: Provider.of<InfoProvider>(context, listen: true)
+              .systemInfo
+              .iconsColor,
+          isSelected: isGuestMode,
+          onTap: () {
+            if (!isGuestMode) {
+              showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (BuildContext context) {
+                  return entryAlert();
+                },
+              );
+            }
+          },
         ),
       ],
     );
@@ -492,23 +535,26 @@ class _MenuPageState extends State<MenuPage> {
         ),
         Row(
           children: [
-            iconButton(
-              isSvg: false,
-              "",
-              icon: Icons.refresh,
-              height,
-              width,
-              () {
-                _fetchData();
-              },
-              context: context,
-            ),
-            (Provider.of<AuthProvider>(context, listen: false).user.userType ==
-                        UserType.owner) ||
-                    (Provider.of<AuthProvider>(context, listen: false)
-                            .user
-                            .userType ==
-                        UserType.manager)
+            !isGuestMode
+                ? iconButton(
+                    isSvg: false,
+                    "",
+                    icon: Icons.refresh,
+                    height,
+                    width,
+                    () {
+                      _fetchData();
+                    },
+                    context: context,
+                  )
+                : const SizedBox(),
+            ((Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                            UserType.owner) ||
+                        (Provider.of<AuthProvider>(context, listen: false)
+                                .user
+                                .userType ==
+                            UserType.manager)) &&
+                    !isGuestMode
                 ? Row(
                     children: [
                       SizedBox(width: width),
@@ -537,12 +583,13 @@ class _MenuPageState extends State<MenuPage> {
   Row category() {
     return Row(
       mainAxisAlignment:
-          (Provider.of<AuthProvider>(context, listen: false).user.userType ==
-                      UserType.owner) ||
-                  (Provider.of<AuthProvider>(context, listen: false)
-                          .user
-                          .userType ==
-                      UserType.manager)
+          ((Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                          UserType.owner) ||
+                      (Provider.of<AuthProvider>(context, listen: false)
+                              .user
+                              .userType ==
+                          UserType.manager)) &&
+                  !isGuestMode
               ? MainAxisAlignment.spaceBetween
               : MainAxisAlignment.start,
       children: [
@@ -552,12 +599,13 @@ class _MenuPageState extends State<MenuPage> {
           width * 0.9,
           fontFamily: "RobotoMedium",
         ),
-        (Provider.of<AuthProvider>(context, listen: false).user.userType ==
-                    UserType.owner) ||
-                (Provider.of<AuthProvider>(context, listen: false)
-                        .user
-                        .userType ==
-                    UserType.manager)
+        ((Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                        UserType.owner) ||
+                    (Provider.of<AuthProvider>(context, listen: false)
+                            .user
+                            .userType ==
+                        UserType.manager)) &&
+                !isGuestMode
             ? iconButton(
                 "assets/svg/edit.svg",
                 height,
@@ -644,12 +692,13 @@ class _MenuPageState extends State<MenuPage> {
                 });
               },
             ),
-            (Provider.of<AuthProvider>(context, listen: false).user.userType ==
-                        UserType.owner) ||
-                    (Provider.of<AuthProvider>(context, listen: false)
-                            .user
-                            .userType ==
-                        UserType.manager)
+            ((Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                            UserType.owner) ||
+                        (Provider.of<AuthProvider>(context, listen: false)
+                                .user
+                                .userType ==
+                            UserType.manager)) &&
+                    !isGuestMode
                 ? Row(
                     children: [
                       SizedBox(width: width),
@@ -864,6 +913,131 @@ class _MenuPageState extends State<MenuPage> {
           ),
         ],
       ),
+    );
+  }
+
+  // set up the AlertDialog
+  Widget entryAlert() {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text("Enter Guest Mode"),
+      content: const Text("Are you sure you want to enter Guest Mode?"),
+      actions: [
+        Column(
+          children: [
+            SizedBox(height: height * 2),
+            textButton(
+              text: "Confirm",
+              height: height,
+              width: width,
+              textColor: Data.greenColor,
+              buttonColor: Data.greenColor,
+              onTap: () {
+                setState(() {
+                  isGuestMode = true;
+                });
+                showTopSnackBar(
+                  Overlay.of(context),
+                  const CustomSnackBar.success(
+                    message: "Successfully entered Guest Mode",
+                  ),
+                );
+                // close dialog box
+                Navigator.pop(context);
+              },
+            ),
+            SizedBox(height: height * 2),
+            textButton(
+              text: "Cancel",
+              height: height,
+              width: width,
+              textColor: Data.redColor,
+              buttonColor: Data.redColor,
+              onTap: () {
+                // close dialog box
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // set up the AlertDialog
+  Widget exitAlert() {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text("Exit Guest Mode"),
+      content: const Text("Are you sure you want to exit Guest Mode?"),
+      actions: [
+        Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              Center(
+                child: Pinput(
+                  controller: pinController,
+                ),
+              ),
+              SizedBox(height: height * 2),
+              textButton(
+                text: "Confirm",
+                height: height,
+                width: width,
+                textColor: Data.greenColor,
+                buttonColor: Data.greenColor,
+                onTap: () {
+                  if (pinController.length == 4) {
+                    if (pinController.text == "1234") {
+                      setState(() {
+                        isGuestMode = false;
+                      });
+                      // close dialog box
+                      Navigator.pop(context);
+                      showTopSnackBar(
+                        Overlay.of(context),
+                        const CustomSnackBar.success(
+                          message: "Exited Guest Mode",
+                        ),
+                      );
+                      pinController.clear();
+                    } else {
+                      //wrong pin
+                      showTopSnackBar(
+                        Overlay.of(context),
+                        const CustomSnackBar.error(
+                          message: "Wrong Pin",
+                        ),
+                      );
+                    }
+                  } else {
+                    /// Pin must be 4 digit
+                    showTopSnackBar(
+                      Overlay.of(context),
+                      const CustomSnackBar.error(
+                        message: "Pin must be 4 digits",
+                      ),
+                    );
+                  }
+                },
+              ),
+              SizedBox(height: height * 2),
+              textButton(
+                text: "Cancel",
+                height: height,
+                width: width,
+                textColor: Data.redColor,
+                buttonColor: Data.redColor,
+                onTap: () {
+                  // close dialog box
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
