@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class MenuProvider extends ChangeNotifier {
-  bool hasPin = false;
+  bool hasPin = true;
   String? guestPin;
 
   void setPinLocally({required String newPin, bool hasPin = false}) {
@@ -83,28 +83,37 @@ class MenuProvider extends ChangeNotifier {
     required BuildContext context,
     required String newPin,
   }) async {
-    late Uri url;
-
-    url = Uri.parse("${Data.baseUrl}/api/guest-mode-pin");
+    final Uri url = Uri.parse("${Data.baseUrl}/api/guest-mode-pin");
 
     try {
       var headers = {
-        "Accept": "application/json",
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer $accessToken',
       };
 
-      Map<String, dynamic> payloadBody = {
-        "data": {
-          "pinCode": newPin,
-          "hasPin": true,
-        },
+      Map<String, dynamic> body = {
+        "pinCode": newPin,
+        "hasPin": true,
       };
-      final response = await http.put(Uri.parse(url.toString()),
-          headers: headers, body: jsonEncode(payloadBody));
+
+      Map<String, dynamic> payloadBody = {
+        "data": body,
+      };
+
+      final response = await http.put(
+        url,
+        headers: headers,
+        body: jsonEncode(payloadBody),
+      );
+
+      print(response.body);
+      print(response.statusCode);
+
       if (response.statusCode == 200) {
         setPinLocally(
           newPin: newPin,
-          hasPin: true,
+          hasPin: false, // Ensure consistency with the API response
         );
         return true;
       }
@@ -112,13 +121,14 @@ class MenuProvider extends ChangeNotifier {
     } on SocketException {
       if (context.mounted) {
         await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ErrorScreen(
-                isConnectedToInternet: false,
-                trace: "setGuestPin",
-              ),
-            ));
+          context,
+          MaterialPageRoute(
+            builder: (context) => ErrorScreen(
+              isConnectedToInternet: false,
+              trace: "setGuestPin",
+            ),
+          ),
+        );
       }
       if (context.mounted) {
         await setGuestPin(
@@ -131,12 +141,13 @@ class MenuProvider extends ChangeNotifier {
     } catch (e) {
       if (context.mounted) {
         await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ErrorScreen(
-                trace: "setGuestPin",
-              ),
-            ));
+          context,
+          MaterialPageRoute(
+            builder: (context) => ErrorScreen(
+              trace: "setGuestPin",
+            ),
+          ),
+        );
       }
       if (context.mounted) {
         await setGuestPin(
