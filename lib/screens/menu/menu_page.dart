@@ -137,7 +137,10 @@ class _MenuPageState extends State<MenuPage> {
           ? false
           : true,
       onPopInvoked: (bool value) async {
-        if (isGuestMode) {
+        if (Provider.of<MenuProvider>(context, listen: true).hasPin == false) {
+          print("do nothing");
+          // do nothing
+        } else if (isGuestMode) {
           showDialog(
             barrierDismissible: false,
             context: context,
@@ -145,8 +148,7 @@ class _MenuPageState extends State<MenuPage> {
               return exitAlert();
             },
           );
-        }
-        if (!isGuestMode) {
+        } else if (!isGuestMode) {
           SystemChrome.setPreferredOrientations([
             DeviceOrientation.landscapeLeft,
             DeviceOrientation.landscapeRight,
@@ -252,7 +254,7 @@ class _MenuPageState extends State<MenuPage> {
       children: [
         !isGuestMode
             ? Padding(
-                padding: EdgeInsets.only(right: width * 4),
+                padding: EdgeInsets.only(right: width * 12),
                 child: iconButton(
                   "assets/svg/arrow_back.svg",
                   height,
@@ -270,28 +272,67 @@ class _MenuPageState extends State<MenuPage> {
               )
             : SizedBox(width: width * 9.4),
         buildTitleText(text, Data.darkTextColor, width),
-        textButton(
-          text: "  Guest Mode  ",
-          height: height,
-          width: width,
-          textColor: Provider.of<InfoProvider>(context, listen: true)
-              .systemInfo
-              .iconsColor,
-          buttonColor: Provider.of<InfoProvider>(context, listen: true)
-              .systemInfo
-              .iconsColor,
-          isSelected: isGuestMode,
-          onTap: () {
-            if (!isGuestMode) {
-              showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (BuildContext context) {
-                  return entryAlert();
-                },
-              );
-            }
-          },
+        Row(
+          children: [
+            ((Provider.of<AuthProvider>(context, listen: false).user.userType ==
+                            UserType.owner) ||
+                        (Provider.of<AuthProvider>(context, listen: false)
+                                .user
+                                .userType ==
+                            UserType.manager)) &&
+                    !isGuestMode
+                ? Padding(
+                    padding: EdgeInsets.only(right: width),
+                    child: textButton(
+                      text: "Reset Pin",
+                      height: height,
+                      width: width,
+                      textColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .iconsColor,
+                      buttonColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .iconsColor,
+                      onTap: () {
+                        showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (BuildContext context) {
+                            return setPinAlert(isReset: true);
+                          },
+                        );
+                      },
+                    ),
+                  )
+                : SizedBox(
+                    width: width * 2,
+                  ),
+            textButton(
+              text: "  Guest Mode  ",
+              height: height,
+              width: width,
+              textColor: Provider.of<InfoProvider>(context, listen: true)
+                  .systemInfo
+                  .iconsColor,
+              buttonColor: Provider.of<InfoProvider>(context, listen: true)
+                  .systemInfo
+                  .iconsColor,
+              isSelected: isGuestMode,
+              onTap: () {
+                if (!isGuestMode) {
+                  showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return entryAlert();
+                    },
+                  );
+                }
+              },
+            ),
+          ],
         ),
       ],
     );
@@ -940,27 +981,7 @@ class _MenuPageState extends State<MenuPage> {
   Widget entryAlert() {
     return AlertDialog(
       backgroundColor: Colors.white,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text("Enter Guest Mode"),
-          textButton(
-            text: "Set Pin",
-            height: height,
-            width: width,
-            textColor: Provider.of<InfoProvider>(context, listen: true)
-                .systemInfo
-                .iconsColor,
-            buttonColor: Provider.of<InfoProvider>(context, listen: true)
-                .systemInfo
-                .iconsColor,
-            onTap: () {
-              // Close dialog box
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
+      title: const Text("Enter Guest Mode"),
       content: const Text("Are you sure you want to enter Guest Mode?"),
       actions: [
         Column(
@@ -1041,7 +1062,6 @@ class _MenuPageState extends State<MenuPage> {
                         message: "Exited Guest Mode",
                       ),
                     );
-                    pinController.clear();
                   } else {
                     //wrong pin
                     showTopSnackBar(
@@ -1051,6 +1071,7 @@ class _MenuPageState extends State<MenuPage> {
                       ),
                     );
                   }
+                  pinController.clear();
                 } else {
                   /// Pin must be 4 digit
                   showTopSnackBar(
@@ -1081,7 +1102,7 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   // set up the AlertDialog
-  Widget setPinAlert() {
+  Widget setPinAlert({bool isReset = false}) {
     return AlertDialog(
       backgroundColor: Colors.white,
       title: const Text("Set Guest Mode Pin"),
@@ -1148,6 +1169,21 @@ class _MenuPageState extends State<MenuPage> {
                 }
               },
             ),
+            isReset
+                ? Padding(
+                    padding: EdgeInsets.only(top: height),
+                    child: textButton(
+                      text: "Cancel",
+                      height: height,
+                      width: width,
+                      textColor: Data.redColor,
+                      buttonColor: Data.redColor,
+                      onTap: () async {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  )
+                : const SizedBox(),
           ],
         ),
       ],

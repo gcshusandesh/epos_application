@@ -14,6 +14,7 @@ class MenuProvider extends ChangeNotifier {
   void setPinLocally({required String newPin, bool hasPin = false}) {
     guestPin = newPin;
     this.hasPin = hasPin;
+    print("hasPin: $hasPin");
     notifyListeners();
   }
 
@@ -106,9 +107,6 @@ class MenuProvider extends ChangeNotifier {
         headers: headers,
         body: jsonEncode(payloadBody),
       );
-
-      print(response.body);
-      print(response.statusCode);
 
       if (response.statusCode == 200) {
         setPinLocally(
