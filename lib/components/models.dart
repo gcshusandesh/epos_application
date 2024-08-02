@@ -102,6 +102,7 @@ class UserDataModel {
   String? accessToken;
   bool isLoggedIn;
   double rating;
+  int ratingCount;
 
   UserDataModel({
     this.id,
@@ -116,6 +117,7 @@ class UserDataModel {
     this.accessToken,
     this.isLoggedIn = false,
     this.rating = 0,
+    this.ratingCount = 0,
   });
 
   static Map<String, dynamic> toMap(UserDataModel user) => {
@@ -131,6 +133,7 @@ class UserDataModel {
         'accessToken': user.accessToken,
         'isLoggedIn': user.isLoggedIn,
         'rating': user.rating,
+        'ratingCount': user.ratingCount,
       };
 
   factory UserDataModel.fromJson(Map<String, dynamic> jsonData) {
@@ -154,6 +157,7 @@ class UserDataModel {
       accessToken: jsonData['accessToken'],
       isLoggedIn: jsonData['isLoggedIn'],
       rating: jsonData['rating'],
+      ratingCount: jsonData['ratingCount'],
     );
   }
 

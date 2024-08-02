@@ -58,6 +58,7 @@ class AuthProvider extends ChangeNotifier {
           accessToken: data["jwt"],
           isLoggedIn: true,
           rating: (data["rating"] ?? 0).toDouble(),
+          ratingCount: data["ratingCount"] ?? 0,
         );
         if (!init) {
           notifyListeners();
@@ -191,6 +192,7 @@ class AuthProvider extends ChangeNotifier {
           accessToken: jwt,
           isLoggedIn: true,
           rating: (data["rating"] ?? 0).toDouble(),
+          ratingCount: data["ratingCount"] ?? 0,
         );
 
         /// add above login data along with image data to cache at once
@@ -246,8 +248,16 @@ class AuthProvider extends ChangeNotifier {
     bool isLoggedIn = false,
     bool isUpdateRating = false,
     double? rating,
+    int? ratingCount,
+    String? id,
   }) async {
-    var url = Uri.parse("${Data.baseUrl}/api/users/${editedDetails!.id}");
+    Uri url;
+    if (isUpdateRating) {
+      url = Uri.parse("${Data.baseUrl}/api/users/${id!}");
+    } else {
+      url = Uri.parse("${Data.baseUrl}/api/users/${editedDetails!.id}");
+    }
+
     try {
       Map<String, String> headers = {
         'Content-Type': 'application/json',
@@ -258,10 +268,11 @@ class AuthProvider extends ChangeNotifier {
       if (isUpdateRating) {
         body = {
           "rating": rating!,
+          "ratingCount": ratingCount!,
         };
       } else {
         body = {
-          "username": editedDetails.username,
+          "username": editedDetails!.username,
           "name": editedDetails.name,
           "email": editedDetails.email,
           "phone": editedDetails.phone,
@@ -274,7 +285,7 @@ class AuthProvider extends ChangeNotifier {
           headers: headers, body: jsonEncode(body));
       if (response.statusCode == 200) {
         if (isLoggedIn) {
-          updateUserDetailsLocally(editedDetails);
+          updateUserDetailsLocally(editedDetails!);
 
           ///save changes to cache
           addUserDataToSF();

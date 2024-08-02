@@ -82,9 +82,18 @@ class _PaymentState extends State<Payment> {
           isItem: true,
           context: context);
     }
+    if (mounted) {
+      // need this data to update average rating
+      await Provider.of<AuthProvider>(context, listen: false).getMyDetails(
+        init: false,
+        context: context,
+      );
+    }
+
     setState(() {
       isLoading = false;
     });
+
     if (mounted && widget.divertedFromPayment) {
       showDialog(
         barrierDismissible: false,
@@ -685,12 +694,24 @@ class _PaymentState extends State<Payment> {
                       Provider.of<AuthProvider>(context, listen: false)
                           .user
                           .rating;
+                  int currentRatingCount =
+                      Provider.of<AuthProvider>(context, listen: false)
+                          .user
+                          .ratingCount;
+                  double newRating =
+                      ((currentRating * currentRatingCount) + staffRating) /
+                          (currentRatingCount + 1);
                   bool isRatingSuccessful =
                       await Provider.of<AuthProvider>(context, listen: false)
                           .updateUserDetails(
                     context: context,
                     isUpdateRating: true,
-                    rating: staffRating,
+                    rating: newRating,
+                    ratingCount: currentRatingCount + 1,
+                    id: Provider.of<AuthProvider>(context, listen: false)
+                        .user
+                        .id
+                        .toString(),
                   );
                   setState(() {
                     isLoading = false;

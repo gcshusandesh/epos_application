@@ -233,6 +233,7 @@ class UserProvider extends ChangeNotifier {
                 isBlocked: user["blocked"],
                 userType: assignUserType(user["userType"]),
                 rating: (user["rating"] ?? 0).toDouble(),
+                ratingCount: user["ratingCount"] ?? 0,
               ));
             }
           } else if (loggedInUserType == UserType.manager) {
@@ -252,6 +253,7 @@ class UserProvider extends ChangeNotifier {
                 isBlocked: user["blocked"],
                 userType: assignUserType(user["userType"]),
                 rating: (user["rating"] ?? 0).toDouble(),
+                ratingCount: user["ratingCount"] ?? 0,
               ));
             }
           }
