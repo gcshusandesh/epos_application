@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:epos_application/components/size_config.dart';
-import 'package:epos_application/providers/info_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class RecommendationsUI extends StatefulWidget {
   const RecommendationsUI({super.key, required this.recommendations});
@@ -13,7 +11,8 @@ class RecommendationsUI extends StatefulWidget {
   State<RecommendationsUI> createState() => _RecommendationsUIState();
 }
 
-class _RecommendationsUIState extends State<RecommendationsUI> {
+class _RecommendationsUIState extends State<RecommendationsUI>
+    with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   Timer? _timer;
   double _scrollPosition = 0.0;
@@ -21,19 +20,30 @@ class _RecommendationsUIState extends State<RecommendationsUI> {
   bool init = true;
   late double height;
   late double width;
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
     _startAutoScroll();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+
+    _scaleAnimation =
+        Tween<double>(begin: 1.0, end: 1.05).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (init) {
-      //initialize size config at the very beginning
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
@@ -43,11 +53,9 @@ class _RecommendationsUIState extends State<RecommendationsUI> {
 
   void _onScroll() {
     if (_scrollController.position.isScrollingNotifier.value) {
-      // User is scrolling
       _isUserScrolling = true;
       _timer?.cancel();
     } else {
-      // User has stopped scrolling
       if (_isUserScrolling) {
         _isUserScrolling = false;
         _startAutoScroll();
@@ -80,78 +88,87 @@ class _RecommendationsUIState extends State<RecommendationsUI> {
     _timer?.cancel();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Fetch the dynamic color from the provider
-    Color dynamicColor =
-        Provider.of<InfoProvider>(context, listen: true).systemInfo.iconsColor;
-    // Create a gradient with the dynamic color and a less opaque version
+    // Steel Blue to Light Steel Blue gradient
+    Color boxColor1 = const Color(0xFF4682B4); // Steel Blue
+    Color boxColor2 = const Color(0xFFB0C4DE); // Light Steel Blue
+
     Gradient gradient = LinearGradient(
-      colors: [
-        dynamicColor,
-        dynamicColor.withOpacity(0.5),
-      ],
+      colors: [boxColor1, boxColor2],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     );
+
     return SizedBox(
+      height: height * 10,
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         itemCount: widget.recommendations.length,
         itemBuilder: (context, index) {
-          return Container(
-            // width: width * 20,
-            margin:
-                EdgeInsets.symmetric(horizontal: width, vertical: height * 0.5),
-            padding: EdgeInsets.symmetric(
-                horizontal: width * 2, vertical: height * 0.5),
-            decoration: BoxDecoration(
-              color: Colors.blueAccent,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 8.0,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-              gradient: gradient,
-            ),
-            child: Column(
-              children: [
-                Center(
-                  child: Text(
-                    widget.recommendations[index],
-                    style: TextStyle(
-                      fontSize: width * 2.5,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    textAlign: TextAlign.center,
+          return AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _scaleAnimation.value,
+                child: child,
+              );
+            },
+            child: Container(
+              margin: EdgeInsets.symmetric(
+                  horizontal: width * 1.5, vertical: height * 0.5),
+              padding: EdgeInsets.symmetric(
+                horizontal: width * 2,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 6.0,
+                    offset: const Offset(0, 4),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: width * 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.redAccent,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  child: Text(
-                    'Top Selling',
-                    style: TextStyle(
-                      fontSize: width * 1.25,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                ],
+                gradient: gradient,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Text(
+                      widget.recommendations[index],
+                      style: TextStyle(
+                        fontSize: width * 2.5,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                ),
-              ],
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: width * 1.5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      'Top Selling',
+                      style: TextStyle(
+                        fontSize: width * 1.5,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },

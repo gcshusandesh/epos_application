@@ -196,20 +196,40 @@ class _MenuPageState extends State<MenuPage> {
               height: height * 10,
               padding: EdgeInsets.symmetric(horizontal: width * 2),
               width: double.infinity,
-              color: Data.lightGreyBodyColor,
+              decoration: BoxDecoration(
+                color: const Color(
+                    0xFF4E4E4E), // Charcoal Gray background (significantly toned down)
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(16.0)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 6.0,
+                    offset: const Offset(0, -4),
+                  ),
+                ],
+              ),
               child: Row(
                 children: [
+                  Icon(
+                    Icons.star,
+                    color: Colors
+                        .amber, // Dusty Blue accent color (significantly toned down)
+                    size: width * 2,
+                  ),
+                  SizedBox(width: width * 0.5),
                   buildCustomText(
                     "Recommendations:",
-                    Data.greyTextColor,
-                    width * 1.5,
+                    const Color(0xFFD1D1D1), // Light Silver text for contrast
+                    width * 1.8,
                     fontWeight: FontWeight.bold,
                   ),
                   SizedBox(width: width),
                   Expanded(
-                      child: RecommendationsUI(
-                    recommendations: recommendations,
-                  )),
+                    child: RecommendationsUI(
+                      recommendations: recommendations,
+                    ),
+                  ),
                 ],
               ),
             )
