@@ -221,7 +221,7 @@ class _MenuPageState extends State<MenuPage> {
                   buildCustomText(
                     "Recommendations:",
                     const Color(0xFFD1D1D1), // Light Silver text for contrast
-                    width * 1.8,
+                    width * 1.5,
                     fontWeight: FontWeight.bold,
                   ),
                   SizedBox(width: width),
