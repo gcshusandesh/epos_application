@@ -52,7 +52,6 @@ class OrderProvider extends ChangeNotifier {
             paymentMode: attributes['paymentMode'],
             orderDateTime: DateTime.parse(attributes['updatedAt']),
             receivedBy: attributes['receivedBy'],
-            rating: attributes['rating'].toDouble(),
           );
         }).toList();
 

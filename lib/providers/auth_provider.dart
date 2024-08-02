@@ -237,25 +237,35 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> updateUserDetails(
-      {required BuildContext context,
-      required UserDataModel editedDetails,
-      bool isLoggedIn = false}) async {
-    var url = Uri.parse("${Data.baseUrl}/api/users/${editedDetails.id}");
+  Future<bool> updateUserDetails({
+    required BuildContext context,
+    UserDataModel? editedDetails,
+    bool isLoggedIn = false,
+    bool isUpdateRating = false,
+    double? rating,
+  }) async {
+    var url = Uri.parse("${Data.baseUrl}/api/users/${editedDetails!.id}");
     try {
       Map<String, String> headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer ${user.accessToken!}',
       };
-      Map<String, String> body = {
-        "username": editedDetails.username,
-        "name": editedDetails.name,
-        "email": editedDetails.email,
-        "phone": editedDetails.phone,
-        "gender": editedDetails.gender,
-        "userType": editedDetails.userType.name,
-      };
+      late Map<String, dynamic> body;
+      if (isUpdateRating) {
+        body = {
+          "rating": rating!,
+        };
+      } else {
+        body = {
+          "username": editedDetails.username,
+          "name": editedDetails.name,
+          "email": editedDetails.email,
+          "phone": editedDetails.phone,
+          "gender": editedDetails.gender,
+          "userType": editedDetails.userType.name,
+        };
+      }
 
       final response = await http.put(Uri.parse(url.toString()),
           headers: headers, body: jsonEncode(body));
@@ -285,9 +295,12 @@ class AuthProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await updateUserDetails(
-            editedDetails: editedDetails,
-            isLoggedIn: isLoggedIn,
-            context: context);
+          editedDetails: editedDetails,
+          isLoggedIn: isLoggedIn,
+          context: context,
+          isUpdateRating: isUpdateRating,
+          rating: rating,
+        );
       }
       return false;
     } catch (e) {
@@ -304,9 +317,12 @@ class AuthProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await updateUserDetails(
-            editedDetails: editedDetails,
-            isLoggedIn: isLoggedIn,
-            context: context);
+          editedDetails: editedDetails,
+          isLoggedIn: isLoggedIn,
+          context: context,
+          isUpdateRating: isUpdateRating,
+          rating: rating,
+        );
       }
     }
     return false;

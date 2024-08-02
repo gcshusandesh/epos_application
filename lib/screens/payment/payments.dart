@@ -681,17 +681,11 @@ class _PaymentState extends State<Payment> {
                   setState(() {
                     isLoading = true;
                   });
-
                   bool isRatingSuccessful =
-                      await Provider.of<OrderProvider>(context, listen: false)
-                          .updateOrders(
-                    accessToken:
-                        Provider.of<AuthProvider>(context, listen: false)
-                            .user
-                            .accessToken!,
+                      await Provider.of<AuthProvider>(context, listen: false)
+                          .updateUserDetails(
                     context: context,
-                    orderID: widget.orderId!,
-                    isRating: true,
+                    isUpdateRating: true,
                     rating: staffRating,
                   );
                   setState(() {

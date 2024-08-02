@@ -326,22 +326,33 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                         .userType
                         .name ==
                     "waiter"
-                ? RatingBar.builder(
-                    initialRating: 3,
-                    minRating: 0.5,
-                    direction: Axis.horizontal,
-                    allowHalfRating: true,
-                    ignoreGestures: true,
-                    itemCount: 5,
-                    itemSize: width * 2, // Adjust size as needed
-                    itemPadding: EdgeInsets.only(
-                        top: height, left: width * 0.25, right: width * 0.25),
-                    itemBuilder: (context, _) => const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                    ),
-                    onRatingUpdate: (rating) {},
-                  )
+                ? Provider.of<UserProvider>(context, listen: true)
+                            .userList[index]
+                            .rating ==
+                        0
+                    ? buildCustomText(
+                        "No Ratings", Data.lightGreyTextColor, width)
+                    : RatingBar.builder(
+                        initialRating:
+                            Provider.of<UserProvider>(context, listen: true)
+                                .userList[index]
+                                .rating,
+                        minRating: 0.5,
+                        direction: Axis.horizontal,
+                        allowHalfRating: true,
+                        ignoreGestures: true,
+                        itemCount: 5,
+                        itemSize: width * 2, // Adjust size as needed
+                        itemPadding: EdgeInsets.only(
+                            top: height,
+                            left: width * 0.25,
+                            right: width * 0.25),
+                        itemBuilder: (context, _) => const Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        onRatingUpdate: (rating) {},
+                      )
                 : const SizedBox(),
           ],
         ),

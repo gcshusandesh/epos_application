@@ -232,6 +232,7 @@ class UserProvider extends ChangeNotifier {
                 gender: user["gender"],
                 isBlocked: user["blocked"],
                 userType: assignUserType(user["userType"]),
+                rating: user["rating"] ?? 0,
               ));
             }
           } else if (loggedInUserType == UserType.manager) {
@@ -250,6 +251,7 @@ class UserProvider extends ChangeNotifier {
                 gender: user["gender"],
                 isBlocked: user["blocked"],
                 userType: assignUserType(user["userType"]),
+                rating: user["rating"] ?? 0,
               ));
             }
           }
