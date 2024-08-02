@@ -100,11 +100,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                 .where((element) => element.isPaid)
                 .toList();
 
-        topEmployee = extractTopEmployee(
-          paidOrders,
-          dateRange.start,
-          dateRange.end,
-        );
+        topEmployee = extractTopEmployee();
 
         totalRevenue = calculateTotalRevenue(
           paidOrders: paidOrders,
@@ -137,49 +133,28 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     });
   }
 
-  String extractTopEmployee(
-      List<ProcessedOrder> paidOrders, DateTime startDate, DateTime endDate,
-      {int topN = 3}) {
-    // A map to hold employee sales data
-    Map<String, EmployeeSales> employeeSalesMap = {};
+  String extractTopEmployee() {
+    List<UserDataModel> userList =
+        Provider.of<UserProvider>(context, listen: false).userList;
 
-    // Filter orders based on the date range and payment status
-    List<ProcessedOrder> filteredOrders = paidOrders.where((order) {
-      if (!order.isPaid || order.orderDateTime == null) return false;
-      DateTime orderDate = order.orderDateTime!;
-      return orderDate.isAfter(startDate) && orderDate.isBefore(endDate);
-    }).toList();
+    // Filter the userList to only include waiters
+    List<UserDataModel> waiters =
+        userList.where((user) => user.userType.name == "waiter").toList();
 
-    // Aggregate sales data by employee
-    for (var order in filteredOrders) {
-      if (order.receivedBy != null) {
-        String employeeName = order.receivedBy!;
-
-        // Calculate total amount for the order
-        double totalAmount = order.paidPrice;
-
-        if (employeeSalesMap.containsKey(employeeName)) {
-          employeeSalesMap[employeeName]!.addSale(totalAmount);
-        } else {
-          employeeSalesMap[employeeName] = EmployeeSales(
-            employeeName: employeeName,
-            totalSalesAmount: totalAmount,
-          );
-        }
-      }
+    if (waiters.isEmpty) {
+      return "No Data Available";
     }
 
-    // Convert the map to a list and sort by total sales amount in descending order
-    var sortedEmployees = employeeSalesMap.values.toList()
-      ..sort((a, b) => b.totalSalesAmount.compareTo(a.totalSalesAmount));
+    // Find the waiter with the highest rating
+    UserDataModel topWaiter = waiters.reduce(
+        (current, next) => current.rating > next.rating ? current : next);
 
-    sortedEmployees.take(topN).toList();
-    // print("Top Employee Name: ${sortedEmployees[0].employeeName}");
-    if (sortedEmployees.isNotEmpty) {
-      // Get the top N employees
-      return sortedEmployees[0].employeeName;
+    // if the top waiter has no rating, return "No Data Available"
+    if (topWaiter.rating == 0) {
+      return "No Data Available";
     }
-    return "No Data Available";
+
+    return topWaiter.name;
   }
 
   double filteredRevenue = 0;
