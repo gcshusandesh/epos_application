@@ -141,6 +141,8 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     List<UserDataModel> waiters =
         userList.where((user) => user.userType.name == "waiter").toList();
 
+    waiters = waiters.where((user) => !user.isBlocked).toList();
+
     if (waiters.isEmpty) {
       return "No Data Available";
     }
@@ -816,8 +818,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          buildCustomText(
-              "Top Employee($filterDropDownValue)", Colors.white, width * 1.7,
+          buildCustomText("Top Server", Colors.white, width * 1.7,
               fontWeight: FontWeight.bold),
           SizedBox(
             height: height,
