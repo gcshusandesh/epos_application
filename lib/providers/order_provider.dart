@@ -269,6 +269,7 @@ class OrderProvider extends ChangeNotifier {
     double? discount,
     String? billedTo,
     double? rating,
+    String? receivedBy,
   }) async {
     Uri url = Uri.parse("${Data.baseUrl}/api/processed-orders/$orderID");
 
@@ -292,7 +293,7 @@ class OrderProvider extends ChangeNotifier {
         };
       } else if (isRating) {
         payloadBody = {
-          "data": {"rating": rating ?? 0}
+          "data": {"rating": rating ?? 0, "receivedBy": receivedBy!}
         };
       } else if (isChangeStatus) {
         payloadBody = {
@@ -350,6 +351,7 @@ class OrderProvider extends ChangeNotifier {
           discount: discount,
           billedTo: billedTo,
           rating: rating,
+          receivedBy: receivedBy,
         );
       }
       return false;
@@ -375,6 +377,7 @@ class OrderProvider extends ChangeNotifier {
           discount: discount,
           billedTo: billedTo,
           rating: rating,
+          receivedBy: receivedBy,
         );
       }
       return false;
