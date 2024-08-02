@@ -53,7 +53,7 @@ class _MenuPageState extends State<MenuPage> {
   TextEditingController pinController = TextEditingController();
   TextEditingController tableNumberController = TextEditingController();
 
-  List<String> recommendations = [];
+  late List<Recommendation> recommendations = [];
 
   Future<void> _fetchData() async {
     setState(() {
@@ -119,6 +119,8 @@ class _MenuPageState extends State<MenuPage> {
     }
   }
 
+  // necessary for paired recommendations
+  Set<String> orderedItems = {};
   void calculateRecommendations() {
     // empty the recommendations list before adding new recommendations
     recommendations.clear();
@@ -220,7 +222,7 @@ class _MenuPageState extends State<MenuPage> {
                   SizedBox(width: width * 0.5),
                   buildCustomText(
                     "Recommendations:",
-                    const Color(0xFFD1D1D1), // Light Silver text for contrast
+                    Colors.white, // Light Silver text for contrast
                     width * 1.5,
                     fontWeight: FontWeight.bold,
                   ),
@@ -553,38 +555,57 @@ class _MenuPageState extends State<MenuPage> {
                       height,
                       width,
                       () {
-                        Provider.of<MenuProvider>(context, listen: false)
-                            .increaseMenuItemQuantity(itemIndex: itemIndex);
+                        final menuProvider =
+                            Provider.of<MenuProvider>(context, listen: false);
+                        final orderProvider =
+                            Provider.of<OrderProvider>(context, listen: false);
 
-                        /// recommend most paired items
-                        // Example data
+                        // Increase menu item quantity
+                        menuProvider.increaseMenuItemQuantity(
+                            itemIndex: itemIndex);
+
+                        // Get the target dish name
+                        String targetDish = menuProvider
+                            .menuItemsByCategory[
+                                menuProvider.selectedCategoryIndex]
+                            .menuItems[itemIndex]
+                            .name;
+
+                        if (!orderedItems.contains(targetDish)) {
+                          // Add the target dish to the set of ordered items
+                          orderedItems.add(targetDish);
+                        }
+
+                        // Find the most ordered pair with the target dish
                         String mostOrderedPair = findMostOrderedPairWithDish(
-                            processedOrders: Provider.of<OrderProvider>(context,
-                                    listen: false)
-                                .processedOrders,
-                            targetDish: Provider.of<MenuProvider>(context,
-                                    listen: false)
-                                .menuItemsByCategory[Provider.of<MenuProvider>(
-                                        context,
-                                        listen: false)
-                                    .selectedCategoryIndex]
-                                .menuItems[itemIndex]
-                                .name);
-                        // Check if the recommendation is valid
-                        if (mostOrderedPair != "No pairings found") {
-                          // Check if the mostOrderedPair is already in the recommendations list
-                          if (recommendations.contains(mostOrderedPair)) {
-                            // Remove the existing recommendation
-                            recommendations.remove(mostOrderedPair);
+                          processedOrders: orderProvider.processedOrders,
+                          targetDish: targetDish,
+                        );
+
+                        // Check if the recommendation is valid and not already ordered
+                        if (mostOrderedPair != "No pairings found" &&
+                            !orderedItems.contains(mostOrderedPair)) {
+                          // Find the existing recommendation in the list, if any
+                          var existingRecommendation = recommendations
+                              .firstWhere((rec) => rec.name == mostOrderedPair,
+                                  orElse: () =>
+                                      Recommendation(name: '', type: ''));
+
+                          // Remove the existing recommendation if found
+                          if (existingRecommendation.name.isNotEmpty) {
+                            recommendations.remove(existingRecommendation);
                           }
 
                           // Insert the new recommendation at the front of the list
-                          recommendations.insert(0, mostOrderedPair);
-
-                          // Print the most ordered pair for verification
-                          print(
-                              mostOrderedPair); // Prints the dish most often ordered with Pizza
+                          recommendations.insert(
+                              0,
+                              Recommendation(
+                                  name: mostOrderedPair, type: "Popular Pair"));
                         }
+
+                        // Remove any ordered items from the recommendations list
+                        recommendations.removeWhere(
+                            (rec) => orderedItems.contains(rec.name));
                       },
                     ),
                   ],
@@ -1092,6 +1113,9 @@ class _MenuPageState extends State<MenuPage> {
                   setState(() {
                     isGuestMode = true;
                   });
+                  Provider.of<MenuProvider>(context, listen: false)
+                      .resetAllOrders();
+                  orderedItems.clear();
                   calculateRecommendations();
                   showTopSnackBar(
                     Overlay.of(context),
@@ -1295,7 +1319,7 @@ class _MenuPageState extends State<MenuPage> {
   }
 }
 
-List<String> extractTopSellingItemNames(
+List<Recommendation> extractTopSellingItemNames(
   List<ProcessedOrder> paidOrders,
   List<OrderItem> priceList,
 ) {
@@ -1344,8 +1368,13 @@ List<String> extractTopSellingItemNames(
   var sortedItems = itemSalesMap.values.toList()
     ..sort((a, b) => b.quantity.compareTo(a.quantity));
 
+  // Get the top 3 selling items based on quantity
+  var topSellingItems = sortedItems.take(3).map((itemSales) {
+    return Recommendation(name: itemSales.itemName, type: "Best Seller");
+  }).toList();
+
   // Get the names of the top 3 selling items based on quantity
-  return sortedItems.take(3).map((itemSales) => itemSales.itemName).toList();
+  return topSellingItems;
 }
 
 String findMostOrderedPairWithDish({
@@ -1391,4 +1420,10 @@ String findMostOrderedPairWithDish({
       pairCountMap.entries.reduce((a, b) => a.value > b.value ? a : b).key;
 
   return mostOrderedPair;
+}
+
+class Recommendation {
+  String name;
+  String type;
+  Recommendation({required this.name, required this.type});
 }

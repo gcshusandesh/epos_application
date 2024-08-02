@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/screens/menu/menu_page.dart';
 import 'package:flutter/material.dart';
 
 class RecommendationsUI extends StatefulWidget {
   const RecommendationsUI({super.key, required this.recommendations});
-  final List<String> recommendations;
+  final List<Recommendation> recommendations;
 
   @override
   State<RecommendationsUI> createState() => _RecommendationsUIState();
@@ -106,73 +107,119 @@ class _RecommendationsUIState extends State<RecommendationsUI>
 
     return SizedBox(
       height: height * 10,
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: widget.recommendations.length,
-        itemBuilder: (context, index) {
-          return AnimatedBuilder(
-            animation: _animationController,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _scaleAnimation.value,
-                child: child,
-              );
-            },
-            child: Container(
-              margin: EdgeInsets.symmetric(
-                  horizontal: width * 1.5, vertical: height * 0.5),
-              padding: EdgeInsets.symmetric(
-                horizontal: width * 2,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 6.0,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-                gradient: gradient,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Text(
-                      widget.recommendations[index],
-                      style: TextStyle(
-                        fontSize: width * 2.5,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Container(
+      child: widget.recommendations.isEmpty
+          ? Row(
+              children: [
+                AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _scaleAnimation.value,
+                      child: child,
+                    );
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(
+                        vertical: height * 0.5, horizontal: width * 1.5),
                     padding: EdgeInsets.symmetric(
-                      horizontal: width * 1.5,
+                      horizontal: width * 2,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.redAccent,
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 6.0,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                      color: const Color(0xFF4682B4),
                     ),
-                    child: Text(
-                      'Top Selling',
-                      style: TextStyle(
-                        fontSize: width * 1.5,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    child: Center(
+                      child: Text(
+                        "No Recommendations",
+                        style: TextStyle(
+                          fontSize: width * 2.5,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
+            )
+          : ListView.builder(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              itemCount: widget.recommendations.length,
+              itemBuilder: (context, index) {
+                return AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _scaleAnimation.value,
+                      child: child,
+                    );
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(
+                        horizontal: width * 1.5, vertical: height * 0.5),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: width * 2,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 6.0,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                      gradient: gradient,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text(
+                            widget.recommendations[index].name,
+                            style: TextStyle(
+                              fontSize: width * 2.5,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: width * 1.5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: widget.recommendations[index].type ==
+                                    "Best Seller"
+                                ? Colors.redAccent
+                                : Colors.orangeAccent,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            widget.recommendations[index].type,
+                            style: TextStyle(
+                              fontSize: width * 1.5,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }
