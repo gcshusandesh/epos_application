@@ -165,10 +165,10 @@ class _MenuPageState extends State<MenuPage>
 
   @override
   void dispose() {
-    super.dispose();
     tableNumberController.dispose();
     pinController.dispose();
     _animationController.dispose();
+    super.dispose();
   }
 
   @override
