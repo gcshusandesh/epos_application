@@ -261,11 +261,13 @@ class OrderProvider extends ChangeNotifier {
     required int orderID,
     bool isPaid = false,
     bool isChangeStatus = false,
+    bool isRating = false,
     OrderStatus? newOrderStatus,
     String? paymentMode,
     int? itemIndex,
     double? discount,
     String? billedTo,
+    double? rating,
   }) async {
     Uri url = Uri.parse("${Data.baseUrl}/api/processed-orders/$orderID");
 
@@ -284,8 +286,12 @@ class OrderProvider extends ChangeNotifier {
             "isPaid": true,
             "discount": discount!,
             "paymentMode": paymentMode,
-            "billedTo": billedTo ?? "", // Add default value or handle null case
+            "billedTo": billedTo ?? "",
           }
+        };
+      } else if (isRating) {
+        payloadBody = {
+          "data": {"rating": rating ?? 0}
         };
       } else if (isChangeStatus) {
         payloadBody = {

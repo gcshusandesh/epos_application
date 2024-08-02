@@ -12,6 +12,7 @@ import 'package:epos_application/providers/order_provider.dart';
 import 'package:epos_application/screens/payment/invoice_pdf.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:printing/printing.dart';
@@ -24,9 +25,11 @@ class Payment extends StatefulWidget {
     super.key,
     this.isSales = false,
     this.divertedFromPayment = false,
+    this.orderId,
   });
   final bool isSales;
   final bool divertedFromPayment;
+  final int? orderId;
 
   @override
   State<Payment> createState() => _PaymentState();
@@ -82,6 +85,15 @@ class _PaymentState extends State<Payment> {
     setState(() {
       isLoading = false;
     });
+    if (mounted && widget.divertedFromPayment) {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return ratingAlert();
+        },
+      );
+    }
   }
 
   @override
@@ -624,6 +636,102 @@ class _PaymentState extends State<Payment> {
       ],
     );
   }
+
+  // default value for staffRating
+  double staffRating = 3;
+  // set up the AlertDialog
+  Widget ratingAlert() {
+    return PopScope(
+      canPop: false,
+      child: AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text("Give Rating"),
+        content:
+            const Text("Please give feedback on the service you received?"),
+        actions: [
+          Column(
+            children: [
+              RatingBar.builder(
+                initialRating: 3,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) => const Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rating) {
+                  print("rating = $rating");
+                  staffRating = rating;
+                },
+              ),
+              SizedBox(height: height * 2),
+              textButton(
+                text: "Confirm",
+                height: height,
+                width: width,
+                textColor: Data.greenColor,
+                buttonColor: Data.greenColor,
+                onTap: () async {
+                  // close dialog box
+                  Navigator.pop(context);
+                  var overlay = Overlay.of(context);
+                  setState(() {
+                    isLoading = true;
+                  });
+
+                  bool isRatingSuccessful =
+                      await Provider.of<OrderProvider>(context, listen: false)
+                          .updateOrders(
+                    accessToken:
+                        Provider.of<AuthProvider>(context, listen: false)
+                            .user
+                            .accessToken!,
+                    context: context,
+                    orderID: widget.orderId!,
+                    isRating: true,
+                    rating: staffRating,
+                  );
+                  setState(() {
+                    isLoading = false;
+                  });
+                  if (isRatingSuccessful) {
+                    showTopSnackBar(
+                      overlay,
+                      const CustomSnackBar.success(
+                        message: "Feedback successfully recorded",
+                      ),
+                    );
+                  } else {
+                    showTopSnackBar(
+                      overlay,
+                      const CustomSnackBar.error(
+                        message: "Feedback not successful. Please try again.",
+                      ),
+                    );
+                  }
+                },
+              ),
+              SizedBox(height: height * 2),
+              textButton(
+                text: "Skip",
+                height: height,
+                width: width,
+                textColor: Data.redColor,
+                buttonColor: Data.redColor,
+                onTap: () {
+                  // close dialog box
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // Add a new screen for viewing the PDF
@@ -1037,9 +1145,13 @@ class _PayState extends State<Pay> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const Payment(
+                      builder: (context) => Payment(
                             isSales: true,
                             divertedFromPayment: true,
+                            orderId: Provider.of<OrderProvider>(context,
+                                    listen: false)
+                                .processedOrders[widget.index]
+                                .id,
                           )),
                 );
               }

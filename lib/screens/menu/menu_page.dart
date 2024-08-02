@@ -35,12 +35,26 @@ class MenuPage extends StatefulWidget {
   State<MenuPage> createState() => _MenuPageState();
 }
 
-class _MenuPageState extends State<MenuPage> {
+class _MenuPageState extends State<MenuPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
   @override
   void initState() {
     super.initState();
     _setPreferredOrientations();
     _fetchData();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+
+    _scaleAnimation =
+        Tween<double>(begin: 1.0, end: 1.05).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
   }
 
   void _setPreferredOrientations() async {
@@ -154,6 +168,7 @@ class _MenuPageState extends State<MenuPage> {
     super.dispose();
     tableNumberController.dispose();
     pinController.dispose();
+    _animationController.dispose();
   }
 
   @override
@@ -213,11 +228,20 @@ class _MenuPageState extends State<MenuPage> {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.star,
-                    color: Colors
-                        .amber, // Dusty Blue accent color (significantly toned down)
-                    size: width * 2,
+                  AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _scaleAnimation.value,
+                        child: child,
+                      );
+                    },
+                    child: Icon(
+                      Icons.star,
+                      color: Colors
+                          .amber, // Dusty Blue accent color (significantly toned down)
+                      size: width * 2,
+                    ),
                   ),
                   SizedBox(width: width * 0.5),
                   buildCustomText(
