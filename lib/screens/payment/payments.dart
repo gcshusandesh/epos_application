@@ -653,7 +653,7 @@ class _PaymentState extends State<Payment> {
             children: [
               RatingBar.builder(
                 initialRating: 3,
-                minRating: 1,
+                minRating: 0.5,
                 direction: Axis.horizontal,
                 allowHalfRating: true,
                 itemCount: 5,

@@ -8,6 +8,7 @@ import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/user_provider.dart';
 import 'package:epos_application/screens/employees/create_employee.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -307,17 +308,43 @@ class _ManageEmployeeState extends State<ManageEmployee> {
                 .gender,
             width,
             context),
-        employeeLabel(
-            text: Provider.of<UserProvider>(context, listen: true)
-                .userList[index]
-                .userType
-                .name
-                .toString(),
-            height: height,
-            width: width,
-            labelColor: Provider.of<InfoProvider>(context, listen: false)
-                .systemInfo
-                .iconsColor),
+        Column(
+          children: [
+            employeeLabel(
+                text: Provider.of<UserProvider>(context, listen: true)
+                    .userList[index]
+                    .userType
+                    .name
+                    .toString(),
+                height: height,
+                width: width,
+                labelColor: Provider.of<InfoProvider>(context, listen: false)
+                    .systemInfo
+                    .iconsColor),
+            Provider.of<UserProvider>(context, listen: true)
+                        .userList[index]
+                        .userType
+                        .name ==
+                    "waiter"
+                ? RatingBar.builder(
+                    initialRating: 3,
+                    minRating: 0.5,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    ignoreGestures: true,
+                    itemCount: 5,
+                    itemSize: width * 2, // Adjust size as needed
+                    itemPadding: EdgeInsets.only(
+                        top: height, left: width * 0.25, right: width * 0.25),
+                    itemBuilder: (context, _) => const Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                    ),
+                    onRatingUpdate: (rating) {},
+                  )
+                : const SizedBox(),
+          ],
+        ),
         buildCupertinoSwitch(
           index: index,
           value: !Provider.of<UserProvider>(context, listen: true)
