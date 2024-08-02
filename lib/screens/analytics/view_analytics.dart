@@ -699,29 +699,56 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
           buildCustomText("Employee Data", Data.darkTextColor, width * 2.2,
               fontWeight: FontWeight.bold),
           SizedBox(height: height),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              analyticsBox(
-                title: "Total Employees",
-                count: Provider.of<UserProvider>(context, listen: true)
-                    .userList
-                    .length,
-                context: context,
-                isTotal: true,
-              ),
-              analyticsBox(
-                title: "Active Employees",
-                count: Provider.of<UserProvider>(context, listen: true)
-                    .userList
-                    .where((user) => !user.isBlocked)
-                    .length,
-                context: context,
-              ),
-              genderBox(context: context),
-              topEmployeeBox(context: context),
-            ],
-          ),
+          Provider.of<UserProvider>(context, listen: true)
+                      .userList
+                      .where((user) => user.userType.name == "waiter")
+                      .length >
+                  1
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    analyticsBox(
+                      title: "Total Employees",
+                      count: Provider.of<UserProvider>(context, listen: true)
+                          .userList
+                          .length,
+                      context: context,
+                      isTotal: true,
+                    ),
+                    analyticsBox(
+                      title: "Active Employees",
+                      count: Provider.of<UserProvider>(context, listen: true)
+                          .userList
+                          .where((user) => !user.isBlocked)
+                          .length,
+                      context: context,
+                    ),
+                    genderBox(context: context),
+                    topEmployeeBox(context: context),
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    analyticsBox(
+                      title: "Total Employees",
+                      count: Provider.of<UserProvider>(context, listen: true)
+                          .userList
+                          .length,
+                      context: context,
+                      isTotal: true,
+                    ),
+                    analyticsBox(
+                      title: "Active Employees",
+                      count: Provider.of<UserProvider>(context, listen: true)
+                          .userList
+                          .where((user) => !user.isBlocked)
+                          .length,
+                      context: context,
+                    ),
+                    genderBox(context: context),
+                  ],
+                ),
         ],
       ),
     );
