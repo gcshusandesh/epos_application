@@ -672,7 +672,6 @@ class _PaymentState extends State<Payment> {
                   color: Colors.amber,
                 ),
                 onRatingUpdate: (rating) {
-                  print("rating = $rating");
                   staffRating = rating;
                 },
               ),
@@ -701,9 +700,9 @@ class _PaymentState extends State<Payment> {
                   double newRating =
                       ((currentRating * currentRatingCount) + staffRating) /
                           (currentRatingCount + 1);
-                  bool isRatingSuccessful =
-                      await Provider.of<AuthProvider>(context, listen: false)
-                          .updateUserDetails(
+                  // update the user rating at the same time as well
+                  Provider.of<AuthProvider>(context, listen: false)
+                      .updateUserDetails(
                     context: context,
                     isUpdateRating: true,
                     rating: newRating,
@@ -713,6 +712,18 @@ class _PaymentState extends State<Payment> {
                         .id
                         .toString(),
                   );
+                  bool isRatingSuccessful =
+                      await Provider.of<OrderProvider>(context, listen: false)
+                          .updateOrders(
+                              accessToken: Provider.of<AuthProvider>(context,
+                                      listen: false)
+                                  .user
+                                  .accessToken!,
+                              context: context,
+                              orderID: widget.orderId!,
+                              isRating: true,
+                              rating: staffRating);
+
                   setState(() {
                     isLoading = false;
                   });

@@ -100,7 +100,11 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                 .where((element) => element.isPaid)
                 .toList();
 
-        topEmployee = extractTopEmployee();
+        topEmployee = extractTopEmployee(
+          paidOrders: paidOrders,
+          startDate: dateRange.start,
+          endDate: dateRange.end,
+        );
 
         totalRevenue = calculateTotalRevenue(
           paidOrders: paidOrders,
@@ -133,30 +137,53 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     });
   }
 
-  String extractTopEmployee() {
-    List<UserDataModel> userList =
-        Provider.of<UserProvider>(context, listen: false).userList;
+  String extractTopEmployee({
+    required List<ProcessedOrder> paidOrders,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) {
+    // A map to hold employee rating data
+    Map<String, EmployeeRating> employeeRatingMap = {};
 
-    // Filter the userList to only include waiters
-    List<UserDataModel> waiters =
-        userList.where((user) => user.userType.name == "waiter").toList();
+    // Filter orders based on date range
+    List<ProcessedOrder> filteredOrders = paidOrders.where((order) {
+      DateTime orderDate = order.orderDateTime!;
+      return orderDate.isAfter(startDate) && orderDate.isBefore(endDate);
+    }).toList();
 
-    waiters = waiters.where((user) => !user.isBlocked).toList();
+    // Aggregate ratings data
+    for (var order in filteredOrders) {
+      var employeeName = order.receivedBy;
+      var rating = order.rating;
 
-    if (waiters.isEmpty) {
-      return "No Data Available";
+      if (employeeName != null) {
+        if (employeeRatingMap.containsKey(employeeName)) {
+          // If the employee already exists in the employeeRatingMap, their rating is updated by calling addRating(rating).
+          employeeRatingMap[employeeName]!.addRating(rating);
+        } else {
+          // If the employee does not exist in the map, a new EmployeeRating object is created and added to the map.
+          // Initialize with 0 if rating is 0
+          employeeRatingMap[employeeName] = EmployeeRating(
+            employeeName: employeeName,
+            ratingCount: rating != 0
+                ? 1
+                : 0, // Initialize with 1 only if rating is not 0
+            totalRating: rating != 0
+                ? rating
+                : 0, // Initialize with rating only if it's not 0
+          );
+        }
+      }
     }
 
-    // Find the waiter with the highest rating
-    UserDataModel topWaiter = waiters.reduce(
-        (current, next) => current.rating > next.rating ? current : next);
+    // Convert the map to a list and sort by average rating in descending order
+    var sortedEmployees = employeeRatingMap.values.toList()
+      ..sort((a, b) => b.averageRating.compareTo(a.averageRating));
 
-    // if the top waiter has no rating, return "No Data Available"
-    if (topWaiter.rating == 0) {
+    if (sortedEmployees.isEmpty || sortedEmployees[0].averageRating == 0) {
       return "No Data Available";
     }
-
-    return topWaiter.name;
+    return sortedEmployees[0].employeeName;
   }
 
   double filteredRevenue = 0;
@@ -818,7 +845,8 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          buildCustomText("Top Server", Colors.white, width * 1.7,
+          buildCustomText(
+              "Top Server($filterDropDownValue)", Colors.white, width * 1.7,
               fontWeight: FontWeight.bold),
           SizedBox(
             height: height,
@@ -1004,17 +1032,23 @@ class SalesByCategoryContainer extends StatelessWidget {
   }
 }
 
-class EmployeeSales {
-  String employeeName;
-  double totalSalesAmount;
+class EmployeeRating {
+  final String employeeName;
+  int ratingCount;
+  double totalRating;
 
-  EmployeeSales({
+  EmployeeRating({
     required this.employeeName,
-    required this.totalSalesAmount,
+    required this.ratingCount,
+    required this.totalRating,
   });
 
-  // Method to add sales to an existing record
-  void addSale(double amount) {
-    totalSalesAmount += amount;
+  double get averageRating => ratingCount == 0 ? 0 : totalRating / ratingCount;
+
+  void addRating(double rating) {
+    if (rating != 0) {
+      totalRating += rating;
+      ratingCount += 1;
+    }
   }
 }

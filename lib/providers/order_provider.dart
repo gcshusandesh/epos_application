@@ -52,6 +52,7 @@ class OrderProvider extends ChangeNotifier {
             paymentMode: attributes['paymentMode'],
             orderDateTime: DateTime.parse(attributes['updatedAt']),
             receivedBy: attributes['receivedBy'],
+            rating: (attributes['rating'] ?? 0).toDouble(),
           );
         }).toList();
 
@@ -347,6 +348,8 @@ class OrderProvider extends ChangeNotifier {
           isChangeStatus: isChangeStatus,
           newOrderStatus: newOrderStatus,
           discount: discount,
+          billedTo: billedTo,
+          rating: rating,
         );
       }
       return false;
@@ -362,7 +365,6 @@ class OrderProvider extends ChangeNotifier {
             ));
       }
       if (context.mounted) {
-        // retry API
         await updateOrders(
           accessToken: accessToken,
           context: context,
@@ -371,6 +373,8 @@ class OrderProvider extends ChangeNotifier {
           isChangeStatus: isChangeStatus,
           newOrderStatus: newOrderStatus,
           discount: discount,
+          billedTo: billedTo,
+          rating: rating,
         );
       }
       return false;

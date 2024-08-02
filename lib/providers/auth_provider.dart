@@ -219,7 +219,6 @@ class AuthProvider extends ChangeNotifier {
         await getMyDetails(init: init, context: context);
       }
     } catch (e) {
-      print(e);
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
