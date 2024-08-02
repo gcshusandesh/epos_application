@@ -278,6 +278,7 @@ class ProcessedOrder {
   String? paymentMode;
   DateTime? orderDateTime;
   String? receivedBy;
+  double? rating;
 
   ProcessedOrder({
     this.id,
@@ -294,6 +295,7 @@ class ProcessedOrder {
     this.paymentMode,
     this.orderDateTime,
     this.receivedBy,
+    this.rating,
   });
 
   double get paidPrice => price - discount;
