@@ -57,6 +57,7 @@ class AuthProvider extends ChangeNotifier {
           userType: assignUserType(userData["userType"]),
           accessToken: data["jwt"],
           isLoggedIn: true,
+          rating: (data["rating"] ?? 0).toDouble(),
         );
         if (!init) {
           notifyListeners();
@@ -161,7 +162,7 @@ class AuthProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> getUserDetails(
+  Future<void> getMyDetails(
       {required bool init, required BuildContext context}) async {
     var url = Uri.parse("${Data.baseUrl}/api/users/me?populate=image");
     try {
@@ -189,6 +190,7 @@ class AuthProvider extends ChangeNotifier {
           userType: assignUserType(data["userType"]),
           accessToken: jwt,
           isLoggedIn: true,
+          rating: (data["rating"] ?? 0).toDouble(),
         );
 
         /// add above login data along with image data to cache at once
@@ -206,28 +208,29 @@ class AuthProvider extends ChangeNotifier {
             MaterialPageRoute(
               builder: (context) => ErrorScreen(
                 isConnectedToInternet: false,
-                trace: "getUserDetails",
+                trace: "getMyDetails",
               ),
             ));
       }
       if (context.mounted) {
         //retry api
-        await getUserDetails(init: init, context: context);
+        await getMyDetails(init: init, context: context);
       }
     } catch (e) {
+      print(e);
       if (context.mounted) {
         // Navigate to Error Page
         await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => ErrorScreen(
-                    trace: "getUserDetails",
+                    trace: "getMyDetails",
                   )),
         );
       }
       if (context.mounted) {
         //retry api
-        await getUserDetails(init: init, context: context);
+        await getMyDetails(init: init, context: context);
       }
     }
   }

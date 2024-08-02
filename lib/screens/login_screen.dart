@@ -291,7 +291,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (loginSuccessful) {
       // once login is successful load the image of the user as well
       if (mounted) {
-        await Provider.of<AuthProvider>(context, listen: false).getUserDetails(
+        await Provider.of<AuthProvider>(context, listen: false).getMyDetails(
           init: true,
           context: context,
         );

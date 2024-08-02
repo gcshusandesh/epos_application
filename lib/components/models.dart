@@ -130,6 +130,7 @@ class UserDataModel {
         'userType': user.userType.toString(),
         'accessToken': user.accessToken,
         'isLoggedIn': user.isLoggedIn,
+        'rating': user.rating,
       };
 
   factory UserDataModel.fromJson(Map<String, dynamic> jsonData) {
@@ -152,6 +153,7 @@ class UserDataModel {
       userType: userType,
       accessToken: jsonData['accessToken'],
       isLoggedIn: jsonData['isLoggedIn'],
+      rating: jsonData['rating'],
     );
   }
 

@@ -80,7 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isLoading = true;
     });
     await Provider.of<AuthProvider>(context, listen: false)
-        .getUserDetails(init: false, context: context);
+        .getMyDetails(init: false, context: context);
 
     if (mounted) {
       UserDataModel user =

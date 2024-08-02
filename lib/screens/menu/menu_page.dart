@@ -125,11 +125,18 @@ class _MenuPageState extends State<MenuPage>
 
     if (mounted) {
       // need this data for accurate order number
-      await Provider.of<OrderProvider>(context, listen: false).getOrders(
+      Provider.of<OrderProvider>(context, listen: false).getOrders(
         accessToken:
             Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
         context: context,
       );
+      // need this data to update average rating
+      await Provider.of<AuthProvider>(context, listen: false).getMyDetails(
+        init: false,
+        context: context,
+      );
+      print(
+          "user rating = ${Provider.of<AuthProvider>(context, listen: false).user.rating}");
     }
   }
 

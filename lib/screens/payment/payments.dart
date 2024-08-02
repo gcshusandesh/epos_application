@@ -681,6 +681,10 @@ class _PaymentState extends State<Payment> {
                   setState(() {
                     isLoading = true;
                   });
+                  double currentRating =
+                      Provider.of<AuthProvider>(context, listen: false)
+                          .user
+                          .rating;
                   bool isRatingSuccessful =
                       await Provider.of<AuthProvider>(context, listen: false)
                           .updateUserDetails(

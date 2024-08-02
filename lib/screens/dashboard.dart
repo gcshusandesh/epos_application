@@ -46,7 +46,14 @@ class _DashboardState extends State<Dashboard> {
     await Provider.of<InfoProvider>(context, listen: false).getSettings(
       context: context,
     );
-    if (mounted) {
+    if (mounted &&
+        (Provider.of<AuthProvider>(context, listen: false).user.userType.name ==
+                "owner" ||
+            Provider.of<AuthProvider>(context, listen: false)
+                    .user
+                    .userType
+                    .name ==
+                "manager")) {
       // Get Employee Data from API
       await Provider.of<UserProvider>(context, listen: false).getUserList(
           user: Provider.of<AuthProvider>(context, listen: false).user,
@@ -268,19 +275,19 @@ class _DashboardState extends State<Dashboard> {
               isVisible: dashboardVisibility[4],
             ),
             dashboardItem(
-                "assets/dashboard/kitchen.svg",
-                "Kitchen",
-                height,
-                width,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Kitchen()),
-                  );
-                },
-                context,
-                isVisible: dashboardVisibility[5],
-              ),
+              "assets/dashboard/kitchen.svg",
+              "Kitchen",
+              height,
+              width,
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Kitchen()),
+                );
+              },
+              context,
+              isVisible: dashboardVisibility[5],
+            ),
             dashboardItem(
               "assets/dashboard/analytics.svg",
               "Analytics",
