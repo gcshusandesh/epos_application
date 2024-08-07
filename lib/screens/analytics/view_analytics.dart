@@ -116,6 +116,16 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
           endDate: dateRange.end,
         );
 
+        totalMargin = calculateTotalMargin(
+          paidOrders: paidOrders,
+        );
+
+        filteredMargin = calculateFilteredMargin(
+          paidOrders: paidOrders,
+          startDate: dateRange.start,
+          endDate: dateRange.end,
+        );
+
         // Extract top selling items based on the selected date range
         topSellingItems = extractTopSellingItems(
           paidOrders,
@@ -210,6 +220,30 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     return filteredRevenue;
   }
 
+  double filteredMargin = 0;
+  double calculateFilteredMargin({
+    required List<ProcessedOrder> paidOrders,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) {
+    // Initialize total margin
+    double filteredMargin = 0.0;
+
+    // Aggregate margin data within the specified date range and for paid orders
+    for (var order in paidOrders) {
+      if (order.isPaid) {
+        DateTime orderDate = order.orderDateTime!;
+
+        if (orderDate.isAfter(startDate) && orderDate.isBefore(endDate)) {
+          double orderRevenue = order.price - order.discount;
+          filteredMargin += (orderRevenue - order.cost);
+        }
+      }
+    }
+
+    return filteredMargin;
+  }
+
   double totalRevenue = 0;
   double calculateTotalRevenue({
     required List<ProcessedOrder> paidOrders,
@@ -225,6 +259,24 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
     }
 
     return totalRevenue;
+  }
+
+  double totalMargin = 0;
+  double calculateTotalMargin({
+    required List<ProcessedOrder> paidOrders,
+  }) {
+    // Initialize total profit
+    double totalMargin = 0.0;
+
+    // Aggregate profit data within the specified date range and for paid orders
+    for (var order in paidOrders) {
+      if (order.isPaid) {
+        double orderRevenue = order.price - order.discount;
+        totalMargin += (orderRevenue - order.cost);
+      }
+    }
+
+    return totalMargin;
   }
 
   Map<String, double> calculateSalesByCategory({
@@ -581,10 +633,9 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                         children: [
                           Column(
                             children: [
-                              buildCustomText("Financial Overview",
+                              buildCustomText("Financial Sales Overview",
                                   Data.darkTextColor, width * 2.2,
                                   fontWeight: FontWeight.bold),
-                              SizedBox(height: height),
                             ],
                           ),
                           Column(
@@ -592,7 +643,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                               Row(
                                 children: [
                                   SizedBox(
-                                    width: width * 20,
+                                    width: width * 25,
                                     child: buildCustomText("Total Revenue",
                                         Data.darkTextColor, width * 2),
                                   ),
@@ -606,7 +657,29 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                               Row(
                                 children: [
                                   SizedBox(
-                                    width: width * 20,
+                                    width: width * 25,
+                                    child: buildCustomText(
+                                        "Total Sales Margins",
+                                        Data.darkTextColor,
+                                        width * 2),
+                                  ),
+                                  buildCustomText(
+                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${totalMargin.toStringAsFixed(2)}",
+                                      Data.lightGreyTextColor,
+                                      width * 2),
+                                ],
+                              ),
+                              SizedBox(height: height),
+                              Container(
+                                height: 1,
+                                width: width * 36,
+                                color: Colors.black,
+                              ),
+                              SizedBox(height: height),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: width * 25,
                                     child: buildCustomText(
                                         "Revenue ($filterDropDownValue)",
                                         Data.darkTextColor,
@@ -622,28 +695,14 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                               Row(
                                 children: [
                                   SizedBox(
-                                    width: width * 20,
-                                    child: buildCustomText("Total Profit",
-                                        Data.darkTextColor, width * 2),
-                                  ),
-                                  buildCustomText(
-                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${filteredRevenue.toStringAsFixed(2)}",
-                                      Data.lightGreyTextColor,
-                                      width * 2),
-                                ],
-                              ),
-                              SizedBox(height: height),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: width * 20,
+                                    width: width * 25,
                                     child: buildCustomText(
-                                        "Profit ($filterDropDownValue)",
+                                        "Sales Margins ($filterDropDownValue)",
                                         Data.darkTextColor,
                                         width * 2),
                                   ),
                                   buildCustomText(
-                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${filteredRevenue.toStringAsFixed(2)}",
+                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${filteredMargin.toStringAsFixed(2)}",
                                       Data.lightGreyTextColor,
                                       width * 2),
                                 ],
