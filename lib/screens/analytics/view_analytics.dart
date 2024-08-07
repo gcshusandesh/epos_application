@@ -633,7 +633,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                         children: [
                           Column(
                             children: [
-                              buildCustomText("Financial Sales Overview",
+                              buildCustomText("Sales Financial Overview",
                                   Data.darkTextColor, width * 2.2,
                                   fontWeight: FontWeight.bold),
                             ],
@@ -658,10 +658,8 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                                 children: [
                                   SizedBox(
                                     width: width * 25,
-                                    child: buildCustomText(
-                                        "Total Sales Margins",
-                                        Data.darkTextColor,
-                                        width * 2),
+                                    child: buildCustomText("Total Margins",
+                                        Data.darkTextColor, width * 2),
                                   ),
                                   buildCustomText(
                                       "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${totalMargin.toStringAsFixed(2)}",
@@ -697,7 +695,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                                   SizedBox(
                                     width: width * 25,
                                     child: buildCustomText(
-                                        "Sales Margins ($filterDropDownValue)",
+                                        "Margins ($filterDropDownValue)",
                                         Data.darkTextColor,
                                         width * 2),
                                   ),
