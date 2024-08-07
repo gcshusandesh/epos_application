@@ -280,6 +280,7 @@ class MenuProvider extends ChangeNotifier {
               description: attributes['description'],
               ingredients: attributes['ingredients'],
               price: attributes['price'].toDouble(),
+              cost: attributes['cost'].toDouble(),
               status: attributes['isActive'],
             ));
             addItemToPriceList(attributes['name'],
@@ -319,6 +320,7 @@ class MenuProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
+      print(e);
       if (context.mounted) {
         await Navigator.push(
             context,
@@ -386,6 +388,7 @@ class MenuProvider extends ChangeNotifier {
             "description": menuItem.description,
             "ingredients": menuItem.ingredients,
             "price": menuItem.price,
+            "cost": menuItem.cost,
             "categoryType": selectedCategory,
           }
         };
@@ -428,6 +431,7 @@ class MenuProvider extends ChangeNotifier {
             description: data['attributes']['description'],
             ingredients: data['attributes']['ingredients'],
             price: data['attributes']['price'].toDouble(),
+            cost: data['attributes']['cost'].toDouble(),
             status: data['attributes']['isActive'],
           );
           addMenuItemLocally(menuItem: newMenuItem);
@@ -636,6 +640,7 @@ class MenuProvider extends ChangeNotifier {
             "description": editedMenuItems.description,
             "ingredients": editedMenuItems.ingredients,
             "price": editedMenuItems.price,
+            "cost": editedMenuItems.cost,
             "isActive": editedMenuItems.status,
           }
         };

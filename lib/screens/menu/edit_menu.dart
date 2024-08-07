@@ -297,6 +297,7 @@ class _EditMenuState extends State<EditMenu> {
                               tableTitle("Description", width),
                               tableTitle("Ingredients", width),
                               tableTitle("Price", width),
+                              tableTitle("Cost", width),
                               tableTitle("Action", width),
                               tableTitle("Status", width),
                             ]),
@@ -333,6 +334,7 @@ class _EditMenuState extends State<EditMenu> {
                           tableTitle("Description", width),
                           tableTitle("Ingredients", width),
                           tableTitle("Price", width),
+                          tableTitle("Cost", width),
                           tableTitle("Action", width),
                           tableTitle("Status", width),
                         ]),
@@ -515,6 +517,11 @@ class _EditMenuState extends State<EditMenu> {
           width,
           context,
         ),
+        tableItem(
+          "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol!} ${Provider.of<MenuProvider>(context, listen: true).menuItemsByCategory[Provider.of<MenuProvider>(context, listen: true).selectedCategoryIndex].menuItems[itemIndex].cost}",
+          width,
+          context,
+        ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: width * 2),
           child: textButton(
@@ -642,6 +649,12 @@ class _EditMenuState extends State<EditMenu> {
                               .selectedCategoryIndex]
                       .menuItems[itemIndex]
                       .price,
+                  cost: Provider.of<MenuProvider>(context, listen: false)
+                      .menuItemsByCategory[
+                          Provider.of<MenuProvider>(context, listen: false)
+                              .selectedCategoryIndex]
+                      .menuItems[itemIndex]
+                      .cost,
                   status: value,
                 ),
                 accessToken: Provider.of<AuthProvider>(context, listen: false)

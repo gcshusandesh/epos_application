@@ -219,6 +219,7 @@ class MenuItems {
   String description;
   String ingredients;
   double price;
+  double cost;
   bool status;
   int quantity;
 
@@ -229,6 +230,7 @@ class MenuItems {
     required this.description,
     required this.ingredients,
     required this.price,
+    required this.cost,
     required this.status,
     this.quantity = 0,
   });

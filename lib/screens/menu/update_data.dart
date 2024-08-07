@@ -50,6 +50,7 @@ class _UpdateDataState extends State<UpdateData> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController ingredientsController = TextEditingController();
   TextEditingController priceController = TextEditingController();
+  TextEditingController costController = TextEditingController();
 
   @override
   void didChangeDependencies() async {
@@ -71,6 +72,7 @@ class _UpdateDataState extends State<UpdateData> {
           descriptionController.text = widget.menuItems!.description;
           ingredientsController.text = widget.menuItems!.ingredients;
           priceController.text = widget.menuItems!.price.toString();
+          costController.text = widget.menuItems!.cost.toString();
         }
       }
 
@@ -82,6 +84,10 @@ class _UpdateDataState extends State<UpdateData> {
   void dispose() {
     super.dispose();
     nameController.dispose();
+    descriptionController.dispose();
+    ingredientsController.dispose();
+    priceController.dispose();
+    costController.dispose();
   }
 
   @override
@@ -350,6 +356,7 @@ class _UpdateDataState extends State<UpdateData> {
           description: descriptionController.text,
           ingredients: ingredientsController.text,
           price: double.parse(priceController.text),
+          cost: double.parse(costController.text),
           status: widget.menuItems!.status,
         ),
         index: widget.index!,
@@ -366,6 +373,7 @@ class _UpdateDataState extends State<UpdateData> {
           description: descriptionController.text,
           ingredients: ingredientsController.text,
           price: double.parse(priceController.text),
+          cost: double.parse(costController.text),
 
           ///always set status to false when creating a new item
           status: false,
@@ -420,11 +428,24 @@ class _UpdateDataState extends State<UpdateData> {
           },
         ),
         dataBox(
-          title: "Price",
-          hintText: "Price",
+          title: "Selling Price",
+          hintText: "Selling Price",
           isRequired: true,
           isNumber: true,
           controller: priceController,
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Enter a valid price!';
+            }
+            return null;
+          },
+        ),
+        dataBox(
+          title: "Cost Price",
+          hintText: "Cost Price",
+          isRequired: true,
+          isNumber: true,
+          controller: costController,
           validator: (value) {
             if (value.isEmpty) {
               return 'Enter a valid price!';

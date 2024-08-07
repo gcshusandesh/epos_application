@@ -157,11 +157,11 @@ Widget buildCupertinoSwitch(
 Widget tableTitle(String text, double width) {
   return Center(
       child: Padding(
-    padding: const EdgeInsets.symmetric(vertical: 15.0),
+    padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 5),
     child: buildBodyText(
       text,
       Data.lightGreyTextColor,
-      width,
+      width * 0.9,
       fontFamily: "RobotoMedium",
     ),
   ));
