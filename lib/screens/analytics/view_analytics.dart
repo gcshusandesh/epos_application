@@ -487,7 +487,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                           fontWeight: FontWeight.bold,
                         ),
                         SizedBox(
-                          height: height * 8,
+                          height: height * 6,
                           width: width * 20,
                           child: DropdownButtonFormField<String>(
                             // Remove padding to ensure text fits
@@ -555,8 +555,17 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                     ),
                   ),
                   SizedBox(height: height),
+                  SalesByCategoryContainer(
+                    categorySalesMap: salesByCategory,
+                    height: height,
+                    width: width,
+                  ),
+                ],
+              ),
+              Column(
+                children: [
                   Container(
-                      height: height * 22,
+                      height: height * 35,
                       width: width * 40,
                       padding: EdgeInsets.symmetric(
                           horizontal: width * 2, vertical: height),
@@ -572,7 +581,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                         children: [
                           Column(
                             children: [
-                              buildCustomText("Revenue Overview",
+                              buildCustomText("Financial Overview",
                                   Data.darkTextColor, width * 2.2,
                                   fontWeight: FontWeight.bold),
                               SizedBox(height: height),
@@ -585,8 +594,7 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                                   SizedBox(
                                     width: width * 20,
                                     child: buildCustomText("Total Revenue",
-                                        Data.darkTextColor, width * 2,
-                                        fontWeight: FontWeight.bold),
+                                        Data.darkTextColor, width * 2),
                                   ),
                                   buildCustomText(
                                       "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${totalRevenue.toStringAsFixed(2)}",
@@ -602,8 +610,37 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                                     child: buildCustomText(
                                         "Revenue ($filterDropDownValue)",
                                         Data.darkTextColor,
-                                        width * 2,
-                                        fontWeight: FontWeight.bold),
+                                        width * 2),
+                                  ),
+                                  buildCustomText(
+                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${filteredRevenue.toStringAsFixed(2)}",
+                                      Data.lightGreyTextColor,
+                                      width * 2),
+                                ],
+                              ),
+                              SizedBox(height: height),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: width * 20,
+                                    child: buildCustomText("Total Profit",
+                                        Data.darkTextColor, width * 2),
+                                  ),
+                                  buildCustomText(
+                                      "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${filteredRevenue.toStringAsFixed(2)}",
+                                      Data.lightGreyTextColor,
+                                      width * 2),
+                                ],
+                              ),
+                              SizedBox(height: height),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: width * 20,
+                                    child: buildCustomText(
+                                        "Profit ($filterDropDownValue)",
+                                        Data.darkTextColor,
+                                        width * 2),
                                   ),
                                   buildCustomText(
                                       "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${filteredRevenue.toStringAsFixed(2)}",
@@ -676,11 +713,6 @@ class _ViewAnalyticsState extends State<ViewAnalytics> {
                     ),
                   ),
                 ],
-              ),
-              SalesByCategoryContainer(
-                categorySalesMap: salesByCategory,
-                height: height,
-                width: width,
               )
             ],
           ),
@@ -991,7 +1023,7 @@ class SalesByCategoryContainer extends StatelessWidget {
     }).toList();
 
     return Container(
-      height: height * 54,
+      height: height * 45,
       width: width * 40,
       padding: EdgeInsets.symmetric(horizontal: width * 2),
       decoration: BoxDecoration(
