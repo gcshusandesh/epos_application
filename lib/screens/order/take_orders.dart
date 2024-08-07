@@ -245,6 +245,8 @@ class _OrderTakerState extends State<OrderTaker> {
                 instructions: specialInstructionController.text,
                 price: Provider.of<MenuProvider>(context, listen: false)
                     .totalAmount,
+                cost:
+                    Provider.of<MenuProvider>(context, listen: false).totalCost,
 
                 /// while placing the order, the discount is not applied, status is processing and isPaid is false
                 discount: 0,

@@ -886,6 +886,7 @@ class MenuProvider extends ChangeNotifier {
   double totalAmount = 0;
   int totalCount = 0;
   double vatAmount = 0;
+  double totalCost = 0;
 
   void deleteItemFromOrderLocally(
       {required int itemIndex, required String itemName}) {
@@ -915,14 +916,18 @@ class MenuProvider extends ChangeNotifier {
 
   void calculateTotal({bool isRecalculate = false}) {
     double total = 0;
+    double totalCost = 0;
     int count = 0;
-    //clear list before generating new one
+
+    // Clear list before generating a new one
     if (!isRecalculate) {
       order.items.clear();
     }
+
     for (var category in menuItemsByCategory) {
       for (var item in category.menuItems) {
         total += item.price * item.quantity;
+        totalCost += item.cost * item.quantity;
         count += item.quantity;
         if (!isRecalculate && item.quantity > 0) {
           order.items.add(OrderItem(
@@ -930,9 +935,11 @@ class MenuProvider extends ChangeNotifier {
         }
       }
     }
+
     totalAmount = total;
     totalCount = count;
     vatAmount = totalAmount * 0.20;
+    this.totalCost = totalCost;
     notifyListeners();
   }
 

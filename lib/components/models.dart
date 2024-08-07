@@ -279,6 +279,7 @@ class ProcessedOrder {
   String items;
   String? instructions;
   double price;
+  double cost;
   double discount;
   String? orderTime;
   String? paymentTime;
@@ -296,6 +297,7 @@ class ProcessedOrder {
     required this.items,
     this.instructions,
     required this.price,
+    required this.cost,
     this.discount = 0,
     this.orderTime,
     this.paymentTime,

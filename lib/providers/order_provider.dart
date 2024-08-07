@@ -39,6 +39,7 @@ class OrderProvider extends ChangeNotifier {
                 ? "N/A"
                 : attributes['instruction'],
             price: attributes['price'].toDouble(),
+            cost: attributes['cost'].toDouble(),
             discount: attributes['discount'].toDouble(),
             orderTime: convertTimestamp(attributes['createdAt'].toString()),
             paymentTime: attributes['updatedAt'] == null
@@ -185,9 +186,9 @@ class OrderProvider extends ChangeNotifier {
         "data": {
           "tableNumber": order.tableNumber,
           "items": order.items,
-          "instruction": order
-              .instructions, // Make sure to match the field name with API requirements
+          "instruction": order.instructions,
           "price": order.price,
+          "cost": order.cost,
           "discount": order.discount,
           "orderStatus": order.status.name,
           "billedTo":
