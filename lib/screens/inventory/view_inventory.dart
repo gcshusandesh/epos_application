@@ -4,7 +4,7 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/inventory_provider.dart';
-import 'package:epos_application/screens/inventory/update_unit.dart';
+import 'package:epos_application/screens/inventory/edit_unit.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -132,7 +132,7 @@ class _ViewInventoryState extends State<ViewInventory> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const UpdateUnitType()),
+                              builder: (context) => const EditUnitType()),
                         );
                       },
                     )

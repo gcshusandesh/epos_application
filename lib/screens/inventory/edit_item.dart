@@ -2,14 +2,14 @@ import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:flutter/material.dart';
 
-class UpdateUnitType extends StatefulWidget {
-  const UpdateUnitType({super.key});
+class EditItem extends StatefulWidget {
+  const EditItem({super.key});
 
   @override
-  State<UpdateUnitType> createState() => _UpdateUnitTypeState();
+  State<EditItem> createState() => _EditItemState();
 }
 
-class _UpdateUnitTypeState extends State<UpdateUnitType> {
+class _EditItemState extends State<EditItem> {
   @override
   bool init = true;
   late double height;
