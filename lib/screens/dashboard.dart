@@ -7,6 +7,7 @@ import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/user_provider.dart';
 import 'package:epos_application/screens/analytics/view_analytics.dart';
+import 'package:epos_application/screens/inventory/view_inventory.dart';
 import 'package:epos_application/screens/kitchen.dart';
 import 'package:epos_application/screens/menu/menu_page.dart';
 import 'package:epos_application/screens/order/orders.dart';
@@ -84,6 +85,7 @@ class _DashboardState extends State<Dashboard> {
     false,
     false,
     false,
+    false,
     false
   ];
 
@@ -91,29 +93,13 @@ class _DashboardState extends State<Dashboard> {
     if (Provider.of<AuthProvider>(context, listen: false).user.userType ==
         UserType.owner) {
       /// Owner
-      dashboardVisibility = [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-      ];
+      dashboardVisibility = [true, true, true, true, true, true, true, true];
     } else if (Provider.of<AuthProvider>(context, listen: false)
             .user
             .userType ==
         UserType.manager) {
       /// Manager
-      dashboardVisibility = [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-      ];
+      dashboardVisibility = [true, true, true, true, true, true, true, true];
     } else if (Provider.of<AuthProvider>(context, listen: false)
             .user
             .userType ==
@@ -126,7 +112,8 @@ class _DashboardState extends State<Dashboard> {
         false,
         false,
         true,
-        false,
+        true,
+        false
       ];
     } else {
       ///default type is waiter
@@ -135,6 +122,7 @@ class _DashboardState extends State<Dashboard> {
         true,
         true,
         true,
+        false,
         false,
         false,
         false,
@@ -289,6 +277,21 @@ class _DashboardState extends State<Dashboard> {
               isVisible: dashboardVisibility[5],
             ),
             dashboardItem(
+              "assets/dashboard/inventory.svg",
+              "Kitchen",
+              height,
+              width,
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ViewInventory()),
+                );
+              },
+              context,
+              isVisible: dashboardVisibility[6],
+            ),
+            dashboardItem(
               "assets/dashboard/analytics.svg",
               "Analytics",
               height,
@@ -301,7 +304,7 @@ class _DashboardState extends State<Dashboard> {
                 );
               },
               context,
-              isVisible: dashboardVisibility[6],
+              isVisible: dashboardVisibility[7],
             ),
           ],
         ),

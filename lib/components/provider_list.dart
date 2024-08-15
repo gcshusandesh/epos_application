@@ -1,6 +1,7 @@
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/extra_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
+import 'package:epos_application/providers/inventory_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
 import 'package:epos_application/providers/upload_provider.dart';
@@ -16,4 +17,5 @@ List<SingleChildWidget> providers = [
   ChangeNotifierProvider<ExtraProvider>(create: (_) => ExtraProvider()),
   ChangeNotifierProvider<UploadProvider>(create: (_) => UploadProvider()),
   ChangeNotifierProvider<OrderProvider>(create: (_) => OrderProvider()),
+  ChangeNotifierProvider<InventoryProvider>(create: (_) => InventoryProvider()),
 ];
