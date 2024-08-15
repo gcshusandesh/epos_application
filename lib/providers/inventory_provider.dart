@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class InventoryProvider extends ChangeNotifier {
+  List unitTypes = [];
+
   /// Inventory Items Units
   Future<bool> createUnitType({
     required String unitType,

@@ -3,6 +3,8 @@ import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/info_provider.dart';
+import 'package:epos_application/providers/inventory_provider.dart';
+import 'package:epos_application/screens/inventory/update_unit.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -113,10 +115,36 @@ class _ViewInventoryState extends State<ViewInventory> {
                       isSelected: isEditing,
                       context: context,
                     ),
+                    SizedBox(width: width),
+                    textButton(
+                      text: "Manage",
+                      height: height,
+                      width: width,
+                      textColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .iconsColor,
+                      buttonColor:
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .iconsColor,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const UpdateUnitType()),
+                        );
+                      },
+                    )
                   ],
                 ),
               ],
             ),
+          ),
+          SizedBox(height: height * 2),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, right: 20),
+            child: tableSection(context),
           ),
         ],
       ),
@@ -217,6 +245,82 @@ class _ViewInventoryState extends State<ViewInventory> {
                 buildCustomText(title, Colors.white, width * 1.65,
                     fontWeight: FontWeight.bold),
               ],
+      ),
+    );
+  }
+
+  Expanded tableSection(BuildContext context) {
+    return Expanded(
+      child: SingleChildScrollView(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: Provider.of<InventoryProvider>(context, listen: true)
+                  .unitTypes
+                  .isEmpty
+              ? Column(
+                  children: [
+                    Table(
+                      border: TableBorder.all(color: Colors.black),
+                      defaultVerticalAlignment:
+                          TableCellVerticalAlignment.middle,
+                      children: [
+                        TableRow(
+                            decoration: const BoxDecoration(
+                                color: Data.lightGreyBodyColor),
+                            children: [
+                              tableTitle("S.N.", width),
+                              tableTitle("Item ID", width),
+                              tableTitle("Name", width),
+                              tableTitle("Quantity Type", width),
+                              tableTitle("Quantity", width),
+                              tableTitle("Price", width),
+                              tableTitle("Action", width),
+                            ]),
+                      ],
+                    ),
+                    Container(
+                      width: width * 100,
+                      decoration: const BoxDecoration(
+                        color: Data.lightGreyBodyColor,
+                        border: Border(
+                          left: BorderSide(color: Colors.black, width: 1),
+                          right: BorderSide(color: Colors.black, width: 1),
+                          bottom: BorderSide(color: Colors.black, width: 1),
+                        ),
+                      ),
+                      child: Center(
+                        child: buildSmallText("No Data Available",
+                            Data.lightGreyTextColor, width),
+                      ),
+                    )
+                  ],
+                )
+              : Table(
+                  border: TableBorder.all(color: Colors.black),
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  children: [
+                    TableRow(
+                        decoration:
+                            const BoxDecoration(color: Data.lightGreyBodyColor),
+                        children: [
+                          tableTitle("S.N.", width),
+                          tableTitle("Item ID", width),
+                          tableTitle("Name", width),
+                          tableTitle("Quantity Type", width),
+                          tableTitle("Quantity", width),
+                          tableTitle("Price", width),
+                          tableTitle("Action", width),
+                        ]),
+                    // for (int index = 0;
+                    // index <
+                    //     Provider.of<InventoryProvider>(context, listen: true)
+                    //         .unitTypes
+                    //         .length;
+                    // index++)
+                    //   buildSpecialsRow(index),
+                  ],
+                ),
+        ),
       ),
     );
   }
