@@ -321,8 +321,8 @@ class InventoryProvider extends ChangeNotifier {
   }
 
   void updateInventoryItemLocally(
-      {required int index, required InventoryItem inventoryItem}) {
-    inventoryItems[index] = inventoryItem;
+      {required int index, required InventoryItem editedInventoryItem}) {
+    inventoryItems[index] = editedInventoryItem;
     notifyListeners();
   }
 
@@ -423,7 +423,7 @@ class InventoryProvider extends ChangeNotifier {
             name: inventoryItem['attributes']['name'],
             price: inventoryItem['attributes']['price'].toDouble(),
             type: inventoryItem['attributes']['type'],
-            quantity: inventoryItem['attributes']['quantity'].toInt(),
+            quantity: inventoryItem['attributes']['quantity'].toDouble(),
           ));
         });
         notifyListeners();
@@ -467,18 +467,24 @@ class InventoryProvider extends ChangeNotifier {
   }
 
   Future<bool> updateInventoryItem({
-    required int id,
+    required int index,
+    required String accessToken,
     required BuildContext context,
-    required String editedInventoryItem,
+    required InventoryItem editedInventoryItem,
   }) async {
-    var url = Uri.parse("${Data.baseUrl}/api/inventory-items/$id");
+    var url = Uri.parse(
+        "${Data.baseUrl}/api/inventory-items/${editedInventoryItem.id}");
     try {
       Map<String, String> headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'Authorization': 'Bearer $accessToken',
       };
-      late Map<String, String> body = {
-        "name": editedInventoryItem,
+      late Map<String, dynamic> body = {
+        "name": editedInventoryItem.name,
+        "type": editedInventoryItem.type,
+        "quantity": editedInventoryItem.quantity,
+        "price": editedInventoryItem.price,
       };
 
       Map<String, dynamic> payloadBody = {
@@ -487,6 +493,8 @@ class InventoryProvider extends ChangeNotifier {
       final response = await http.put(Uri.parse(url.toString()),
           headers: headers, body: jsonEncode(payloadBody));
       if (response.statusCode == 200) {
+        updateInventoryItemLocally(
+            index: index, editedInventoryItem: editedInventoryItem);
         return true;
       }
       return false;
@@ -505,7 +513,10 @@ class InventoryProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await updateInventoryItem(
-            id: id, context: context, editedInventoryItem: editedInventoryItem);
+            accessToken: accessToken,
+            index: index,
+            context: context,
+            editedInventoryItem: editedInventoryItem);
       }
       return false;
     } catch (e) {
@@ -522,7 +533,10 @@ class InventoryProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await updateInventoryItem(
-            id: id, context: context, editedInventoryItem: editedInventoryItem);
+            accessToken: accessToken,
+            index: index,
+            context: context,
+            editedInventoryItem: editedInventoryItem);
       }
     }
     return false;

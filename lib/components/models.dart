@@ -326,7 +326,7 @@ class InventoryItem {
   int? id;
   String name;
   String type;
-  int quantity;
+  double quantity;
   double price;
 
   InventoryItem({

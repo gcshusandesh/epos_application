@@ -1,6 +1,7 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/inventory_provider.dart';
@@ -101,112 +102,178 @@ class _UpdateInventoryState extends State<UpdateInventory> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                iconButton(
-                  "assets/svg/arrow_back.svg",
-                  height,
-                  width,
-                  () {
-                    Navigator.pop(context);
-                  },
-                  context: context,
-                ),
-                buildTitleText(widget.isEdit ? "Edit Unit" : "Add Unit",
-                    Data.darkTextColor, width),
-                SizedBox(width: width * 5),
-              ],
-            ),
-            SizedBox(height: height * 2),
-            Container(
-                width: width * 35,
-                padding: EdgeInsets.symmetric(
-                    vertical: height * 2, horizontal: width * 2),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Data.lightGreyBodyColor50,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.25), // Shadow color
-                      spreadRadius: 0, // How much the shadow spreads
-                      blurRadius: 4, // How much the shadow blurs
-                      offset: const Offset(0, 5), // The offset of the shadow
-                    ),
-                  ],
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      dataBox(
-                        title: "Item Name",
-                        hintText: "Item Name",
-                        isRequired: true,
-                        controller: nameController,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Enter a valid name!';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: height * 2),
-                      buildButton(
-                        widget.isEdit ? Icons.update : Icons.create,
-                        widget.isEdit ? "Update" : "Create",
-                        height,
-                        width,
-                        () async {
-                          if (_formKey.currentState!.validate()) {
-                            setState(() {
-                              isLoading = true;
-                            });
-                            late bool isSuccessful;
-                            isSuccessful = await updateUnit();
-                            setState(() {
-                              isLoading = false;
-                            });
-                            if (isSuccessful) {
-                              if (mounted) {
-                                Navigator.pop(context);
-                                // show success massage
-                                showTopSnackBar(
-                                  Overlay.of(context),
-                                  CustomSnackBar.success(
-                                    message: widget.isEdit
-                                        ? "Item Successfully Updated"
-                                        : "Item Successfully Created",
-                                  ),
-                                );
-                              }
-                            } else {
-                              if (mounted) {
-                                // show error massage
-                                showTopSnackBar(
-                                  Overlay.of(context),
-                                  CustomSnackBar.error(
-                                    message: widget.isEdit
-                                        ? "Item update failed"
-                                        : "Item creation failed",
-                                  ),
-                                );
-                              }
-                            }
-                          }
-                        },
-                        context,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  iconButton(
+                    "assets/svg/arrow_back.svg",
+                    height,
+                    width,
+                    () {
+                      Navigator.pop(context);
+                    },
+                    context: context,
+                  ),
+                  buildTitleText(widget.isEdit ? "Edit Unit" : "Add Unit",
+                      Data.darkTextColor, width),
+                  SizedBox(width: width * 5),
+                ],
+              ),
+              SizedBox(height: height * 2),
+              Container(
+                  width: width * 35,
+                  padding: EdgeInsets.symmetric(
+                      vertical: height * 2, horizontal: width * 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Data.lightGreyBodyColor50,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.25), // Shadow color
+                        spreadRadius: 0, // How much the shadow spreads
+                        blurRadius: 4, // How much the shadow blurs
+                        offset: const Offset(0, 5), // The offset of the shadow
                       ),
                     ],
                   ),
-                ))
-          ],
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        widget.isUnit ? unitForm() : itemForm(),
+                        SizedBox(height: height * 2),
+                        buildButton(
+                          widget.isEdit ? Icons.update : Icons.create,
+                          widget.isEdit ? "Update" : "Create",
+                          height,
+                          width,
+                          () async {
+                            if (_formKey.currentState!.validate()) {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              late bool isSuccessful;
+                              if (widget.isUnit) {
+                                isSuccessful = await updateUnit();
+                              } else {}
+                              isSuccessful = await updateItem();
+                              setState(() {
+                                isLoading = false;
+                              });
+                              if (isSuccessful) {
+                                if (mounted) {
+                                  Navigator.pop(context);
+                                  // show success massage
+                                  showTopSnackBar(
+                                    Overlay.of(context),
+                                    CustomSnackBar.success(
+                                      message: widget.isEdit
+                                          ? "Item Successfully Updated"
+                                          : "Item Successfully Created",
+                                    ),
+                                  );
+                                }
+                              } else {
+                                if (mounted) {
+                                  // show error massage
+                                  showTopSnackBar(
+                                    Overlay.of(context),
+                                    CustomSnackBar.error(
+                                      message: widget.isEdit
+                                          ? "Item update failed"
+                                          : "Item creation failed",
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                          },
+                          context,
+                        ),
+                      ],
+                    ),
+                  ))
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget itemForm() {
+    return Column(
+      children: [
+        dataBox(
+          title: "Item Name",
+          hintText: "Item Name",
+          isRequired: true,
+          controller: nameController,
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Enter a valid name!';
+            }
+            return null;
+          },
+        ),
+        dataBox(
+          title: "Type",
+          hintText: "Type",
+          isRequired: true,
+          controller: nameController,
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Enter a valid type!';
+            }
+            return null;
+          },
+        ),
+        dataBox(
+          title: "Quantity",
+          hintText: "Quantity",
+          isRequired: true,
+          controller: quantityController,
+          isNumber: true,
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Enter a valid quantity!';
+            }
+            return null;
+          },
+        ),
+        dataBox(
+          title: "Price",
+          hintText: "Price",
+          isRequired: true,
+          isNumber: true,
+          controller: priceController,
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Enter a valid price!';
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Container unitForm() {
+    return dataBox(
+      title: "Unit Name",
+      hintText: "Unit Name",
+      isRequired: true,
+      controller: nameController,
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Enter a valid name!';
+        }
+        return null;
+      },
     );
   }
 
@@ -227,6 +294,37 @@ class _UpdateInventoryState extends State<UpdateInventory> {
       isSuccessful =
           await Provider.of<InventoryProvider>(context, listen: false)
               .createUnitType(
+                  unitType: nameController.text,
+                  accessToken: Provider.of<AuthProvider>(context, listen: false)
+                      .user
+                      .accessToken!,
+                  context: context);
+    }
+
+    return isSuccessful;
+  }
+
+  Future<bool> updateItem() async {
+    late bool isSuccessful;
+    if (widget.isEdit) {
+      isSuccessful =
+          await Provider.of<InventoryProvider>(context, listen: false)
+              .updateInventoryItem(
+        index: widget.index!,
+        editedInventoryItem: InventoryItem(
+            id: widget.id!,
+            name: nameController.text,
+            price: double.tryParse(priceController.text)!,
+            quantity: double.tryParse(quantityController.text)!,
+            type: "KG"),
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+        context: context,
+      );
+    } else {
+      isSuccessful =
+          await Provider.of<InventoryProvider>(context, listen: false)
+              .createInventoryItem(
                   unitType: nameController.text,
                   accessToken: Provider.of<AuthProvider>(context, listen: false)
                       .user
