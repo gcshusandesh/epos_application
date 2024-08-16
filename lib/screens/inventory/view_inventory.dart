@@ -100,13 +100,11 @@ class _ViewInventoryState extends State<ViewInventory> {
                       height,
                       width,
                       () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => const UpdateData(
-                        //         isSpecial: true,
-                        //       )),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const UpdateInventory()),
+                        );
                       },
                       context: context,
                     ),

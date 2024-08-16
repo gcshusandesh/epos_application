@@ -327,7 +327,7 @@ class InventoryProvider extends ChangeNotifier {
   }
 
   Future<bool> createInventoryItem({
-    required String unitType,
+    required InventoryItem inventoryItem,
     required String accessToken,
     required BuildContext context,
   }) async {
@@ -340,7 +340,10 @@ class InventoryProvider extends ChangeNotifier {
       };
       late Map<String, dynamic> payloadBody = {
         "data": {
-          "name": unitType,
+          "name": inventoryItem.name,
+          "type": inventoryItem.type,
+          "quantity": inventoryItem.quantity,
+          "price": inventoryItem.price,
         }
       };
 
@@ -352,6 +355,14 @@ class InventoryProvider extends ChangeNotifier {
       var extractedData = json.decode(response.body);
       var data = extractedData['data'];
       if (response.statusCode == 200) {
+        addInventoryItemLocally(
+            inventoryItem: InventoryItem(
+          id: data["id"],
+          name: inventoryItem.name,
+          type: inventoryItem.type,
+          quantity: inventoryItem.quantity,
+          price: inventoryItem.price,
+        ));
         notifyListeners();
         return true;
       }
@@ -371,7 +382,7 @@ class InventoryProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await createInventoryItem(
-          unitType: unitType,
+          inventoryItem: inventoryItem,
           accessToken: accessToken,
           context: context,
         );
@@ -391,7 +402,7 @@ class InventoryProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await createInventoryItem(
-          unitType: unitType,
+          inventoryItem: inventoryItem,
           accessToken: accessToken,
           context: context,
         );
@@ -561,6 +572,7 @@ class InventoryProvider extends ChangeNotifier {
       );
       json.decode(response.body);
       if (response.statusCode == 200) {
+        deleteInventoryItemLocally(index: index);
         notifyListeners();
         return true;
       }

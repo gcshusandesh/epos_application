@@ -29,7 +29,6 @@ class UpdateInventory extends StatefulWidget {
 }
 
 class _UpdateInventoryState extends State<UpdateInventory> {
-  @override
   bool init = true;
   late double height;
   late double width;
@@ -379,7 +378,11 @@ class _UpdateInventoryState extends State<UpdateInventory> {
       isSuccessful =
           await Provider.of<InventoryProvider>(context, listen: false)
               .createInventoryItem(
-                  unitType: nameController.text,
+                  inventoryItem: InventoryItem(
+                      name: nameController.text,
+                      price: double.tryParse(priceController.text)!,
+                      quantity: double.tryParse(quantityController.text)!,
+                      type: typeDropdownValue!),
                   accessToken: Provider.of<AuthProvider>(context, listen: false)
                       .user
                       .accessToken!,

@@ -19,7 +19,6 @@ class EditUnitType extends StatefulWidget {
 }
 
 class _EditUnitTypeState extends State<EditUnitType> {
-  @override
   bool init = true;
   late double height;
   late double width;

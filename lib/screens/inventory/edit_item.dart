@@ -10,7 +10,6 @@ class EditItem extends StatefulWidget {
 }
 
 class _EditItemState extends State<EditItem> {
-  @override
   bool init = true;
   late double height;
   late double width;
