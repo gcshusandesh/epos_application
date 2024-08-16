@@ -186,6 +186,7 @@ class InventoryProvider extends ChangeNotifier {
       final response = await http.put(Uri.parse(url.toString()),
           headers: headers, body: jsonEncode(payloadBody));
       if (response.statusCode == 200) {
+        updateUnitTypeLocally(index: index, unitType: editedUnitType);
         return true;
       }
       return false;

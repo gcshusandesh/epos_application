@@ -203,6 +203,18 @@ class _EditUnitTypeState extends State<EditUnitType> {
         InkWell(
           onTap: () {
             if (isEditing) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UpdateInventory(
+                          isEdit: true,
+                          index: index,
+                          id: Provider.of<InventoryProvider>(context,
+                                  listen: false)
+                              .unitTypes[index]
+                              .id,
+                        )),
+              );
               // Navigator.push(
               //   context,
               //   MaterialPageRoute(
