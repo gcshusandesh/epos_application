@@ -321,3 +321,19 @@ class UnitType {
     required this.name,
   });
 }
+
+class InventoryItem {
+  int? id;
+  String name;
+  String type;
+  int quantity;
+  double price;
+
+  InventoryItem({
+    this.id,
+    required this.name,
+    required this.price,
+    required this.quantity,
+    required this.type,
+  });
+}

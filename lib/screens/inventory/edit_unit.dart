@@ -98,7 +98,9 @@ class _EditUnitTypeState extends State<EditUnitType> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const UpdateInventory()),
+                          builder: (context) => const UpdateInventory(
+                                isUnit: true,
+                              )),
                     );
                   },
                   context: context,
@@ -210,6 +212,7 @@ class _EditUnitTypeState extends State<EditUnitType> {
                 MaterialPageRoute(
                     builder: (context) => UpdateInventory(
                           isEdit: true,
+                          isUnit: true,
                           index: index,
                           id: Provider.of<InventoryProvider>(context,
                                   listen: false)

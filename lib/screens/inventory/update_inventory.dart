@@ -15,10 +15,12 @@ class UpdateInventory extends StatefulWidget {
     this.isEdit = false,
     this.id,
     this.index,
+    this.isUnit = false,
   });
   final bool isEdit;
   final int? id;
   final int? index;
+  final bool isUnit;
 
   @override
   State<UpdateInventory> createState() => _UpdateInventoryState();
@@ -35,6 +37,8 @@ class _UpdateInventoryState extends State<UpdateInventory> {
       GlobalKey<FormState>(); // A key for managing the form
 
   TextEditingController nameController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
 
   @override
   void didChangeDependencies() async {
@@ -45,10 +49,27 @@ class _UpdateInventoryState extends State<UpdateInventory> {
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
       if (widget.isEdit) {
-        nameController.text =
-            Provider.of<InventoryProvider>(context, listen: false)
-                .unitTypes[widget.index!]
-                .name;
+        if (widget.isUnit) {
+          nameController.text =
+              Provider.of<InventoryProvider>(context, listen: false)
+                  .unitTypes[widget.index!]
+                  .name;
+        } else {
+          nameController.text =
+              Provider.of<InventoryProvider>(context, listen: false)
+                  .inventoryItems[widget.index!]
+                  .name;
+          quantityController.text =
+              Provider.of<InventoryProvider>(context, listen: false)
+                  .inventoryItems[widget.index!]
+                  .quantity
+                  .toString();
+          priceController.text =
+              Provider.of<InventoryProvider>(context, listen: false)
+                  .inventoryItems[widget.index!]
+                  .price
+                  .toString();
+        }
       }
       init = false;
     }
@@ -58,6 +79,8 @@ class _UpdateInventoryState extends State<UpdateInventory> {
   void dispose() {
     super.dispose();
     nameController.dispose();
+    quantityController.dispose();
+    priceController.dispose();
   }
 
   @override

@@ -308,12 +308,30 @@ class InventoryProvider extends ChangeNotifier {
   }
 
   /// Inventory Items
+  List<InventoryItem> inventoryItems = [];
+
+  void addInventoryItemLocally({required InventoryItem inventoryItem}) {
+    inventoryItems.add(inventoryItem);
+    notifyListeners();
+  }
+
+  void deleteInventoryItemLocally({required int index}) {
+    inventoryItems.removeAt(index);
+    notifyListeners();
+  }
+
+  void updateInventoryItemLocally(
+      {required int index, required InventoryItem inventoryItem}) {
+    inventoryItems[index] = inventoryItem;
+    notifyListeners();
+  }
+
   Future<bool> createInventoryItem({
     required String unitType,
     required String accessToken,
     required BuildContext context,
   }) async {
-    late Uri url = Uri.parse("${Data.baseUrl}/api/unit-types");
+    late Uri url = Uri.parse("${Data.baseUrl}/api/inventory-items");
     try {
       var headers = {
         "Accept": "application/json",
@@ -386,7 +404,7 @@ class InventoryProvider extends ChangeNotifier {
     required String accessToken,
     required BuildContext context,
   }) async {
-    late Uri url = Uri.parse("${Data.baseUrl}/api/unit-types");
+    late Uri url = Uri.parse("${Data.baseUrl}/api/inventory-items");
 
     try {
       var headers = {
@@ -398,6 +416,16 @@ class InventoryProvider extends ChangeNotifier {
       var data = extractedData['data'];
 
       if (response.statusCode == 200) {
+        inventoryItems.clear();
+        data.forEach((inventoryItem) {
+          inventoryItems.add(InventoryItem(
+            id: inventoryItem['id'],
+            name: inventoryItem['attributes']['name'],
+            price: inventoryItem['attributes']['price'].toDouble(),
+            type: inventoryItem['attributes']['type'],
+            quantity: inventoryItem['attributes']['quantity'].toInt(),
+          ));
+        });
         notifyListeners();
       } else {
         throw Exception('Failed to load data');
@@ -443,7 +471,7 @@ class InventoryProvider extends ChangeNotifier {
     required BuildContext context,
     required String editedInventoryItem,
   }) async {
-    var url = Uri.parse("${Data.baseUrl}/api/unit-types/$id");
+    var url = Uri.parse("${Data.baseUrl}/api/inventory-items/$id");
     try {
       Map<String, String> headers = {
         'Content-Type': 'application/json',
@@ -506,7 +534,7 @@ class InventoryProvider extends ChangeNotifier {
     required String accessToken,
     required BuildContext context,
   }) async {
-    late Uri url = Uri.parse("${Data.baseUrl}/api/specials/$id");
+    late Uri url = Uri.parse("${Data.baseUrl}/api/inventory-items/$id");
     try {
       var headers = {
         "Accept": "application/json",
