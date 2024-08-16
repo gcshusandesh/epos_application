@@ -4,6 +4,7 @@ import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/inventory_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -41,6 +42,9 @@ class _UpdateInventoryState extends State<UpdateInventory> {
   TextEditingController quantityController = TextEditingController();
   TextEditingController priceController = TextEditingController();
 
+  TextEditingController typeController = TextEditingController();
+  String? typeDropdownValue;
+
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
@@ -70,6 +74,10 @@ class _UpdateInventoryState extends State<UpdateInventory> {
                   .inventoryItems[widget.index!]
                   .price
                   .toString();
+          typeDropdownValue =
+              Provider.of<InventoryProvider>(context, listen: false)
+                  .inventoryItems[widget.index!]
+                  .type;
         }
       }
       init = false;
@@ -82,6 +90,7 @@ class _UpdateInventoryState extends State<UpdateInventory> {
     nameController.dispose();
     quantityController.dispose();
     priceController.dispose();
+    typeController.dispose();
   }
 
   @override
@@ -221,16 +230,61 @@ class _UpdateInventoryState extends State<UpdateInventory> {
           },
         ),
         dataBox(
-          title: "Type",
-          hintText: "Type",
+          title: "Unit Type",
+          hintText: "Unit Type",
           isRequired: true,
-          controller: nameController,
+          isDropDown: true,
+          controller: typeController,
           validator: (value) {
-            if (value.isEmpty) {
-              return 'Enter a valid type!';
+            if (typeDropdownValue == null || typeDropdownValue!.isEmpty) {
+              return 'Select a valid User Type';
             }
             return null;
           },
+          dropDown: DropdownButtonFormField<String>(
+            padding: EdgeInsets.zero,
+            icon: const Icon(Icons.arrow_drop_down_circle_outlined),
+            iconSize: width * 2,
+            iconDisabledColor: Provider.of<InfoProvider>(context, listen: true)
+                .systemInfo
+                .iconsColor,
+            iconEnabledColor: Provider.of<InfoProvider>(context, listen: true)
+                .systemInfo
+                .iconsColor,
+            decoration: InputDecoration(
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Data.lightGreyBodyColor, // Custom focused border color
+                  width: 1, // Custom focused border width (optional)
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Provider.of<InfoProvider>(context, listen: true)
+                      .systemInfo
+                      .primaryColor, // Custom focused border color
+                  width: 2.0, // Custom focused border width (optional)
+                ),
+              ),
+            ),
+            hint: const Text('Select'),
+            dropdownColor: Colors.white,
+            value: typeDropdownValue,
+            onChanged: (String? newValue) {
+              setState(() {
+                typeDropdownValue = newValue!;
+              });
+            },
+            items: ["KG", "Litre", "Unit"]
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(
+                  value,
+                ),
+              );
+            }).toList(),
+          ),
         ),
         dataBox(
           title: "Quantity",
@@ -316,7 +370,7 @@ class _UpdateInventoryState extends State<UpdateInventory> {
             name: nameController.text,
             price: double.tryParse(priceController.text)!,
             quantity: double.tryParse(quantityController.text)!,
-            type: "KG"),
+            type: typeDropdownValue!),
         accessToken:
             Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
         context: context,
@@ -340,6 +394,7 @@ class _UpdateInventoryState extends State<UpdateInventory> {
     required String hintText,
     required TextEditingController controller,
     required Function? validator,
+    bool isDropDown = false,
     bool isRequired = false,
     bool isNumber = false,
     Widget dropDown = const SizedBox(),
@@ -364,8 +419,10 @@ class _UpdateInventoryState extends State<UpdateInventory> {
                   : const SizedBox(),
             ],
           ),
-          buildInputField(hintText, height, width, context, controller,
-              validator: validator, isNumber: isNumber),
+          isDropDown
+              ? dropDown
+              : buildInputField(hintText, height, width, context, controller,
+                  validator: validator, isNumber: isNumber),
         ],
       ),
     );
