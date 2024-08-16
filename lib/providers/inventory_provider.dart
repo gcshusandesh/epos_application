@@ -2,12 +2,28 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/screens/error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class InventoryProvider extends ChangeNotifier {
-  List unitTypes = [];
+  List<UnitType> unitTypes = [];
+
+  void addUnitTypeLocally({required UnitType unitType}) {
+    unitTypes.add(unitType);
+    notifyListeners();
+  }
+
+  void deleteUnitTypeLocally({required int index}) {
+    unitTypes.removeAt(index);
+    notifyListeners();
+  }
+
+  void updateUnitTypeLocally({required int index, required String unitType}) {
+    unitTypes[index].name = unitType;
+    notifyListeners();
+  }
 
   /// Inventory Items Units
   Future<bool> createUnitType({
@@ -27,15 +43,13 @@ class InventoryProvider extends ChangeNotifier {
           "name": unitType,
         }
       };
-
       var response = await http.post(
         url,
         headers: headers,
         body: jsonEncode(payloadBody),
       );
-      var extractedData = json.decode(response.body);
-      var data = extractedData['data'];
       if (response.statusCode == 200) {
+        addUnitTypeLocally(unitType: UnitType(name: unitType));
         notifyListeners();
         return true;
       }
@@ -100,6 +114,13 @@ class InventoryProvider extends ChangeNotifier {
       var data = extractedData['data'];
 
       if (response.statusCode == 200) {
+        unitTypes.clear();
+        data.forEach((unitItem) {
+          unitTypes.add(UnitType(
+            id: unitItem['id'],
+            name: unitItem['attributes']['name'],
+          ));
+        });
         notifyListeners();
       } else {
         throw Exception('Failed to load data');
@@ -143,14 +164,17 @@ class InventoryProvider extends ChangeNotifier {
 
   Future<bool> updateUnitType({
     required int id,
-    required BuildContext context,
+    required int index,
     required String editedUnitType,
+    required String accessToken,
+    required BuildContext context,
   }) async {
     var url = Uri.parse("${Data.baseUrl}/api/unit-types/$id");
     try {
       Map<String, String> headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'Authorization': 'Bearer $accessToken',
       };
       late Map<String, String> body = {
         "name": editedUnitType,
@@ -180,7 +204,11 @@ class InventoryProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await updateUnitType(
-            id: id, context: context, editedUnitType: editedUnitType);
+            id: id,
+            index: index,
+            editedUnitType: editedUnitType,
+            context: context,
+            accessToken: accessToken);
       }
       return false;
     } catch (e) {
@@ -197,7 +225,11 @@ class InventoryProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await updateUnitType(
-            id: id, context: context, editedUnitType: editedUnitType);
+            id: id,
+            index: index,
+            editedUnitType: editedUnitType,
+            context: context,
+            accessToken: accessToken);
       }
     }
     return false;
@@ -408,7 +440,7 @@ class InventoryProvider extends ChangeNotifier {
   Future<bool> updateInventoryItem({
     required int id,
     required BuildContext context,
-    required String editedUnitType,
+    required String editedInventoryItem,
   }) async {
     var url = Uri.parse("${Data.baseUrl}/api/unit-types/$id");
     try {
@@ -417,7 +449,7 @@ class InventoryProvider extends ChangeNotifier {
         'Accept': 'application/json',
       };
       late Map<String, String> body = {
-        "name": editedUnitType,
+        "name": editedInventoryItem,
       };
 
       Map<String, dynamic> payloadBody = {
@@ -443,8 +475,8 @@ class InventoryProvider extends ChangeNotifier {
       }
       if (context.mounted) {
         //retry api
-        await updateUnitType(
-            id: id, context: context, editedUnitType: editedUnitType);
+        await updateInventoryItem(
+            id: id, context: context, editedInventoryItem: editedInventoryItem);
       }
       return false;
     } catch (e) {
@@ -461,7 +493,7 @@ class InventoryProvider extends ChangeNotifier {
       if (context.mounted) {
         //retry api
         await updateInventoryItem(
-            id: id, context: context, editedUnitType: editedUnitType);
+            id: id, context: context, editedInventoryItem: editedInventoryItem);
       }
     }
     return false;

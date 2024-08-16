@@ -41,12 +41,10 @@ class _ViewInventoryState extends State<ViewInventory> {
     }
   }
 
-  void _fetchData({bool reload = false}) {
-    if (reload) {
-      setState(() {
-        isLoading = true;
-      });
-    }
+  void _fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
     setState(() {
       isLoading = false;
     });
@@ -76,7 +74,7 @@ class _ViewInventoryState extends State<ViewInventory> {
                 text: "Inventory",
                 width: width,
                 onTap: () {
-                  _fetchData(reload: true);
+                  _fetchData();
                 }),
           ),
           inventoryAnalytics(context),

@@ -2,6 +2,8 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/inventory_provider.dart';
 import 'package:epos_application/screens/inventory/update_inventory.dart';
 import 'package:flutter/material.dart';
@@ -41,12 +43,14 @@ class _EditUnitTypeState extends State<EditUnitType> {
     }
   }
 
-  void _fetchData({bool reload = false}) {
-    if (reload) {
-      setState(() {
-        isLoading = true;
-      });
-    }
+  void _fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await Provider.of<InventoryProvider>(context, listen: false).getUnitTypes(
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+        context: context);
     setState(() {
       isLoading = false;
     });
@@ -76,7 +80,7 @@ class _EditUnitTypeState extends State<EditUnitType> {
                 text: "Inventory Unit Type",
                 width: width,
                 onTap: () {
-                  _fetchData(reload: true);
+                  _fetchData();
                 }),
             SizedBox(
               height: height * 2,
@@ -176,17 +180,89 @@ class _EditUnitTypeState extends State<EditUnitType> {
                           tableTitle("Quantity Type", width),
                           tableTitle("Action", width),
                         ]),
-                    // for (int index = 0;
-                    // index <
-                    //     Provider.of<InventoryProvider>(context, listen: true)
-                    //         .unitTypes
-                    //         .length;
-                    // index++)
-                    //   buildSpecialsRow(index),
+                    for (int index = 0;
+                        index <
+                            Provider.of<InventoryProvider>(context,
+                                    listen: true)
+                                .unitTypes
+                                .length;
+                        index++)
+                      buildUnitRows(index),
                   ],
                 ),
         ),
       ),
+    );
+  }
+
+  TableRow buildUnitRows(int index) {
+    return TableRow(
+      decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
+      children: [
+        tableItem((index + 1).toString(), width, context),
+        InkWell(
+          onTap: () {
+            if (isEditing) {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //       builder: (context) => UpdateData(
+              //         isCategory: true,
+              //         category:
+              //         Provider.of<MenuProvider>(context, listen: false)
+              //             .categoryList[index],
+              //         isEdit: true,
+              //         index: index,
+              //       )),
+              // );
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Column(
+              children: [
+                tableItem(
+                    Provider.of<InventoryProvider>(context, listen: true)
+                        .unitTypes[index]
+                        .name,
+                    width,
+                    context),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: width),
+                      child: isEditing
+                          ? label(
+                              text: "edit",
+                              height: height,
+                              width: width,
+                              labelColor: Provider.of<InfoProvider>(context,
+                                      listen: true)
+                                  .systemInfo
+                                  .iconsColor)
+                          : const SizedBox(),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: width * 6),
+          child: textButton(
+            text: "Delete",
+            height: height,
+            width: width,
+            textColor: Data.redColor,
+            buttonColor: Data.redColor,
+            onTap: () async {
+              // do not delete if unit has items
+            },
+          ),
+        ),
+      ],
     );
   }
 }

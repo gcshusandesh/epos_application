@@ -312,3 +312,12 @@ class ProcessedOrder {
 
   double get paidPrice => price - discount;
 }
+
+class UnitType {
+  int? id;
+  String name;
+  UnitType({
+    this.id,
+    required this.name,
+  });
+}

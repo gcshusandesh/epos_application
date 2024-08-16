@@ -2,7 +2,10 @@ import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
 import 'package:epos_application/components/size_config.dart';
+import 'package:epos_application/providers/auth_provider.dart';
+import 'package:epos_application/providers/inventory_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
@@ -10,8 +13,12 @@ class UpdateInventory extends StatefulWidget {
   const UpdateInventory({
     super.key,
     this.isEdit = false,
+    this.id,
+    this.index,
   });
   final bool isEdit;
+  final int? id;
+  final int? index;
 
   @override
   State<UpdateInventory> createState() => _UpdateInventoryState();
@@ -131,7 +138,8 @@ class _UpdateInventoryState extends State<UpdateInventory> {
                             setState(() {
                               isLoading = true;
                             });
-                            late bool isSuccessful = false;
+                            late bool isSuccessful;
+                            isSuccessful = await updateUnit();
                             setState(() {
                               isLoading = false;
                             });
@@ -172,6 +180,33 @@ class _UpdateInventoryState extends State<UpdateInventory> {
         ),
       ),
     );
+  }
+
+  Future<bool> updateUnit() async {
+    late bool isSuccessful;
+    if (widget.isEdit) {
+      isSuccessful =
+          await Provider.of<InventoryProvider>(context, listen: false)
+              .updateUnitType(
+        id: widget.id!,
+        index: widget.index!,
+        editedUnitType: nameController.text,
+        accessToken:
+            Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
+        context: context,
+      );
+    } else {
+      isSuccessful =
+          await Provider.of<InventoryProvider>(context, listen: false)
+              .createUnitType(
+                  unitType: nameController.text,
+                  accessToken: Provider.of<AuthProvider>(context, listen: false)
+                      .user
+                      .accessToken!,
+                  context: context);
+    }
+
+    return isSuccessful;
   }
 
   Container dataBox({
