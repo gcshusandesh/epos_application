@@ -276,20 +276,29 @@ class _DashboardState extends State<Dashboard> {
               context,
               isVisible: dashboardVisibility[5],
             ),
-            dashboardItem(
-              "assets/dashboard/inventory.svg",
-              "Kitchen",
-              height,
-              width,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ViewInventory()),
-                );
-              },
-              context,
-              isVisible: dashboardVisibility[6],
+            Padding(
+              padding: EdgeInsets.only(
+                  left: Provider.of<AuthProvider>(context, listen: true)
+                              .user
+                              .userType ==
+                          UserType.chef
+                      ? width * 5
+                      : 0),
+              child: dashboardItem(
+                "assets/dashboard/inventory.svg",
+                "Inventory",
+                height,
+                width,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ViewInventory()),
+                  );
+                },
+                context,
+                isVisible: dashboardVisibility[6],
+              ),
             ),
             dashboardItem(
               "assets/dashboard/analytics.svg",

@@ -8,6 +8,8 @@ import 'package:epos_application/providers/inventory_provider.dart';
 import 'package:epos_application/screens/inventory/update_inventory.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class EditUnitType extends StatefulWidget {
   const EditUnitType({super.key});
@@ -215,18 +217,6 @@ class _EditUnitTypeState extends State<EditUnitType> {
                               .id,
                         )),
               );
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => UpdateData(
-              //         isCategory: true,
-              //         category:
-              //         Provider.of<MenuProvider>(context, listen: false)
-              //             .categoryList[index],
-              //         isEdit: true,
-              //         index: index,
-              //       )),
-              // );
             }
           },
           child: Padding(
@@ -270,7 +260,47 @@ class _EditUnitTypeState extends State<EditUnitType> {
             textColor: Data.redColor,
             buttonColor: Data.redColor,
             onTap: () async {
-              // do not delete if unit has items
+              /// do not delete if unit has items
+              setState(() {
+                isLoading = true;
+              });
+              // delete item from list
+              bool isDeleted = await Provider.of<InventoryProvider>(context,
+                      listen: false)
+                  .deleteUnitType(
+                      id: Provider.of<InventoryProvider>(context, listen: false)
+                          .unitTypes[index]
+                          .id!,
+                      index: index,
+                      accessToken:
+                          Provider.of<AuthProvider>(context, listen: false)
+                              .user
+                              .accessToken!,
+                      context: context);
+              setState(() {
+                isLoading = false;
+              });
+              if (isDeleted) {
+                if (mounted) {
+                  // Check if the widget is still mounted
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.success(
+                      message: "Unit successfully deleted.",
+                    ),
+                  );
+                }
+              } else {
+                if (mounted) {
+                  // Check if the widget is still mounted
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.error(
+                      message: "Unit could not be deleted.",
+                    ),
+                  );
+                }
+              }
             },
           ),
         ),

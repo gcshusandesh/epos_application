@@ -320,7 +320,6 @@ class MenuProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print(e);
       if (context.mounted) {
         await Navigator.push(
             context,

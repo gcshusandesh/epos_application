@@ -48,8 +48,10 @@ class InventoryProvider extends ChangeNotifier {
         headers: headers,
         body: jsonEncode(payloadBody),
       );
+      var extractedData = json.decode(response.body);
+      var data = extractedData['data'];
       if (response.statusCode == 200) {
-        addUnitTypeLocally(unitType: UnitType(name: unitType));
+        addUnitTypeLocally(unitType: UnitType(name: unitType, id: data["id"]));
         notifyListeners();
         return true;
       }
@@ -143,7 +145,6 @@ class InventoryProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print(e);
       if (context.mounted) {
         await Navigator.push(
             context,
@@ -242,7 +243,7 @@ class InventoryProvider extends ChangeNotifier {
     required String accessToken,
     required BuildContext context,
   }) async {
-    late Uri url = Uri.parse("${Data.baseUrl}/api/specials/$id");
+    late Uri url = Uri.parse("${Data.baseUrl}/api/unit-types/$id");
     try {
       var headers = {
         "Accept": "application/json",
@@ -253,8 +254,8 @@ class InventoryProvider extends ChangeNotifier {
         url,
         headers: headers,
       );
-      json.decode(response.body);
       if (response.statusCode == 200) {
+        deleteUnitTypeLocally(index: index);
         notifyListeners();
         return true;
       }
@@ -419,7 +420,6 @@ class InventoryProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print(e);
       if (context.mounted) {
         await Navigator.push(
             context,

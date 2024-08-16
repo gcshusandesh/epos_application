@@ -44,7 +44,12 @@ class _UpdateInventoryState extends State<UpdateInventory> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-
+      if (widget.isEdit) {
+        nameController.text =
+            Provider.of<InventoryProvider>(context, listen: false)
+                .unitTypes[widget.index!]
+                .name;
+      }
       init = false;
     }
   }

@@ -140,10 +140,7 @@ class _ViewInventoryState extends State<ViewInventory> {
             ),
           ),
           SizedBox(height: height * 2),
-          Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20),
-            child: tableSection(context),
-          ),
+          tableSection(context),
         ],
       ),
     );
@@ -249,75 +246,78 @@ class _ViewInventoryState extends State<ViewInventory> {
 
   Expanded tableSection(BuildContext context) {
     return Expanded(
-      child: SingleChildScrollView(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: Provider.of<InventoryProvider>(context, listen: true)
-                  .unitTypes
-                  .isEmpty
-              ? Column(
-                  children: [
-                    Table(
-                      border: TableBorder.all(color: Colors.black),
-                      defaultVerticalAlignment:
-                          TableCellVerticalAlignment.middle,
-                      children: [
-                        TableRow(
-                            decoration: const BoxDecoration(
-                                color: Data.lightGreyBodyColor),
-                            children: [
-                              tableTitle("S.N.", width),
-                              tableTitle("Item ID", width),
-                              tableTitle("Name", width),
-                              tableTitle("Quantity Type", width),
-                              tableTitle("Quantity", width),
-                              tableTitle("Price", width),
-                              tableTitle("Action", width),
-                            ]),
-                      ],
-                    ),
-                    Container(
-                      width: width * 100,
-                      decoration: const BoxDecoration(
-                        color: Data.lightGreyBodyColor,
-                        border: Border(
-                          left: BorderSide(color: Colors.black, width: 1),
-                          right: BorderSide(color: Colors.black, width: 1),
-                          bottom: BorderSide(color: Colors.black, width: 1),
-                        ),
-                      ),
-                      child: Center(
-                        child: buildSmallText("No Data Available",
-                            Data.lightGreyTextColor, width),
-                      ),
-                    )
-                  ],
-                )
-              : Table(
-                  border: TableBorder.all(color: Colors.black),
-                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                  children: [
-                    TableRow(
-                        decoration:
-                            const BoxDecoration(color: Data.lightGreyBodyColor),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20),
+        child: SingleChildScrollView(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: Provider.of<InventoryProvider>(context, listen: true)
+                    .unitTypes
+                    .isEmpty
+                ? Column(
+                    children: [
+                      Table(
+                        border: TableBorder.all(color: Colors.black),
+                        defaultVerticalAlignment:
+                            TableCellVerticalAlignment.middle,
                         children: [
-                          tableTitle("S.N.", width),
-                          tableTitle("Item ID", width),
-                          tableTitle("Name", width),
-                          tableTitle("Quantity Type", width),
-                          tableTitle("Quantity", width),
-                          tableTitle("Price", width),
-                          tableTitle("Action", width),
-                        ]),
-                    // for (int index = 0;
-                    // index <
-                    //     Provider.of<InventoryProvider>(context, listen: true)
-                    //         .unitTypes
-                    //         .length;
-                    // index++)
-                    //   buildSpecialsRow(index),
-                  ],
-                ),
+                          TableRow(
+                              decoration: const BoxDecoration(
+                                  color: Data.lightGreyBodyColor),
+                              children: [
+                                tableTitle("S.N.", width),
+                                tableTitle("Item ID", width),
+                                tableTitle("Name", width),
+                                tableTitle("Quantity Type", width),
+                                tableTitle("Quantity", width),
+                                tableTitle("Price", width),
+                                tableTitle("Action", width),
+                              ]),
+                        ],
+                      ),
+                      Container(
+                        width: width * 100,
+                        decoration: const BoxDecoration(
+                          color: Data.lightGreyBodyColor,
+                          border: Border(
+                            left: BorderSide(color: Colors.black, width: 1),
+                            right: BorderSide(color: Colors.black, width: 1),
+                            bottom: BorderSide(color: Colors.black, width: 1),
+                          ),
+                        ),
+                        child: Center(
+                          child: buildSmallText("No Data Available",
+                              Data.lightGreyTextColor, width),
+                        ),
+                      )
+                    ],
+                  )
+                : Table(
+                    border: TableBorder.all(color: Colors.black),
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    children: [
+                      TableRow(
+                          decoration: const BoxDecoration(
+                              color: Data.lightGreyBodyColor),
+                          children: [
+                            tableTitle("S.N.", width),
+                            tableTitle("Item ID", width),
+                            tableTitle("Name", width),
+                            tableTitle("Quantity Type", width),
+                            tableTitle("Quantity", width),
+                            tableTitle("Price", width),
+                            tableTitle("Action", width),
+                          ]),
+                      // for (int index = 0;
+                      // index <
+                      //     Provider.of<InventoryProvider>(context, listen: true)
+                      //         .unitTypes
+                      //         .length;
+                      // index++)
+                      //   buildSpecialsRow(index),
+                    ],
+                  ),
+          ),
         ),
       ),
     );
