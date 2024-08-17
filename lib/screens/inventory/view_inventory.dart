@@ -119,7 +119,10 @@ class _ViewInventoryState extends State<ViewInventory> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(width: width * 40, child: searchBar()),
+                  SizedBox(
+                      width: width * 40,
+                      height: height * 10,
+                      child: searchBar()),
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     child: Row(
