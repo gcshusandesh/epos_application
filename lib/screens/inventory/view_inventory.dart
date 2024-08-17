@@ -27,11 +27,14 @@ class _ViewInventoryState extends State<ViewInventory> {
   bool isLoading = false;
   bool isEditing = false;
   String searchQuery = "";
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _fetchData(reload: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchData(reload: false);
+    });
   }
 
   @override
@@ -43,6 +46,12 @@ class _ViewInventoryState extends State<ViewInventory> {
       width = SizeConfig.safeBlockHorizontal;
       init = false;
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
   }
 
   void _fetchData({required bool reload}) async {
@@ -100,92 +109,99 @@ class _ViewInventoryState extends State<ViewInventory> {
 
   Widget mainBody(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-            child: customTopSection(
-                context: context,
-                height: height,
-                text: "Inventory",
-                width: width,
-                onTap: () {
-                  _fetchData(reload: true);
-                }),
-          ),
-          inventoryAnalytics(context),
-          Column(
+      body: SingleChildScrollView(
+        controller: _scrollController,
+        child: SizedBox(
+          height: height * 100,
+          child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Padding(
+                padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                child: customTopSection(
+                    context: context,
+                    height: height,
+                    text: "Inventory",
+                    width: width,
+                    onTap: () {
+                      _fetchData(reload: true);
+                    }),
+              ),
+              inventoryAnalytics(context),
+              Column(
                 children: [
-                  SizedBox(
-                      width: width * 40,
-                      height: height * 10,
-                      child: searchBar()),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        iconButton(
-                          "assets/svg/add.svg",
-                          height,
-                          width,
-                          () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const UpdateInventory()),
-                            );
-                          },
-                          context: context,
-                        ),
-                        SizedBox(width: width),
-                        iconButton(
-                          "assets/svg/edit.svg",
-                          height,
-                          width,
-                          () {
-                            setState(() {
-                              isEditing = !isEditing;
-                            });
-                          },
-                          isSelected: isEditing,
-                          context: context,
-                        ),
-                        SizedBox(width: width),
-                        textButton(
-                          text: "Manage",
-                          height: height,
-                          width: width,
-                          textColor:
-                              Provider.of<InfoProvider>(context, listen: true)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                          width: width * 40,
+                          height: height * 10,
+                          child: searchBar()),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20, right: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            iconButton(
+                              "assets/svg/add.svg",
+                              height,
+                              width,
+                              () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const UpdateInventory()),
+                                );
+                              },
+                              context: context,
+                            ),
+                            SizedBox(width: width),
+                            iconButton(
+                              "assets/svg/edit.svg",
+                              height,
+                              width,
+                              () {
+                                setState(() {
+                                  isEditing = !isEditing;
+                                });
+                              },
+                              isSelected: isEditing,
+                              context: context,
+                            ),
+                            SizedBox(width: width),
+                            textButton(
+                              text: "Manage",
+                              height: height,
+                              width: width,
+                              textColor: Provider.of<InfoProvider>(context,
+                                      listen: true)
                                   .systemInfo
                                   .iconsColor,
-                          buttonColor:
-                              Provider.of<InfoProvider>(context, listen: true)
+                              buttonColor: Provider.of<InfoProvider>(context,
+                                      listen: true)
                                   .systemInfo
                                   .iconsColor,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const EditUnitType()),
-                            );
-                          },
-                        )
-                      ],
-                    ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const EditUnitType()),
+                                );
+                              },
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
+              SizedBox(height: height * 2),
+              tableSection(context),
             ],
           ),
-          SizedBox(height: height * 2),
-          tableSection(context),
-        ],
+        ),
       ),
     );
   }
@@ -309,16 +325,35 @@ class _ViewInventoryState extends State<ViewInventory> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: TextField(
+        onTapOutside: (value) {
+          FocusScope.of(context).unfocus();
+        },
+        onTap: () {
+          if (_scrollController.hasClients) {
+            _scrollController.animateTo(
+              330,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+            );
+          }
+        },
         onChanged: (value) {
           setState(() {
             searchQuery = value.toLowerCase();
           });
+          if (_scrollController.hasClients) {
+            _scrollController.animateTo(
+              330,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+            );
+          }
         },
         decoration: InputDecoration(
           hintText: "Search items...",
           prefixIcon: Icon(
             Icons.search,
-            color: Provider.of<InfoProvider>(context, listen: false)
+            color: Provider.of<InfoProvider>(context, listen: true)
                 .systemInfo
                 .primaryColor,
           ),
