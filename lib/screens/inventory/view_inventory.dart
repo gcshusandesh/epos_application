@@ -302,29 +302,48 @@ class _ViewInventoryState extends State<ViewInventory> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               analyticsBox(
-                  context: context,
-                  count: Provider.of<InventoryProvider>(context, listen: true)
-                      .totalItems
-                      .toDouble(),
-                  title: "Total Items"),
+                context: context,
+                count: Provider.of<InventoryProvider>(context, listen: true)
+                    .totalItems
+                    .toDouble(),
+                title: "Total Items",
+                onTap: () {
+                  setState(() {
+                    filterDropDown = "Total Items";
+                  });
+                },
+              ),
               analyticsBox(
-                  context: context,
-                  count: Provider.of<InventoryProvider>(context, listen: true)
-                      .lowStock
-                      .toDouble(),
-                  title: "Low Stock"),
+                context: context,
+                count: Provider.of<InventoryProvider>(context, listen: true)
+                    .lowStock
+                    .toDouble(),
+                title: "Low Stock",
+                onTap: () {
+                  setState(() {});
+                  filterDropDown = "Low Stock";
+                },
+              ),
               analyticsBox(
-                  context: context,
-                  count: Provider.of<InventoryProvider>(context, listen: true)
-                      .outOfStock
-                      .toDouble(),
-                  title: "Out of Stock"),
+                context: context,
+                count: Provider.of<InventoryProvider>(context, listen: true)
+                    .outOfStock
+                    .toDouble(),
+                title: "Out of Stock",
+                onTap: () {
+                  setState(() {
+                    filterDropDown = "Out of Stock";
+                  });
+                },
+              ),
               analyticsBox(
-                  context: context,
-                  count: Provider.of<InventoryProvider>(context, listen: true)
-                      .inventoryWorth,
-                  title: "Inventory Worth",
-                  isWorth: true),
+                context: context,
+                count: Provider.of<InventoryProvider>(context, listen: true)
+                    .inventoryWorth,
+                title: "Inventory Worth",
+                isWorth: true,
+                onTap: () {},
+              ),
             ],
           )
         ],
@@ -337,8 +356,10 @@ class _ViewInventoryState extends State<ViewInventory> {
     required double count,
     required String title,
     bool isWorth = false,
+    Function()? onTap,
   }) {
     return InkWell(
+      onTap: onTap,
       child: Container(
         width: isWorth ? width * 20 : width * 15,
         height: height * 20,
