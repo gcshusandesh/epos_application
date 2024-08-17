@@ -308,6 +308,25 @@ class InventoryProvider extends ChangeNotifier {
   }
 
   /// Inventory Items
+  int totalItems = 0;
+  int lowStock = 0;
+  int outOfStock = 0;
+  double inventoryWorth = 0.0;
+
+  void calculateInventoryAnalytics() {
+    totalItems = inventoryItems.length;
+    lowStock = inventoryItems
+        .where((element) => (element.quantity <= 5 && element.quantity != 0))
+        .length;
+    outOfStock =
+        inventoryItems.where((element) => element.quantity == 0).length;
+    inventoryWorth = inventoryItems.fold(
+        0,
+        (previousValue, element) =>
+            previousValue + (element.price * element.quantity));
+    notifyListeners();
+  }
+
   List<InventoryItem> inventoryItems = [];
 
   void addInventoryItemLocally({required InventoryItem inventoryItem}) {

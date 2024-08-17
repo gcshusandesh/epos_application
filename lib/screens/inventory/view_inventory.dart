@@ -48,6 +48,8 @@ class _ViewInventoryState extends State<ViewInventory> {
     setState(() {
       isLoading = true;
     });
+    Provider.of<InventoryProvider>(context, listen: false)
+        .calculateInventoryAnalytics();
     await Provider.of<InventoryProvider>(context, listen: false)
         .getInventoryList(
             accessToken: Provider.of<AuthProvider>(context, listen: false)
@@ -196,12 +198,28 @@ class _ViewInventoryState extends State<ViewInventory> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              analyticsBox(context: context, count: 0, title: "Total Items"),
-              analyticsBox(context: context, count: 0, title: "Low Stock"),
-              analyticsBox(context: context, count: 0, title: "Out of Stock"),
               analyticsBox(
                   context: context,
-                  count: 0,
+                  count: Provider.of<InventoryProvider>(context, listen: true)
+                      .totalItems
+                      .toDouble(),
+                  title: "Total Items"),
+              analyticsBox(
+                  context: context,
+                  count: Provider.of<InventoryProvider>(context, listen: true)
+                      .lowStock
+                      .toDouble(),
+                  title: "Low Stock"),
+              analyticsBox(
+                  context: context,
+                  count: Provider.of<InventoryProvider>(context, listen: true)
+                      .outOfStock
+                      .toDouble(),
+                  title: "Out of Stock"),
+              analyticsBox(
+                  context: context,
+                  count: Provider.of<InventoryProvider>(context, listen: true)
+                      .inventoryWorth,
                   title: "Inventory Worth",
                   isWorth: true),
             ],
@@ -213,7 +231,7 @@ class _ViewInventoryState extends State<ViewInventory> {
 
   Container analyticsBox({
     required BuildContext context,
-    required int count,
+    required double count,
     required String title,
     bool isWorth = false,
   }) {
@@ -263,7 +281,8 @@ class _ViewInventoryState extends State<ViewInventory> {
                 ),
               ]
             : [
-                buildCustomText(count.toString(), Colors.white, width * 3,
+                buildCustomText(
+                    count.toStringAsFixed(0), Colors.white, width * 3,
                     fontWeight: FontWeight.bold),
                 SizedBox(
                   height: height,
@@ -390,19 +409,45 @@ class _ViewInventoryState extends State<ViewInventory> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: width),
-                      child: isEditing
-                          ? label(
-                              text: "edit",
-                              height: height,
-                              width: width,
-                              labelColor: Provider.of<InfoProvider>(context,
-                                      listen: true)
-                                  .systemInfo
-                                  .iconsColor)
-                          : const SizedBox(),
-                    ),
+                    buildCustomText(
+                        Provider.of<InventoryProvider>(context, listen: true)
+                                    .inventoryItems[index]
+                                    .quantity ==
+                                0
+                            ? "Out of Stock"
+                            : Provider.of<InventoryProvider>(context,
+                                            listen: true)
+                                        .inventoryItems[index]
+                                        .quantity <=
+                                    5
+                                ? "Low Stock"
+                                : "In Stock",
+                        Provider.of<InventoryProvider>(context, listen: true)
+                                    .inventoryItems[index]
+                                    .quantity ==
+                                0
+                            ? Data.redColor
+                            : Provider.of<InventoryProvider>(context,
+                                            listen: true)
+                                        .inventoryItems[index]
+                                        .quantity <=
+                                    5
+                                ? Provider.of<InfoProvider>(context,listen: true).systemInfo.iconsColor
+                                : Data.greenColor,
+                        width),
+                    isEditing
+                        ? Padding(
+                            padding: EdgeInsets.only(left: width),
+                            child: label(
+                                text: "edit",
+                                height: height,
+                                width: width,
+                                labelColor: Provider.of<InfoProvider>(context,
+                                        listen: true)
+                                    .systemInfo
+                                    .iconsColor),
+                          )
+                        : const SizedBox(),
                   ],
                 )
               ],

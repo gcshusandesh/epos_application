@@ -94,15 +94,22 @@ class _UpdateInventoryState extends State<UpdateInventory> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        mainBody(),
-        isLoading
-            ? Center(
-                child: onLoading(width: width, context: context),
-              )
-            : const SizedBox(),
-      ],
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (value) {
+        Provider.of<InventoryProvider>(context, listen: false)
+            .calculateInventoryAnalytics();
+      },
+      child: Stack(
+        children: [
+          mainBody(),
+          isLoading
+              ? Center(
+                  child: onLoading(width: width, context: context),
+                )
+              : const SizedBox(),
+        ],
+      ),
     );
   }
 
@@ -123,6 +130,8 @@ class _UpdateInventoryState extends State<UpdateInventory> {
                     height,
                     width,
                     () {
+                      Provider.of<InventoryProvider>(context, listen: false)
+                          .calculateInventoryAnalytics();
                       Navigator.pop(context);
                     },
                     context: context,
