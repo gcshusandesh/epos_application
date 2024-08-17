@@ -521,6 +521,7 @@ class _ViewInventoryState extends State<ViewInventory> {
                                 tableTitle("Name", width),
                                 tableTitle("Quantity Type", width),
                                 tableTitle("Quantity", width),
+                                tableTitle("Low Stock Trigger", width),
                                 tableTitle("Price", width),
                                 tableTitle("Total", width),
                                 tableTitle("Action", width),
@@ -556,6 +557,7 @@ class _ViewInventoryState extends State<ViewInventory> {
                             tableTitle("Name", width),
                             tableTitle("Quantity Type", width),
                             tableTitle("Quantity", width),
+                            tableTitle("Low Stock Trigger", width),
                             tableTitle("Price", width),
                             tableTitle("Total", width),
                             tableTitle("Action", width),
@@ -633,6 +635,7 @@ class _ViewInventoryState extends State<ViewInventory> {
         ),
         tableItem(item.type, width, context),
         tableItem("x${item.quantity.toString()}", width, context),
+        tableItem(item.lowStockTrigger.toString(), width, context),
         tableItem(
             "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${item.price.toStringAsFixed(2)}",
             width,
