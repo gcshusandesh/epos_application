@@ -28,6 +28,8 @@ class _ViewInventoryState extends State<ViewInventory> {
   bool isEditing = false;
   String searchQuery = "";
   final ScrollController _scrollController = ScrollController();
+  TextEditingController filterController = TextEditingController();
+  String? filterDropDown = "Total Items";
 
   @override
   void initState() {
@@ -52,6 +54,7 @@ class _ViewInventoryState extends State<ViewInventory> {
   void dispose() {
     super.dispose();
     _scrollController.dispose();
+    filterController.dispose();
   }
 
   void _fetchData({required bool reload}) async {
@@ -132,10 +135,83 @@ class _ViewInventoryState extends State<ViewInventory> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SizedBox(
-                          width: width * 40,
-                          height: height * 10,
-                          child: searchBar()),
+                      Row(
+                        children: [
+                          SizedBox(
+                              width: width * 40,
+                              height: height * 10,
+                              child: searchBar()),
+                          dataBox(
+                            title: "Filter",
+                            hintText: "Filter",
+                            isRequired: true,
+                            isDropDown: true,
+                            controller: filterController,
+                            validator: (value) {
+                              if (filterDropDown == null ||
+                                  filterDropDown!.isEmpty) {
+                                return 'Select a valid Filter Type';
+                              }
+                              return null;
+                            },
+                            dropDown: DropdownButtonFormField<String>(
+                              padding: EdgeInsets.zero,
+                              icon: const Icon(
+                                  Icons.arrow_drop_down_circle_outlined),
+                              iconSize: width * 2,
+                              iconDisabledColor: Provider.of<InfoProvider>(
+                                      context,
+                                      listen: true)
+                                  .systemInfo
+                                  .iconsColor,
+                              iconEnabledColor: Provider.of<InfoProvider>(
+                                      context,
+                                      listen: true)
+                                  .systemInfo
+                                  .iconsColor,
+                              decoration: InputDecoration(
+                                enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Data
+                                        .lightGreyBodyColor, // Custom focused border color
+                                    width:
+                                        1, // Custom focused border width (optional)
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Provider.of<InfoProvider>(context,
+                                            listen: true)
+                                        .systemInfo
+                                        .primaryColor, // Custom focused border color
+                                    width:
+                                        2.0, // Custom focused border width (optional)
+                                  ),
+                                ),
+                              ),
+                              hint: const Text('Select'),
+                              dropdownColor: Colors.white,
+                              value: filterDropDown,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  filterDropDown = newValue!;
+                                });
+                              },
+                              items: [
+                                "Total Items",
+                                "In Stock",
+                                "Low Stock",
+                                "Out of Stock"
+                              ].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ],
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(left: 20, right: 20),
                         child: Row(
@@ -256,67 +332,69 @@ class _ViewInventoryState extends State<ViewInventory> {
     );
   }
 
-  Container analyticsBox({
+  Widget analyticsBox({
     required BuildContext context,
     required double count,
     required String title,
     bool isWorth = false,
   }) {
-    return Container(
-      width: isWorth ? width * 20 : width * 15,
-      height: height * 20,
-      padding: EdgeInsets.symmetric(horizontal: width * 1.5),
-      decoration: BoxDecoration(
-        color: Provider.of<InfoProvider>(context, listen: true)
-            .systemInfo
-            .primaryColor,
-        borderRadius: BorderRadius.circular(6.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.25), // Shadow color
-            spreadRadius: 0, // How much the shadow spreads
-            blurRadius: 4, // How much the shadow blurs
-            offset: const Offset(0, 5), // The offset of the shadow
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: isWorth
-            ? [
-                buildCustomText(title, Colors.white, width * 1.65,
-                    fontWeight: FontWeight.bold),
-                SizedBox(
-                  height: height,
-                ),
-                Row(
-                  children: [
-                    buildCustomText(
-                        Provider.of<InfoProvider>(context, listen: true)
-                            .systemInfo
-                            .currencySymbol
-                            .toString(),
-                        Colors.white,
-                        width * 3,
-                        fontWeight: FontWeight.bold),
-                    SizedBox(width: width),
-                    buildCustomText(
-                        count.toStringAsFixed(2), Colors.white, width * 3,
-                        fontWeight: FontWeight.bold),
-                  ],
-                ),
-              ]
-            : [
-                buildCustomText(
-                    count.toStringAsFixed(0), Colors.white, width * 3,
-                    fontWeight: FontWeight.bold),
-                SizedBox(
-                  height: height,
-                ),
-                buildCustomText(title, Colors.white, width * 1.65,
-                    fontWeight: FontWeight.bold),
-              ],
+    return InkWell(
+      child: Container(
+        width: isWorth ? width * 20 : width * 15,
+        height: height * 20,
+        padding: EdgeInsets.symmetric(horizontal: width * 1.5),
+        decoration: BoxDecoration(
+          color: Provider.of<InfoProvider>(context, listen: true)
+              .systemInfo
+              .primaryColor,
+          borderRadius: BorderRadius.circular(6.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.25), // Shadow color
+              spreadRadius: 0, // How much the shadow spreads
+              blurRadius: 4, // How much the shadow blurs
+              offset: const Offset(0, 5), // The offset of the shadow
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: isWorth
+              ? [
+                  buildCustomText(title, Colors.white, width * 1.65,
+                      fontWeight: FontWeight.bold),
+                  SizedBox(
+                    height: height,
+                  ),
+                  Row(
+                    children: [
+                      buildCustomText(
+                          Provider.of<InfoProvider>(context, listen: true)
+                              .systemInfo
+                              .currencySymbol
+                              .toString(),
+                          Colors.white,
+                          width * 3,
+                          fontWeight: FontWeight.bold),
+                      SizedBox(width: width),
+                      buildCustomText(
+                          count.toStringAsFixed(2), Colors.white, width * 3,
+                          fontWeight: FontWeight.bold),
+                    ],
+                  ),
+                ]
+              : [
+                  buildCustomText(
+                      count.toStringAsFixed(0), Colors.white, width * 3,
+                      fontWeight: FontWeight.bold),
+                  SizedBox(
+                    height: height,
+                  ),
+                  buildCustomText(title, Colors.white, width * 1.65,
+                      fontWeight: FontWeight.bold),
+                ],
+        ),
       ),
     );
   }
@@ -384,13 +462,29 @@ class _ViewInventoryState extends State<ViewInventory> {
             item.type.toLowerCase().contains(searchQuery))
         .toList();
 
+    // Apply filtering based on the selected filterDropDown value
+    List<InventoryItem> filteredItems;
+    if (filterDropDown == "In Stock") {
+      filteredItems =
+          inventoryItems.where((item) => item.quantity > 5).toList();
+    } else if (filterDropDown == "Low Stock") {
+      filteredItems = inventoryItems
+          .where((item) => item.quantity > 0 && item.quantity <= 5)
+          .toList();
+    } else if (filterDropDown == "Out of Stock") {
+      filteredItems =
+          inventoryItems.where((item) => item.quantity == 0).toList();
+    } else {
+      filteredItems = inventoryItems;
+    }
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
         child: SingleChildScrollView(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(6),
-            child: inventoryItems.isEmpty
+            child: filteredItems.isEmpty
                 ? Column(
                     children: [
                       Table(
@@ -445,10 +539,8 @@ class _ViewInventoryState extends State<ViewInventory> {
                             tableTitle("Total", width),
                             tableTitle("Action", width),
                           ]),
-                      for (int index = 0;
-                          index < inventoryItems.length;
-                          index++)
-                        buildInventoryRows(inventoryItems[index], index),
+                      for (int index = 0; index < filteredItems.length; index++)
+                        buildInventoryRows(filteredItems[index], index),
                     ],
                   ),
           ),
@@ -603,6 +695,31 @@ class _ViewInventoryState extends State<ViewInventory> {
       child: Center(
         child: buildCustomText(text, Data.darkTextColor, width,
             fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget dataBox({
+    required String title,
+    required String hintText,
+    required TextEditingController controller,
+    required Function? validator,
+    bool isDropDown = false,
+    bool isRequired = false,
+    bool isNumber = false,
+    Widget dropDown = const SizedBox(),
+  }) {
+    return SizedBox(
+      height: height * 8,
+      width: width * 31,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          isDropDown
+              ? dropDown
+              : buildInputField(hintText, height, width, context, controller,
+                  validator: validator, isNumber: isNumber),
+        ],
       ),
     );
   }
