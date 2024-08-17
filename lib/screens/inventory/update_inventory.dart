@@ -40,6 +40,7 @@ class _UpdateInventoryState extends State<UpdateInventory> {
   TextEditingController nameController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
   TextEditingController priceController = TextEditingController();
+  TextEditingController triggerController = TextEditingController();
 
   TextEditingController typeController = TextEditingController();
   String? typeDropdownValue;
@@ -73,6 +74,11 @@ class _UpdateInventoryState extends State<UpdateInventory> {
                   .inventoryItems[widget.index!]
                   .price
                   .toString();
+          triggerController.text =
+              Provider.of<InventoryProvider>(context, listen: false)
+                  .inventoryItems[widget.index!]
+                  .lowStockTrigger
+                  .toString();
           typeDropdownValue =
               Provider.of<InventoryProvider>(context, listen: false)
                   .inventoryItems[widget.index!]
@@ -90,6 +96,7 @@ class _UpdateInventoryState extends State<UpdateInventory> {
     quantityController.dispose();
     priceController.dispose();
     typeController.dispose();
+    triggerController.dispose();
   }
 
   @override
@@ -182,6 +189,16 @@ class _UpdateInventoryState extends State<UpdateInventory> {
                                 Overlay.of(context),
                                 const CustomSnackBar.error(
                                   message: "Please select a Unit Type",
+                                ),
+                              );
+                            } else if (!widget.isUnit &&
+                                int.tryParse(triggerController.text) == 0) {
+                              // show error massage
+                              showTopSnackBar(
+                                Overlay.of(context),
+                                const CustomSnackBar.error(
+                                  message:
+                                      "Low Stock Trigger must be greater than 0",
                                 ),
                               );
                             } else if (_formKey.currentState!.validate()) {
@@ -336,6 +353,19 @@ class _UpdateInventoryState extends State<UpdateInventory> {
             return null;
           },
         ),
+        dataBox(
+          title: "Low Stock Trigger",
+          hintText: "Low Stock Trigger",
+          isRequired: true,
+          isNumber: true,
+          controller: triggerController,
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Enter a valid number!';
+            }
+            return null;
+          },
+        ),
       ],
     );
   }
@@ -394,6 +424,7 @@ class _UpdateInventoryState extends State<UpdateInventory> {
             name: nameController.text,
             price: double.tryParse(priceController.text)!,
             quantity: double.tryParse(quantityController.text)!,
+            lowStockTrigger: int.tryParse(triggerController.text)!,
             type: typeDropdownValue!),
         accessToken:
             Provider.of<AuthProvider>(context, listen: false).user.accessToken!,
@@ -404,10 +435,12 @@ class _UpdateInventoryState extends State<UpdateInventory> {
           await Provider.of<InventoryProvider>(context, listen: false)
               .createInventoryItem(
                   inventoryItem: InventoryItem(
-                      name: nameController.text,
-                      price: double.tryParse(priceController.text)!,
-                      quantity: double.tryParse(quantityController.text)!,
-                      type: typeDropdownValue!),
+                    name: nameController.text,
+                    price: double.tryParse(priceController.text)!,
+                    quantity: double.tryParse(quantityController.text)!,
+                    type: typeDropdownValue!,
+                    lowStockTrigger: int.tryParse(triggerController.text)!,
+                  ),
                   accessToken: Provider.of<AuthProvider>(context, listen: false)
                       .user
                       .accessToken!,

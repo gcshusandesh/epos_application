@@ -363,6 +363,7 @@ class InventoryProvider extends ChangeNotifier {
           "type": inventoryItem.type,
           "quantity": inventoryItem.quantity,
           "price": inventoryItem.price,
+          "trigger": inventoryItem.lowStockTrigger,
         }
       };
 
@@ -381,6 +382,7 @@ class InventoryProvider extends ChangeNotifier {
           type: inventoryItem.type,
           quantity: inventoryItem.quantity,
           price: inventoryItem.price,
+          lowStockTrigger: inventoryItem.lowStockTrigger,
         ));
         notifyListeners();
         return true;
@@ -454,6 +456,7 @@ class InventoryProvider extends ChangeNotifier {
             price: inventoryItem['attributes']['price'].toDouble(),
             type: inventoryItem['attributes']['type'],
             quantity: inventoryItem['attributes']['quantity'].toDouble(),
+            lowStockTrigger: inventoryItem['attributes']['trigger'],
           ));
         });
         notifyListeners();
@@ -515,6 +518,7 @@ class InventoryProvider extends ChangeNotifier {
         "type": editedInventoryItem.type,
         "quantity": editedInventoryItem.quantity,
         "price": editedInventoryItem.price,
+        "trigger": editedInventoryItem.lowStockTrigger,
       };
 
       Map<String, dynamic> payloadBody = {

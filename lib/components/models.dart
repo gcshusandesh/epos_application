@@ -328,6 +328,7 @@ class InventoryItem {
   String type;
   double quantity;
   double price;
+  int lowStockTrigger;
 
   InventoryItem({
     this.id,
@@ -335,5 +336,6 @@ class InventoryItem {
     required this.price,
     required this.quantity,
     required this.type,
+    required this.lowStockTrigger,
   });
 }
