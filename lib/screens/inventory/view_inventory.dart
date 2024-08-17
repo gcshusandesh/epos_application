@@ -486,11 +486,13 @@ class _ViewInventoryState extends State<ViewInventory> {
     // Apply filtering based on the selected filterDropDown value
     List<InventoryItem> filteredItems;
     if (filterDropDown == "In Stock") {
-      filteredItems =
-          inventoryItems.where((item) => item.quantity > 5).toList();
+      filteredItems = inventoryItems
+          .where((item) => item.quantity > item.lowStockTrigger)
+          .toList();
     } else if (filterDropDown == "Low Stock") {
       filteredItems = inventoryItems
-          .where((item) => item.quantity > 0 && item.quantity <= 5)
+          .where((item) =>
+              item.quantity > 0 && item.quantity <= item.lowStockTrigger)
           .toList();
     } else if (filterDropDown == "Out of Stock") {
       filteredItems =
@@ -602,12 +604,12 @@ class _ViewInventoryState extends State<ViewInventory> {
                     buildCustomText(
                         item.quantity == 0
                             ? "Out of Stock"
-                            : item.quantity <= 5
+                            : item.quantity <= item.lowStockTrigger
                                 ? "Low Stock"
                                 : "In Stock",
                         item.quantity == 0
                             ? Data.redColor
-                            : item.quantity <= 5
+                            : item.quantity <= item.lowStockTrigger
                                 ? Provider.of<InfoProvider>(context,
                                         listen: true)
                                     .systemInfo

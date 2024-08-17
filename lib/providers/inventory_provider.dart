@@ -316,7 +316,8 @@ class InventoryProvider extends ChangeNotifier {
   void calculateInventoryAnalytics() {
     totalItems = inventoryItems.length;
     lowStock = inventoryItems
-        .where((element) => (element.quantity <= 5 && element.quantity != 0))
+        .where((element) => (element.quantity <= element.lowStockTrigger &&
+            element.quantity != 0))
         .length;
     outOfStock =
         inventoryItems.where((element) => element.quantity == 0).length;
