@@ -40,7 +40,7 @@ class _ViewInventoryState extends State<ViewInventory> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-
+      initialCheck = true;
       init = false;
     }
   }
@@ -55,13 +55,34 @@ class _ViewInventoryState extends State<ViewInventory> {
                 .user
                 .accessToken!,
             context: context);
+    if (mounted) {
+      await Provider.of<InventoryProvider>(context, listen: false).getUnitTypes(
+          accessToken: Provider.of<AuthProvider>(context, listen: false)
+              .user
+              .accessToken!,
+          context: context);
+    }
     setState(() {
       isLoading = false;
     });
   }
 
+  bool initialCheck = false;
+
   @override
   Widget build(BuildContext context) {
+    if (initialCheck &&
+        Provider.of<InventoryProvider>(context, listen: false)
+            .unitTypes
+            .isEmpty) {
+      initialCheck = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const EditUnitType()),
+        );
+      });
+    }
     return Stack(
       children: [
         mainBody(context),

@@ -13,7 +13,6 @@ import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class EditUnitType extends StatefulWidget {
   const EditUnitType({super.key});
-
   @override
   State<EditUnitType> createState() => _EditUnitTypeState();
 }
@@ -26,12 +25,6 @@ class _EditUnitTypeState extends State<EditUnitType> {
   bool isEditing = false;
 
   @override
-  void initState() {
-    super.initState();
-    _fetchData();
-  }
-
-  @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     if (init) {
@@ -39,9 +32,45 @@ class _EditUnitTypeState extends State<EditUnitType> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-
+      if (Provider.of<InventoryProvider>(context, listen: false)
+          .unitTypes
+          .isEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) {
+              return alert();
+            },
+          );
+        });
+      }
       init = false;
     }
+  }
+
+  // set up the AlertDialog
+  Widget alert() {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text("Initial Unit Setup"),
+      content: const Text(
+          "No Quantity Units detected.\nPlease add units to start using inventory management."),
+      actions: [
+        SizedBox(height: height * 2),
+        textButton(
+          text: "Okay",
+          height: height,
+          width: width,
+          textColor: const Color(0xff063B9D),
+          buttonColor: const Color(0xff063B9D),
+          onTap: () {
+            // close dialog box
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
   }
 
   void _fetchData() async {
@@ -59,13 +88,20 @@ class _EditUnitTypeState extends State<EditUnitType> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        mainBody(context),
-        isLoading
-            ? onLoading(width: width, context: context)
-            : const SizedBox(),
-      ],
+    return PopScope(
+      canPop: Provider.of<InventoryProvider>(context, listen: true)
+              .unitTypes
+              .isEmpty
+          ? false
+          : true,
+      child: Stack(
+        children: [
+          mainBody(context),
+          isLoading
+              ? onLoading(width: width, context: context)
+              : const SizedBox(),
+        ],
+      ),
     );
   }
 
@@ -126,6 +162,40 @@ class _EditUnitTypeState extends State<EditUnitType> {
           ],
         ),
       ),
+    );
+  }
+
+  Row customTopSection(
+      {required BuildContext context,
+      required double height,
+      required String text,
+      required double width,
+      required Function() onTap}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Provider.of<InventoryProvider>(context, listen: true).unitTypes.isEmpty
+            ? const SizedBox()
+            : iconButton(
+                "assets/svg/arrow_back.svg",
+                height,
+                width,
+                () {
+                  Navigator.pop(context);
+                },
+                context: context,
+              ),
+        buildTitleText(text, Data.darkTextColor, width),
+        iconButton(
+          "",
+          height,
+          width,
+          onTap,
+          isSvg: false,
+          icon: Icons.refresh,
+          context: context,
+        ),
+      ],
     );
   }
 

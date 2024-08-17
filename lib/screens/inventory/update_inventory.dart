@@ -168,8 +168,10 @@ class _UpdateInventoryState extends State<UpdateInventory> {
                               late bool isSuccessful;
                               if (widget.isUnit) {
                                 isSuccessful = await updateUnit();
-                              } else {}
-                              isSuccessful = await updateItem();
+                              } else {
+                                isSuccessful = await updateItem();
+                              }
+
                               setState(() {
                                 isLoading = false;
                               });
@@ -274,12 +276,13 @@ class _UpdateInventoryState extends State<UpdateInventory> {
                 typeDropdownValue = newValue!;
               });
             },
-            items: ["KG", "Litre", "Unit"]
-                .map<DropdownMenuItem<String>>((String value) {
+            items: Provider.of<InventoryProvider>(context, listen: true)
+                .unitTypes
+                .map<DropdownMenuItem<String>>((UnitType unitType) {
               return DropdownMenuItem<String>(
-                value: value,
+                value: unitType.name, // Use the name as the value
                 child: Text(
-                  value,
+                  unitType.name, // Display the name in the dropdown
                 ),
               );
             }).toList(),
