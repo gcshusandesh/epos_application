@@ -1,6 +1,7 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
@@ -25,6 +26,7 @@ class _ViewInventoryState extends State<ViewInventory> {
   late double width;
   bool isLoading = false;
   bool isEditing = false;
+  String searchQuery = "";
 
   @override
   void initState() {
@@ -33,10 +35,9 @@ class _ViewInventoryState extends State<ViewInventory> {
   }
 
   @override
-  void didChangeDependencies() async {
+  void didChangeDependencies() {
     super.didChangeDependencies();
     if (init) {
-      //initialize size config at the very beginning
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
@@ -97,7 +98,7 @@ class _ViewInventoryState extends State<ViewInventory> {
     );
   }
 
-  Scaffold mainBody(BuildContext context) {
+  Widget mainBody(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
@@ -113,64 +114,71 @@ class _ViewInventoryState extends State<ViewInventory> {
                 }),
           ),
           inventoryAnalytics(context),
-          Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    iconButton(
-                      "assets/svg/add.svg",
-                      height,
-                      width,
-                      () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const UpdateInventory()),
-                        );
-                      },
-                      context: context,
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(width: width * 40, child: searchBar()),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        iconButton(
+                          "assets/svg/add.svg",
+                          height,
+                          width,
+                          () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const UpdateInventory()),
+                            );
+                          },
+                          context: context,
+                        ),
+                        SizedBox(width: width),
+                        iconButton(
+                          "assets/svg/edit.svg",
+                          height,
+                          width,
+                          () {
+                            setState(() {
+                              isEditing = !isEditing;
+                            });
+                          },
+                          isSelected: isEditing,
+                          context: context,
+                        ),
+                        SizedBox(width: width),
+                        textButton(
+                          text: "Manage",
+                          height: height,
+                          width: width,
+                          textColor:
+                              Provider.of<InfoProvider>(context, listen: true)
+                                  .systemInfo
+                                  .iconsColor,
+                          buttonColor:
+                              Provider.of<InfoProvider>(context, listen: true)
+                                  .systemInfo
+                                  .iconsColor,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const EditUnitType()),
+                            );
+                          },
+                        )
+                      ],
                     ),
-                    SizedBox(width: width),
-                    iconButton(
-                      "assets/svg/edit.svg",
-                      height,
-                      width,
-                      () {
-                        setState(() {
-                          isEditing = !isEditing;
-                        });
-                      },
-                      isSelected: isEditing,
-                      context: context,
-                    ),
-                    SizedBox(width: width),
-                    textButton(
-                      text: "Manage",
-                      height: height,
-                      width: width,
-                      textColor:
-                          Provider.of<InfoProvider>(context, listen: true)
-                              .systemInfo
-                              .iconsColor,
-                      buttonColor:
-                          Provider.of<InfoProvider>(context, listen: true)
-                              .systemInfo
-                              .iconsColor,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const EditUnitType()),
-                        );
-                      },
-                    )
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
           SizedBox(height: height * 2),
           tableSection(context),
@@ -294,16 +302,57 @@ class _ViewInventoryState extends State<ViewInventory> {
     );
   }
 
+  Widget searchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      child: TextField(
+        onChanged: (value) {
+          setState(() {
+            searchQuery = value.toLowerCase();
+          });
+        },
+        decoration: InputDecoration(
+          hintText: "Search items...",
+          prefixIcon: Icon(
+            Icons.search,
+            color: Provider.of<InfoProvider>(context, listen: false)
+                .systemInfo
+                .primaryColor,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Provider.of<InfoProvider>(context, listen: true)
+                  .systemInfo
+                  .primaryColor, // Custom focused border color
+              width: 2.0, // Custom focused border width (optional)
+            ),
+          ),
+          enabledBorder: const OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Data.lightGreyBodyColor, // Custom focused border color
+              width: 1, // Custom focused border width (optional)
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Expanded tableSection(BuildContext context) {
+    final inventoryItems = Provider.of<InventoryProvider>(context, listen: true)
+        .inventoryItems
+        .where((item) =>
+            item.name.toLowerCase().contains(searchQuery) ||
+            item.type.toLowerCase().contains(searchQuery))
+        .toList();
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
         child: SingleChildScrollView(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(6),
-            child: Provider.of<InventoryProvider>(context, listen: true)
-                    .inventoryItems
-                    .isEmpty
+            child: inventoryItems.isEmpty
                 ? Column(
                     children: [
                       Table(
@@ -359,13 +408,9 @@ class _ViewInventoryState extends State<ViewInventory> {
                             tableTitle("Action", width),
                           ]),
                       for (int index = 0;
-                          index <
-                              Provider.of<InventoryProvider>(context,
-                                      listen: true)
-                                  .inventoryItems
-                                  .length;
+                          index < inventoryItems.length;
                           index++)
-                        buildInventoryRows(index),
+                        buildInventoryRows(inventoryItems[index], index),
                     ],
                   ),
           ),
@@ -374,7 +419,7 @@ class _ViewInventoryState extends State<ViewInventory> {
     );
   }
 
-  TableRow buildInventoryRows(int index) {
+  TableRow buildInventoryRows(InventoryItem item, int index) {
     return TableRow(
       decoration: const BoxDecoration(color: Data.lightGreyBodyColor),
       children: [
@@ -388,10 +433,7 @@ class _ViewInventoryState extends State<ViewInventory> {
                     builder: (context) => UpdateInventory(
                           isEdit: true,
                           index: index,
-                          id: Provider.of<InventoryProvider>(context,
-                                  listen: false)
-                              .inventoryItems[index]
-                              .id,
+                          id: item.id,
                         )),
               );
             }
@@ -400,39 +442,23 @@ class _ViewInventoryState extends State<ViewInventory> {
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: Column(
               children: [
-                tableItem(
-                    Provider.of<InventoryProvider>(context, listen: true)
-                        .inventoryItems[index]
-                        .name,
-                    width,
-                    context),
+                tableItem(item.name, width, context),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     buildCustomText(
-                        Provider.of<InventoryProvider>(context, listen: true)
-                                    .inventoryItems[index]
-                                    .quantity ==
-                                0
+                        item.quantity == 0
                             ? "Out of Stock"
-                            : Provider.of<InventoryProvider>(context,
-                                            listen: true)
-                                        .inventoryItems[index]
-                                        .quantity <=
-                                    5
+                            : item.quantity <= 5
                                 ? "Low Stock"
                                 : "In Stock",
-                        Provider.of<InventoryProvider>(context, listen: true)
-                                    .inventoryItems[index]
-                                    .quantity ==
-                                0
+                        item.quantity == 0
                             ? Data.redColor
-                            : Provider.of<InventoryProvider>(context,
-                                            listen: true)
-                                        .inventoryItems[index]
-                                        .quantity <=
-                                    5
-                                ? Provider.of<InfoProvider>(context,listen: true).systemInfo.iconsColor
+                            : item.quantity <= 5
+                                ? Provider.of<InfoProvider>(context,
+                                        listen: true)
+                                    .systemInfo
+                                    .iconsColor
                                 : Data.greenColor,
                         width),
                     isEditing
@@ -454,22 +480,14 @@ class _ViewInventoryState extends State<ViewInventory> {
             ),
           ),
         ),
+        tableItem(item.type, width, context),
+        tableItem("x${item.quantity.toString()}", width, context),
         tableItem(
-            Provider.of<InventoryProvider>(context, listen: true)
-                .inventoryItems[index]
-                .type,
+            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${item.price.toStringAsFixed(2)}",
             width,
             context),
         tableItem(
-            "x${Provider.of<InventoryProvider>(context, listen: true).inventoryItems[index].quantity.toString()}",
-            width,
-            context),
-        tableItem(
-            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${Provider.of<InventoryProvider>(context, listen: true).inventoryItems[index].price.toStringAsFixed(2)}",
-            width,
-            context),
-        tableItem(
-            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${(Provider.of<InventoryProvider>(context, listen: true).inventoryItems[index].price * Provider.of<InventoryProvider>(context, listen: true).inventoryItems[index].quantity).toStringAsFixed(2)}",
+            "${Provider.of<InfoProvider>(context, listen: true).systemInfo.currencySymbol} ${(item.price * item.quantity).toStringAsFixed(2)}",
             width,
             context),
         Padding(
@@ -484,47 +502,70 @@ class _ViewInventoryState extends State<ViewInventory> {
               setState(() {
                 isLoading = true;
               });
-              // delete item from list
-              bool isDeleted = await Provider.of<InventoryProvider>(context,
-                      listen: false)
-                  .deleteInventoryItem(
-                      id: Provider.of<InventoryProvider>(context, listen: false)
-                          .inventoryItems[index]
-                          .id!,
-                      index: index,
-                      accessToken:
-                          Provider.of<AuthProvider>(context, listen: false)
-                              .user
-                              .accessToken!,
-                      context: context);
+              bool isDeleted =
+                  await Provider.of<InventoryProvider>(context, listen: false)
+                      .deleteInventoryItem(
+                          id: item.id!,
+                          index: index,
+                          accessToken:
+                              Provider.of<AuthProvider>(context, listen: false)
+                                  .user
+                                  .accessToken!,
+                          context: context);
+              if (isDeleted && mounted) {
+                showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.success(
+                      message: "Inventory Item Deleted",
+                      textStyle:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+                    ));
+              } else if (!isDeleted && mounted) {
+                showTopSnackBar(
+                    Overlay.of(context),
+                    const CustomSnackBar.error(
+                      message: "Unable to delete item",
+                      textStyle:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+                    ));
+              }
               setState(() {
                 isLoading = false;
               });
-              if (isDeleted) {
-                if (mounted) {
-                  // Check if the widget is still mounted
-                  showTopSnackBar(
-                    Overlay.of(context),
-                    const CustomSnackBar.success(
-                      message: "Item successfully deleted.",
-                    ),
-                  );
-                }
-              } else {
-                if (mounted) {
-                  // Check if the widget is still mounted
-                  showTopSnackBar(
-                    Overlay.of(context),
-                    const CustomSnackBar.error(
-                      message: "Item could not be deleted.",
-                    ),
-                  );
-                }
-              }
             },
           ),
-        ),
+        )
       ],
+    );
+  }
+
+  Container tableItem(String text, double width, BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: height),
+      decoration: const BoxDecoration(
+        border: Border(
+          left: BorderSide(color: Colors.black, width: 1),
+          right: BorderSide(color: Colors.black, width: 1),
+        ),
+      ),
+      child: Center(
+        child: buildSmallText(text, Data.darkTextColor, width),
+      ),
+    );
+  }
+
+  Container tableTitle(String text, double width) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: height),
+      decoration: const BoxDecoration(
+        border: Border(
+          right: BorderSide(color: Colors.black, width: 1),
+        ),
+      ),
+      child: Center(
+        child: buildCustomText(text, Data.darkTextColor, width,
+            fontWeight: FontWeight.bold),
+      ),
     );
   }
 }

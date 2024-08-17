@@ -397,7 +397,6 @@ class _EditUnitTypeState extends State<EditUnitType> {
   }
 
   bool checkIsUnitEmpty(List<InventoryItem> inventoryItems, String unitType) {
-    print("unit type is $unitType");
     bool isUnitPresent = inventoryItems
         .any((item) => item.type.toLowerCase() == unitType.toLowerCase());
     return !isUnitPresent;
