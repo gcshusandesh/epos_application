@@ -1,6 +1,7 @@
 import 'package:epos_application/components/buttons.dart';
 import 'package:epos_application/components/common_widgets.dart';
 import 'package:epos_application/components/data.dart';
+import 'package:epos_application/components/models.dart';
 import 'package:epos_application/components/size_config.dart';
 import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
@@ -333,44 +334,59 @@ class _EditUnitTypeState extends State<EditUnitType> {
             buttonColor: Data.redColor,
             onTap: () async {
               /// do not delete if unit has items
-              setState(() {
-                isLoading = true;
-              });
-              // delete item from list
-              bool isDeleted = await Provider.of<InventoryProvider>(context,
-                      listen: false)
-                  .deleteUnitType(
-                      id: Provider.of<InventoryProvider>(context, listen: false)
-                          .unitTypes[index]
-                          .id!,
-                      index: index,
-                      accessToken:
-                          Provider.of<AuthProvider>(context, listen: false)
-                              .user
-                              .accessToken!,
-                      context: context);
-              setState(() {
-                isLoading = false;
-              });
-              if (isDeleted) {
-                if (mounted) {
-                  // Check if the widget is still mounted
-                  showTopSnackBar(
-                    Overlay.of(context),
-                    const CustomSnackBar.success(
-                      message: "Unit successfully deleted.",
-                    ),
-                  );
-                }
+              bool isUnitEmpty = checkIsUnitEmpty(
+                  Provider.of<InventoryProvider>(context, listen: false)
+                      .inventoryItems,
+                  Provider.of<InventoryProvider>(context, listen: false)
+                      .unitTypes[index]
+                      .name);
+              if (!isUnitEmpty) {
+                showTopSnackBar(
+                  Overlay.of(context),
+                  const CustomSnackBar.error(
+                    message: "Unit has items. Please delete items first.",
+                  ),
+                );
               } else {
-                if (mounted) {
-                  // Check if the widget is still mounted
-                  showTopSnackBar(
-                    Overlay.of(context),
-                    const CustomSnackBar.error(
-                      message: "Unit could not be deleted.",
-                    ),
-                  );
+                setState(() {
+                  isLoading = true;
+                });
+                // delete item from list
+                bool isDeleted =
+                    await Provider.of<InventoryProvider>(context, listen: false)
+                        .deleteUnitType(
+                  id: Provider.of<InventoryProvider>(context, listen: false)
+                      .unitTypes[index]
+                      .id!,
+                  index: index,
+                  accessToken: Provider.of<AuthProvider>(context, listen: false)
+                      .user
+                      .accessToken!,
+                  context: context,
+                );
+                setState(() {
+                  isLoading = false;
+                });
+                if (isDeleted) {
+                  if (mounted) {
+                    // Check if the widget is still mounted
+                    showTopSnackBar(
+                      Overlay.of(context),
+                      const CustomSnackBar.success(
+                        message: "Unit successfully deleted.",
+                      ),
+                    );
+                  }
+                } else {
+                  if (mounted) {
+                    // Check if the widget is still mounted
+                    showTopSnackBar(
+                      Overlay.of(context),
+                      const CustomSnackBar.error(
+                        message: "Unit could not be deleted.",
+                      ),
+                    );
+                  }
                 }
               }
             },
@@ -378,5 +394,12 @@ class _EditUnitTypeState extends State<EditUnitType> {
         ),
       ],
     );
+  }
+
+  bool checkIsUnitEmpty(List<InventoryItem> inventoryItems, String unitType) {
+    print("unit type is $unitType");
+    bool isUnitPresent = inventoryItems
+        .any((item) => item.type.toLowerCase() == unitType.toLowerCase());
+    return !isUnitPresent;
   }
 }

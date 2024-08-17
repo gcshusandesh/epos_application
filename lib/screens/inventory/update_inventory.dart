@@ -165,8 +165,9 @@ class _UpdateInventoryState extends State<UpdateInventory> {
                           height,
                           width,
                           () async {
-                            if (typeDropdownValue == null ||
-                                typeDropdownValue!.isEmpty) {
+                            if (!widget.isUnit &&
+                                (typeDropdownValue == null ||
+                                    typeDropdownValue!.isEmpty)) {
                               // show error massage
                               showTopSnackBar(
                                 Overlay.of(context),

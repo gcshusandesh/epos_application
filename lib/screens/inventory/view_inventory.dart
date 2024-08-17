@@ -29,7 +29,7 @@ class _ViewInventoryState extends State<ViewInventory> {
   @override
   void initState() {
     super.initState();
-    _fetchData();
+    _fetchData(reload: false);
   }
 
   @override
@@ -40,12 +40,11 @@ class _ViewInventoryState extends State<ViewInventory> {
       SizeConfig().init(context);
       height = SizeConfig.safeBlockVertical;
       width = SizeConfig.safeBlockHorizontal;
-      initialCheck = true;
       init = false;
     }
   }
 
-  void _fetchData() async {
+  void _fetchData({required bool reload}) async {
     setState(() {
       isLoading = true;
     });
@@ -61,6 +60,9 @@ class _ViewInventoryState extends State<ViewInventory> {
               .user
               .accessToken!,
           context: context);
+      if (!reload) {
+        initialCheck = true;
+      }
     }
     setState(() {
       isLoading = false;
@@ -105,7 +107,7 @@ class _ViewInventoryState extends State<ViewInventory> {
                 text: "Inventory",
                 width: width,
                 onTap: () {
-                  _fetchData();
+                  _fetchData(reload: true);
                 }),
           ),
           inventoryAnalytics(context),
