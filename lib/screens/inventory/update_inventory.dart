@@ -127,8 +127,12 @@ class _UpdateInventoryState extends State<UpdateInventory> {
                     },
                     context: context,
                   ),
-                  buildTitleText(widget.isEdit ? "Edit Unit" : "Add Unit",
-                      Data.darkTextColor, width),
+                  buildTitleText(
+                      widget.isEdit
+                          ? (widget.isUnit ? "Edit Unit" : "Edit Item")
+                          : (widget.isUnit ? "Create Unit" : "Create Item"),
+                      Data.darkTextColor,
+                      width),
                   SizedBox(width: width * 5),
                 ],
               ),
@@ -161,7 +165,16 @@ class _UpdateInventoryState extends State<UpdateInventory> {
                           height,
                           width,
                           () async {
-                            if (_formKey.currentState!.validate()) {
+                            if (typeDropdownValue == null ||
+                                typeDropdownValue!.isEmpty) {
+                              // show error massage
+                              showTopSnackBar(
+                                Overlay.of(context),
+                                const CustomSnackBar.error(
+                                  message: "Please select a Unit Type",
+                                ),
+                              );
+                            } else if (_formKey.currentState!.validate()) {
                               setState(() {
                                 isLoading = true;
                               });
@@ -171,7 +184,6 @@ class _UpdateInventoryState extends State<UpdateInventory> {
                               } else {
                                 isSuccessful = await updateItem();
                               }
-
                               setState(() {
                                 isLoading = false;
                               });
