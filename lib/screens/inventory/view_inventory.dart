@@ -61,8 +61,6 @@ class _ViewInventoryState extends State<ViewInventory> {
     setState(() {
       isLoading = true;
     });
-    Provider.of<InventoryProvider>(context, listen: false)
-        .calculateInventoryAnalytics();
     await Provider.of<InventoryProvider>(context, listen: false)
         .getInventoryList(
             accessToken: Provider.of<AuthProvider>(context, listen: false)
@@ -78,6 +76,10 @@ class _ViewInventoryState extends State<ViewInventory> {
       if (!reload) {
         initialCheck = true;
       }
+    }
+    if (mounted) {
+      Provider.of<InventoryProvider>(context, listen: false)
+          .calculateInventoryAnalytics();
     }
     setState(() {
       isLoading = false;
