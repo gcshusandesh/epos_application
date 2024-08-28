@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-Future<String> generateInvoicePdf({
+Future<String> generateReceiptPdf({
   required BuildContext context,
   required ProcessedOrder order,
   required String currency,
@@ -45,7 +45,7 @@ Future<String> generateInvoicePdf({
             pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text('INVOICE',
+                pw.Text('Payment Receipt',
                     style: pw.TextStyle(fontSize: 40, font: ttf)),
                 pw.SizedBox(height: 20),
                 pw.Text('Date: ${order.paymentTime}',
@@ -120,7 +120,7 @@ Future<String> generateInvoicePdf({
                 pw.SizedBox(height: 20),
                 pw.Align(
                   alignment: pw.Alignment.center,
-                  child: pw.Text('********** END OF INVOICE **********',
+                  child: pw.Text('********** END OF DOCUMENT **********',
                       style: pw.TextStyle(fontSize: 18, font: ttf)),
                 ),
               ],
@@ -143,7 +143,7 @@ Future<String> generateInvoicePdf({
 
   // Save the PDF document
   final output = await getTemporaryDirectory();
-  final filePath = "${output.path}/invoice_${order.id}.pdf";
+  final filePath = "${output.path}/receipt_${order.id}.pdf";
   final file = File(filePath);
   await file.writeAsBytes(await pdf.save());
 

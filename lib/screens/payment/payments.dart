@@ -9,7 +9,7 @@ import 'package:epos_application/providers/auth_provider.dart';
 import 'package:epos_application/providers/info_provider.dart';
 import 'package:epos_application/providers/menu_provider.dart';
 import 'package:epos_application/providers/order_provider.dart';
-import 'package:epos_application/screens/payment/invoice_pdf.dart';
+import 'package:epos_application/screens/payment/receipt_pdf.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -301,7 +301,7 @@ class _PaymentState extends State<Payment> {
     setState(() {
       isLoading = true;
     });
-    String pdfPath = await generateInvoicePdf(
+    String pdfPath = await generateReceiptPdf(
       context: context,
       order: order,
       currency: Provider.of<InfoProvider>(context, listen: false)
@@ -565,7 +565,7 @@ class _PaymentState extends State<Payment> {
                 isLoading = true;
               });
 
-              String pdfPath = await generateInvoicePdf(
+              String pdfPath = await generateReceiptPdf(
                 context: context,
                 order: order,
                 currency: Provider.of<InfoProvider>(context, listen: false)
@@ -580,7 +580,7 @@ class _PaymentState extends State<Payment> {
               if (mounted) {
                 bool isSendSuccessful =
                     await Provider.of<OrderProvider>(context, listen: false)
-                        .sendInvoiceEmail(
+                        .sendReceiptEmail(
                   email: emailController.text,
                   filePath: pdfPath,
                   restaurantName:

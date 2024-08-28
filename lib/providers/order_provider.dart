@@ -385,7 +385,7 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> sendInvoiceEmail({
+  Future<bool> sendReceiptEmail({
     required String email,
     required String filePath,
     required BuildContext context,
@@ -402,14 +402,14 @@ class OrderProvider extends ChangeNotifier {
       };
       Map<String, dynamic> body = {
         "to": email,
-        "subject": "Invoice",
+        "subject": "Receipt",
         "html": """
         <!DOCTYPE html>
         <html lang="en">
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Invoice</title>
+          <title>Receipt</title>
           <style>
             body {
               font-family: Arial, sans-serif;
@@ -452,11 +452,11 @@ class OrderProvider extends ChangeNotifier {
         <body>
           <div class="container">
             <div class="header">
-              <h1>Invoice</h1>
+              <h1>Receipt</h1>
             </div>
             <div class="content">
               <p>Dear Customer,</p>
-              <p>Thank you for visiting $restaurantName. We are pleased to attach your invoice for the recent transaction.</p>
+              <p>Thank you for visiting $restaurantName. We are pleased to attach your receipt for the recent transaction.</p>
               <p>If you have any questions, please do not hesitate to contact us.</p>
             </div>
             <div class="footer">
@@ -468,7 +468,7 @@ class OrderProvider extends ChangeNotifier {
       """,
         "attachments": [
           {
-            "filename": "invoice.pdf",
+            "filename": "receipt.pdf",
             "content": base64File,
             "encoding": "base64",
           }
@@ -488,7 +488,7 @@ class OrderProvider extends ChangeNotifier {
           MaterialPageRoute(
             builder: (context) => ErrorScreen(
               isConnectedToInternet: false,
-              trace: "sendInvoiceEmail",
+              trace: "sendReceiptEmail",
             ),
           ),
         );
@@ -501,7 +501,7 @@ class OrderProvider extends ChangeNotifier {
           context,
           MaterialPageRoute(
             builder: (context) => ErrorScreen(
-              trace: "sendInvoiceEmail",
+              trace: "sendReceiptEmail",
             ),
           ),
         );
